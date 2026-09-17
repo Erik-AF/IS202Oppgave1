@@ -144,7 +144,7 @@ Merge into main
 Branch names should:
 
 - Use one of the prefixes listed below.
-- Use `/` between the prefix and branch name.
+- Use `_` between the prefix and branch name.
 - Use lowercase letters.
 - Use `-` to separate words.
 - Be short and descriptive.
@@ -152,13 +152,13 @@ Branch names should:
 Example:
 
 ```text
-feat/login-page
+feat_login-page
 ```
 
 or:
 
 ```text
-refactor/login-page-refactor
+refactor_login-page-refactor
 ```
 
 ---
