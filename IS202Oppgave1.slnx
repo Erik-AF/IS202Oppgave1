@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="../IS202Oppgave1.AppHost/IS202Oppgave1.AppHost.csproj" />
-  <Project Path="../IS202Oppgave1.ServiceDefaults/IS202Oppgave1.ServiceDefaults.csproj" />
-  <Project Path="ObligOppgave/ObligOppgave.csproj" />
+  <Project Path="202Oppgave/202Oppgave.csproj" />
+  <Project Path="IS202Oppgave11.AppHost/IS202Oppgave11.AppHost.csproj" Id="e5c50acc-02a2-4158-b75d-6c62bf3283ea" />
+  <Project Path="IS202Oppgave11.ServiceDefaults/IS202Oppgave11.ServiceDefaults.csproj" />
 </Solution>
