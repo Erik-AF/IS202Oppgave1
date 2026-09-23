@@ -1,0 +1,50 @@
+@{
+    ViewData["Title"] = "Kartoversikt";
+}
+
+<h2>Kartoversikt – behov og ressurser</h2>
+<p>
+    <span style="color:red">&#9679;</span> Akutt behov &nbsp;
+    <span style="color:#d4b800">&#9679;</span> Planlagt behov &nbsp;
+    <span style="color:green">&#9679;</span> Tilgjengelig ressurs &nbsp;
+    <span style="color:blue">&#9679;</span> Offentlig aktør
+</p>
+
+<div id="map" style="height: 550px"></div>
+
+@section Scripts {
+    <script src="~/js/map-utils.js"></script>
+    <script>
+        var map = L.map('map').setView([58.1467, 7.9956], 11);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        fetch('/Kart/Data')
+            .then(response => response.json())
+            .then(punkter => {
+                punkter.forEach(function (p) {
+                    var marker = L.circleMarker([p.latitude, p.longitude], {
+                        radius: 9,
+                        fillColor: getMarkerColor(p),
+                        color: '#000',
+                        weight: 1,
+                        fillOpacity: 0.9
+                    }).addTo(map);
+
+                    marker.bindPopup(
+                        '<strong>' + p.type + '</strong><br>' +
+                        'Kategori: ' + p.kategori + '<br>' +
+                        'Status: ' + p.status + '<br>' +
+                        (p.prioritet ? 'Prioritet: ' + p.prioritet + '<br>' : '') +
+                        'Kontakt: ' + p.kontaktpunkt + '<br>' +
+                        p.beskrivelse
+                    );
+                });
+            })
+            .catch(error => {
+                console.error('Klarte ikke å hente kartdata:', error);
+            });
+    </script>
+}
