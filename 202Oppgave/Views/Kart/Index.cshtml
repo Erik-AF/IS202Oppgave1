@@ -1,0 +1,43 @@
+@model RegistrerPunktViewModel
+
+@{
+    ViewData["Title"] = "Registrer behov/ressurs";
+}
+
+<h2>Registrer behov/ressurs</h2>
+
+<form asp-action="Index" method="post">
+    <div class="mb-3">
+        <label asp-for="Latitude" class="form-label d-block"></label>
+        <input asp-for="Latitude" class="form-control" readonly />
+
+        <label asp-for="Longitude" class="form-label d-block"></label>
+        <input asp-for="Longitude" class="form-control" readonly />
+    </div>
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+</form>
+
+<h3>Klikk i kartet for å velge posisjon</h3>
+<div id="map" style="height: 400px"></div>
+
+@section Scripts {
+    <script>
+        var map = L.map('map').setView([58.1467, 7.9956], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var marker;
+
+        map.on('click', function (e) {
+            document.getElementById('Latitude').value = e.latlng.lat;
+            document.getElementById('Longitude').value = e.latlng.lng;
+
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker(e.latlng).addTo(map);
+        });
+    </script>
+}
