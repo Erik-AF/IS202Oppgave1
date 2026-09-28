@@ -1,58 +1,133 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] -202Oppgave</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/_202Oppgave.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">202Oppgave</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Kart" asp-action="Index">Registrer</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Kart" asp-action="Oversikt">Kartoversikt</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+﻿@*
+    _Layout.cshtml – felles ramme for alle sider (header, meny, footer).
+    Eier: Sarah (Frontend/UI).
 
-    <footer class="border-top footer text-muted">
+    Andre kan legge til egne ting via to sections i sin egen view:
+      @section Head    { ... }   -> havner i <head> (f.eks. Leaflet-CSS)
+      @section Scripts { ... }   -> havner sist på siden (f.eks. Leaflet-JS, kartkode)
+*@
+@{
+    // Finner ut hvilken controller vi er på akkurat nå (f.eks. "Home" eller "Need").
+    // Brukes lenger ned til å markere aktiv lenke i menyen.
+    
+    var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    
+    // Hjelpemetode: gir true hvis lenken tilhører siden brukeren er på nå.
+    
+    bool IsActive(string controller) =>
+        string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
+}
+<!DOCTYPE html>
+<html lang="nb">
+
+@* ========== 1. HEAD ==========
+   Usynlig del av siden: metadata, sidetittel og CSS-filer. Vises ikke for brukeren. *@
+
+<head>
+    
+    @* Tegnsett og mobiltilpasning. "viewport" er det som gjør at siden blir responsiv på mobil. *@
+    
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    
+    @* Sidetittel i nettleserfanen. Hentes fra ViewData["Title"] i hver enkelt view. *@
+    
+    <title>@ViewData["Title"] – CrisisSystem</title>
+
+    @* Felles CSS: site.css = grunnstil, header, footer og forside. components.css = knapper, kort, skjema, tabell. *@
+    
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true"/>
+    
+    @* Plass for ekstra <head>-innhold fra andre views (f.eks. Leaflet-CSS på kartsiden). Valgfri. *@
+    
+    @await RenderSectionAsync("Head", required: false)
+</head>
+
+@* ========== 2. BODY ==========
+   Alt brukeren ser: header, hovedinnhold og footer. *@
+
+<body>
+
+@* ---------- 2a. HEADER ----------
+       Den mørke stripen øverst med logo, meny og «Logg inn». Vises på alle sider.
+       Ikke det samme som banneret på forsiden (det ligger i Home/Index.cshtml).
+       Styling: .site-header i site.css *@
+
+<header class="site-header">
+    <div class="container header-inner">
+        
+        @* Logo/navn til venstre. Klikk sender brukeren til forsiden. *@
+        
+        <a class="brand" asp-controller="Home" asp-action="Index">CrisisSystem</a>
+        
+        @* Hamburger-knapp. Vises kun på mobil og åpner/lukker menyen (logikk i site.js). *@
+
+        <button class="nav-toggle" type="button" aria-label="Åpne meny"
+                aria-expanded="false" aria-controls="main-nav">
+            <span aria-hidden="true">☰</span>
+        </button>
+        
+        @* Hovedmeny. aria-current="page" markerer siden brukeren er på nå (se IsActive øverst). *@
+
+        <nav id="main-nav" class="main-nav" aria-label="Hovedmeny">
+            <a asp-controller="Home" asp-action="Index"
+               aria-current="@(IsActive("Home") ? "page" : null)">Hjem</a>
+            <a asp-controller="Resource" asp-action="Index"
+               aria-current="@(IsActive("Resource") ? "page" : null)">Ressurser</a>
+            <a asp-controller="Need" asp-action="Index"
+               aria-current="@(IsActive("Need") ? "page" : null)">Behov</a>
+            <a asp-controller="Map" asp-action="Index"
+               aria-current="@(IsActive("Map") ? "page" : null)">Kart</a>
+
+            @* TODO: Peker på Account/Login når innlogging er på plass *@
+            <a class="nav-login" asp-controller="Account" asp-action="Login">Logg inn</a>
+        </nav>
+    </div>
+</header>
+
+@* ---------- 2b. HOVEDINNHOLD ----------
+       Området som skifter fra side til side. Styling: .site-main i site.css (bakgrunn med fargeflekker). *@
+
+<main class="site-main">
+    
+    @* Grønn bekreftelsesmelding etter registrering (f.eks. «Ressurs registrert»).
+           Vises kun hvis en controller har satt TempData["Success"] før omdirigering. *@
+    
+    @if (TempData["Success"] is string successMessage)
+    {
         <div class="container">
-            &copy; 2026 - _202Oppgave - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="alert alert-success" role="status">@successMessage</div>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    }
+    
+    @* Her settes innholdet fra den aktuelle viewen inn (Index, Create, Map osv.). *@
+
+    @RenderBody()
+</main>
+
+@* ---------- 2c. FOOTER ----------
+       Mørk stripe nederst med navn og lenker til infosidene (InfoController, Emma).
+       Styling: .site-footer i site.css *@
+
+<footer class="site-footer">
+    <div class="container footer-inner">
+        <span class="footer-brand">CrisisSystem</span>
+        <nav class="footer-links" aria-label="Bunnmeny">
+            <a asp-controller="Info" asp-action="Om">Om</a>
+            <a asp-controller="Info" asp-action="Kontakt">Kontakt</a>
+            <a asp-controller="Info" asp-action="Hjelp">Hjelp</a>
+        </nav>
+    </div>
+</footer>
+
+@* ---------- 2d. JAVASCRIPT ----------
+       Lastes sist så siden vises raskt. site.js styrer mobilmenyen. *@
+
 <script src="~/js/site.js" asp-append-version="true"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+
+@* Plass for ekstra script fra andre views (f.eks. Leaflet-JS og kartkode). Valgfri. *@
+
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
