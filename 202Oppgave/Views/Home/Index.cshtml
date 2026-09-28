@@ -1,8 +1,93 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@*
+    Forsiden – følger designskissen og prototype: hero, to store handlingskort, tre oversiktskort.
+    Eier: Sarah (Frontend/UI).
+
+    Lenkene under er en avtale mellom gruppemedlemmene:
+      Resource/Create  Resource/Index   (Vetle)
+      Need/Create      Need/Index       (Sindre)
+      Map/Index                         (Marius)
+*@
+@{
+    // Setter sidetittelen. _Layout.cshtml bruker den i <title>: "Hjem – CrisisSystem"
+    ViewData["Title"] = "Hjem";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@* ========== 1. BANNER (hero-banner) ==========
+   Stort banner øverst på forsiden med tittel og undertittel.
+   Ikke en del av headeren (headeren med meny ligger i _Layout.cshtml).
+   Styling: .hero i site.css *@
+
+<section class="hero">
+    <h1>Sammen i krise</h1>
+    <p>Koble behov med ressurser – raskt og effektivt.</p>
+</section>
+
+@* ========== 2. HOVEDINNHOLD ==========
+   Beholder som holder alt under banneret. Sentrerer innholdet og gir maksbredde.
+   Styling: .container og .home-content i site.css *@
+
+<div class="container home-content">
+    
+    @* ---------- 2a. HANDLINGSKORT ----------
+       To store kort side om side som leder brukeren til å registrere noe.
+       Hvert kort har ikon, tittel, kort beskrivelse og en knapp.
+       På mobil legger kortene seg under hverandre (.grid-2 i site.css). *@
+    
+    <div class="grid-2">
+        
+        @* Kort 1: Registrer behov – for offentlige aktører. Lenker til Need/Create (Sindre). *@
+        
+        <article class="card">
+            <div class="icon-tile icon-need" aria-hidden="true">👥</div>
+            <h2>Registrer behov</h2>
+            <p>Offentlige aktører kan registrere behov for ressurser.</p>
+            <a class="btn" asp-controller="Need" asp-action="Create">
+                Registrer behov <span aria-hidden="true">→</span>
+            </a>
+        </article>
+        
+        @* Kort 2: Registrer ressurser – for ressursleverandører. Lenker til Resource/Create (Vetle). *@
+
+        <article class="card">
+            <div class="icon-tile icon-resource" aria-hidden="true">🚚</div>
+            <h2>Registrer ressurser</h2>
+            <p>Ressursleverandører kan registrere tilgjengelige ressurser.</p>
+            <a class="btn" asp-controller="Resource" asp-action="Create">
+                Registrer ressurser <span aria-hidden="true">→</span>
+            </a>
+        </article>
+    </div>
+
+    @* ---------- 2b. OVERSKRIFT FOR OVERSIKT ----------
+       Skiller handlingskortene over fra oversiktslenkene under. *@
+    
+    <h2 class="section-title">Se oversikt</h2>
+    
+    @* ---------- 2c. OVERSIKTSKORT ----------
+       Tre klikkbare kort i tre kolonner. Hele kortet er en lenke (.card-link).
+       På mobil legger de seg under hverandre (.grid-3 i site.css). *@
+
+    <div class="grid-3">
+        
+        @* Lenke til listen over ressurser: Resource/Index (Vetle) *@
+        
+        <a class="card card-link" asp-controller="Resource" asp-action="Index">
+            <strong>Se alle ressurser</strong>
+            <span>Utforsk tilgjengelige ressurser.</span>
+        </a>
+        
+        @* Lenke til listen over behov: Need/Index (Sindre) *@
+        
+        <a class="card card-link" asp-controller="Need" asp-action="Index">
+            <strong>Se alle behov</strong>
+            <span>Utforsk registrerte behov.</span>
+        </a>
+        
+        @* Lenke til kartsiden: Map/Index (Marius) *@
+        
+        <a class="card card-link" asp-controller="Map" asp-action="Index">
+            <strong>Åpne kart</strong>
+            <span>Se ressurser og behov på kartet.</span>
+        </a>
+    </div>
 </div>
