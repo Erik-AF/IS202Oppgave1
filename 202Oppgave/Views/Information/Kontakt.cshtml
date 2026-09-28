@@ -1,0 +1,51 @@
+@model KontaktFormModel
+
+@{
+    // Tittel i nettleserfanen
+    ViewData["Title"] = "Kontakt oss";
+}
+
+<!-- Kontaktskjema -->
+<section class="py-5">
+    <div class="container" style="max-width: 700px;">
+        <h1 class="mb-3">Kontakt oss</h1>
+        <p class="mb-4">Har du spørsmål eller tilbakemeldinger? Fyll ut skjemaet, så tar vi kontakt snarest.</p>
+
+        <!-- Viser feilmelding hvis noen felt mangler -->
+        @if (ViewBag.Feil != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Feil</div>
+        }
+
+        <form asp-controller="Information" asp-action="Kontakt" method="post">
+
+            <div class="mb-3">
+                <label asp-for="Navn" class="form-label">Navn</label>
+                <input asp-for="Navn" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Epost" class="form-label">E-post</label>
+                <input asp-for="Epost" type="email" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Emne" class="form-label">Emne</label>
+                <select asp-for="Emne" class="form-select">
+                    <option value="">Velg emne</option>
+                    <option>Spørsmål om tjenesten</option>
+                    <option>Feil på nettsiden</option>
+                    <option>Samarbeid</option>
+                    <option>Annet</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Melding" class="form-label">Melding</label>
+                <textarea asp-for="Melding" class="form-control" rows="5"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+</section>

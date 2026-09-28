@@ -1,0 +1,50 @@
+@model _202Oppgave.ViewModels.NeedViewModel
+
+@{
+    ViewData["Title"] = "Registrer behov";
+}
+<h1>Registrer behov</h1>
+
+<form asp-controller="Need" asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Type" class="form-label">Type behov</label>
+        <input asp-for="Type" class="form-control" />
+        <span asp-validation-for="Type" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Location" class="form-label">Lokasjon</label>
+        <input asp-for="Location" class="form-control" />
+        <span asp-validation-for="Location" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Priority" class="form-label">Prioritet</label>
+        <select asp-for="Priority"
+                asp-items="Html.GetEnumSelectList<_202Oppgave.ViewModels.NeedPriority>()"
+                class="form-select">
+            <option value="">Velg prioritet</option>
+        </select>
+        <span asp-validation-for="Priority" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Beskrivelse</label>
+        <textarea asp-for="Description"
+                  class="form-control"
+                  rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Deadline" class="form-label">Frist for hjelp</label>
+        <input asp-for="Deadline"
+               type="datetime-local"
+               class="form-control" />
+        <span asp-validation-for="Deadline" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Registrer behov
+    </button>
+</form>

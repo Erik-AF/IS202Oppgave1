@@ -1,0 +1,24 @@
+@model _202Oppgave.ViewModels.NeedViewModel
+
+@{
+    ViewData["Title"] = "Innsendt behov";
+}
+
+<h1>Innsendt behov</h1>
+
+<p>Her er opplysningene du sendte inn. Behovet er foreløpig ikke lagret.</p>
+
+<dl>
+    <dt>Type behov</dt>
+    <dd>@Model.Type</dd>
+    <dt>Lokasjon</dt>
+    <dd>@Model.Location</dd>
+    <dt>Prioritet</dt>
+    <dd>@Model.Priority</dd>
+    <dt>Beskrivelse</dt>
+    <dd>@Model.Description</dd>
+    <dt>Frist for hjelp</dt>
+    <dd>@Model.Deadline?.ToString("dd.MM.yyyy HH:mm")</dd>
+</dl>
+
+<a asp-controller="Need" asp-action="Create">Registrer et nytt behov</a>
