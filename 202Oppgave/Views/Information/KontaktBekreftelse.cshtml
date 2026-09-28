@@ -1,0 +1,25 @@
+@model KontaktFormModel
+
+@{
+    // Tittel i nettleserfanen
+    ViewData["Title"] = "Takk for meldingen";
+}
+
+<!-- Bekreftelse etter at kontaktskjemaet er sendt -->
+<section class="py-5">
+    <div class="container" style="max-width: 700px;">
+        <h1 class="mb-3">Takk, @Model.Navn!</h1>
+        <p class="mb-4">Vi har mottatt meldingen din og svarer så snart vi kan.</p>
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Dette sendte du</h2>
+                <p><strong>E-post:</strong> @Model.Epost</p>
+                <p><strong>Emne:</strong> @Model.Emne</p>
+                <p><strong>Melding:</strong> @Model.Melding</p>
+            </div>
+        </div>
+
+        <a class="btn btn-primary mt-4" asp-controller="Home" asp-action="Index">Tilbake til forsiden</a>
+    </div>
+</section>
