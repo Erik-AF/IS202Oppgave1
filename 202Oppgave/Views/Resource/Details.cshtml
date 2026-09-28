@@ -2,22 +2,25 @@
 
 @{
     ViewData["Title"] = "Ressursdetaljer";
+    var statusColor = Model.Status switch
+    {
+        "Tilgjengelig" => "var(--map-available)",
+        "Reservert" => "var(--map-planned)",
+        _ => "var(--muted)"
+    };
 }
 
-<h1>@Model.Type</h1>
-
-<dl class="row">
-    <dt class="col-sm-3">Område</dt>
-    <dd class="col-sm-9">@Model.Area</dd>
-
-    <dt class="col-sm-3">Beskrivelse</dt>
-    <dd class="col-sm-9">@Model.Description</dd>
-
-    <dt class="col-sm-3">Status</dt>
-    <dd class="col-sm-9">@Model.Status</dd>
-
-    <dt class="col-sm-3">Kontakt</dt>
-    <dd class="col-sm-9">@Model.ContactName, @Model.ContactPhone</dd>
-</dl>
-
-<a asp-action="Index" class="btn btn-secondary">Tilbake</a>
+<div class="container home-content">
+    <div class="card" style="padding:2rem; max-width:600px;">
+        <h1>@Model.Type</h1>
+        <p><strong>Område:</strong> @Model.Area</p>
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p><strong>Beskrivelse:</strong> @Model.Description</p>
+        }
+        <p><strong>Status:</strong> <span style="color:@statusColor; font-weight:600;">@Model.Status</span></p>
+        <p><strong>Kontakt:</strong> @Model.ContactName, @Model.ContactPhone</p>
+        <p><a asp-action="Index" class="btn btn-primary" style="color:#fff; 
+        text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Tilbake</a></p>
+    </div>
+</div>

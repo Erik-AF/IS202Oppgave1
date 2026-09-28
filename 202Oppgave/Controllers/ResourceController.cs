@@ -17,14 +17,14 @@ public class ResourceController : Controller
         return View(_resources);
     }
 
-    public IActionResult Register()
+    public IActionResult Create()
     {
         return View(new ResourceViewModel());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Register(ResourceViewModel model)
+    public IActionResult Create(ResourceViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -62,5 +62,23 @@ public class ResourceController : Controller
         }
 
         return View(resource);
+    }
+    //Resource/Geo
+    [HttpGet]
+    public IActionResult Geo()
+    {
+        var data = _resources
+            .Where(r => r.Latitude != null && r.Longitude != null)
+            .Select(r => new
+            {
+                r.Id,
+                r.Type,
+                r.Area,
+                r.Status,
+                r.Latitude,
+                r.Longitude
+            });
+
+        return Json(data);
     }
 }
