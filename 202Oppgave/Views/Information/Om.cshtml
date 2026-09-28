@@ -1,0 +1,71 @@
+@using _202Oppgave
+@using _202Oppgave.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    // Tittelen i nettleserfanen
+    ViewData["Title"] = "Om oss";
+}
+
+<!-- Forklaring om hva tjenesten er -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h1 class="display-5 fw-bold">Riktig ressurs, på riktig sted</h1>
+        <p class="lead mx-auto" style="max-width: 700px;">
+            Når krisen rammer, er det ofte noen i nærheten som har akkurat det som trengs.
+            Vi gjør det enkelt for beredskapsaktører å finne dem. Samtidig kan du som privatperson
+            legge inn ressurser du har tilgjengelig. På denne måten styrker vi samarbeidet mellom sivile
+            og offentlige aktører, og gjør det lettere å handle raskt når det gjelder.
+        </p>
+    </div>
+</section>
+
+<!-- Hensikten med tjenesten -->
+<section class="py-5 bg-light">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="text-center mb-4">Hvorfor denne tjenesten?</h2>
+        <p>
+            I krisesituasjoner som ekstremvær, flom eller strømbrudd teller ofte hvert sekund.
+            Ressursene som trengs finnes gjerne i nærheten, men det er vanskelig å vite hvor
+            og hos hvem. Da går verdifull tid tapt, og situasjonen kan bli mer alvorlig enn nødvendig.
+        </p>
+        <p>
+            Ved hjelp av dette systemet legger vi til rette for at nødvendige ressurser i en
+            krisesituasjon er enkle å gjøre tilgjengelige for offentlige aktører og privatpersoner,
+            og lette å lokalisere for de som skal bruke dem. Mye av det som trengs finnes allerede
+            lokalt, hos bønder, entreprenører, frivillige organisasjoner og vanlige folk. Tjenesten
+            samler denne oversikten på ett sted, slik at kriseledelsen vet hva som er tilgjengelig
+            før det haster.
+        </p>
+    </div>
+</section>
+
+<!-- Slik brukes tjenesten -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Slik bruker du tjenesten</h2>
+        <div class="row text-center">
+            <div class="col-md-4 mb-3">
+                <h3 class="h5">1. Opprett en bruker</h3>
+                <p>Registrer deg som offentlig aktør eller som ressursleverandør.</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h3 class="h5">2. Meld inn behov eller ressurs</h3>
+                <p>Offentlige aktører melder inn hva de trenger. Privatpersoner, bedrifter og frivillige legger inn hva de kan bidra med.</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h3 class="h5">3. Se det i kartet</h3>
+                <p>Behov og ressurser vises i kartet, så det er lett å se hva som finnes i nærheten.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Avslutning med lenke til kontaktsiden -->
+<section class="py-5 bg-light text-center">
+    <div class="container">
+        <h2 class="h4">Har du spørsmål?</h2>
+        <p>Ta kontakt med oss, så hjelper vi deg i gang.</p>
+        <a class="btn btn-primary" asp-controller="Information" asp-action="Kontakt">Kontakt oss</a>
+    </div>
+</section>

@@ -1,0 +1,47 @@
+/* Felles styling for Om-, Kontakt- og Hjelp-sidene */
+
+/* Kortene: litt skygge og myke hjørner */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Spørsmålene på Hjelp-siden: fetere tekst */
+.accordion-button {
+    font-weight: 600;
+}
+
+/* Skjemafeltene: tydeligere ramme når man klikker i dem */
+.form-control:focus,
+.form-select:focus {
+    border-color: #1f4e79;
+    box-shadow: 0 0 0 3px rgba(31, 78, 121, 0.2);
+}
+
+/* Knappene: mørkeblå farge som passer beredskapstemaet */
+.btn-primary {
+    background-color: #1f4e79;
+    border-color: #1f4e79;
+}
+
+.btn-primary:hover {
+    background-color: #163a5a;
+    border-color: #163a5a;
+}
+
+/* Tilpasninger for mobil (skjermer smalere enn 768px) */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    section {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}

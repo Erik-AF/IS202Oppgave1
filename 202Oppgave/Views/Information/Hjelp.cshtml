@@ -1,0 +1,92 @@
+@{
+    // Tittel i nettleserfanen
+    ViewData["Title"] = "Hjelp";
+}
+
+<!-- Innledning til hjelpesiden -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h1 class="display-6 fw-bold">Hjelp</h1>
+        <p class="lead mx-auto" style="max-width: 700px;">
+            Her finner du ofte stilte spørsmål og svar om hvordan tjenesten brukes.
+        </p>
+    </div>
+</section>
+
+<!-- Vanlige spørsmål -->
+<section class="py-5 bg-light">
+    <div class="container" style="max-width: 800px;">
+        <div class="accordion" id="faq">
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#svar1">
+                        Hvordan oppretter jeg en bruker?
+                    </button>
+                </h2>
+                <div id="svar1" class="accordion-collapse collapse" data-bs-parent="#faq">
+                    <div class="accordion-body">
+                        Trykk på "Registrer" og velg om du er offentlig aktør eller ressursleverandør.
+                        Du må bekrefte innloggingen med tofaktorautentisering.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#svar2">
+                        Hvordan legger jeg inn en ressurs?
+                    </button>
+                </h2>
+                <div id="svar2" class="accordion-collapse collapse" data-bs-parent="#faq">
+                    <div class="accordion-body">
+                        Logg inn som ressursleverandør, velg type ressurs, og marker i kartet hvor den befinner seg.
+                        Du kan når som helst se og slette ressursene du har lagt inn.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#svar3">
+                        Hva betyr fargene i kartet?
+                    </button>
+                </h2>
+                <div id="svar3" class="accordion-collapse collapse" data-bs-parent="#faq">
+                    <div class="accordion-body">
+                        <ul class="mb-0">
+                            <li><strong>Rød:</strong> akutt behov</li>
+                            <li><strong>Gul:</strong> planlagt behov</li>
+                            <li><strong>Grønn:</strong> tilgjengelig ressurs</li>
+                            <li><strong>Blå:</strong> offentlig aktør</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#svar4">
+                        Hva betyr statusen på et behov?
+                    </button>
+                </h2>
+                <div id="svar4" class="accordion-collapse collapse" data-bs-parent="#faq">
+                    <div class="accordion-body">
+                        Et behov går gjennom fire steg: <strong>ny</strong>, <strong>vurderes</strong>,
+                        <strong>tildelt</strong> og <strong>løst</strong>.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Henvisning til kontaktsiden -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h2 class="h4">Fant du ikke svaret?</h2>
+        <p>Send oss en melding, så hjelper vi deg.</p>
+        <a class="btn btn-primary" asp-controller="Information" asp-action="Kontakt">Kontakt oss</a>
+    </div>
+</section>
