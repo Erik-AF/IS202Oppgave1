@@ -38,7 +38,7 @@
     
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/components.css" asp-append-version="true"/>
-    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     @* Plass for ekstra <head>-innhold fra andre views (f.eks. Leaflet-CSS på kartsiden). Valgfri. *@
     
     @await RenderSectionAsync("Head", required: false)
@@ -75,10 +75,12 @@
                aria-current="@(IsActive("Home") ? "page" : null)">Hjem</a>
             <a asp-controller="Resource" asp-action="Index"
                aria-current="@(IsActive("Resource") ? "page" : null)">Ressurser</a>
-            <a asp-controller="Need" asp-action="Index"
+            <a asp-controller="Need" asp-action="Create"
                aria-current="@(IsActive("Need") ? "page" : null)">Behov</a>
-            <a asp-controller="Map" asp-action="Index"
-               aria-current="@(IsActive("Map") ? "page" : null)">Kart</a>
+            <a asp-controller="Kart" asp-action="Oversikt"
+               aria-current="@(IsActive("Kart") ? "page" : null)">Kart</a>
+            <a asp-controller="Information" asp-action="Om"
+               aria-current="@(IsActive("Information") ? "page" : null)">Om oss</a>
 
             @* TODO: Peker på Account/Login når innlogging er på plass *@
             <a class="nav-login" asp-controller="Account" asp-action="Login">Logg inn</a>
@@ -114,9 +116,9 @@
     <div class="container footer-inner">
         <span class="footer-brand">CrisisSystem</span>
         <nav class="footer-links" aria-label="Bunnmeny">
-            <a asp-controller="Info" asp-action="Om">Om</a>
-            <a asp-controller="Info" asp-action="Kontakt">Kontakt</a>
-            <a asp-controller="Info" asp-action="Hjelp">Hjelp</a>
+                <a asp-controller="Information" asp-action="Om">Om</a>
+                <a asp-controller="Information" asp-action="Kontakt">Kontakt</a>
+                <a asp-controller="Information" asp-action="Hjelp">Hjelp</a>
         </nav>
     </div>
 </footer>
@@ -125,7 +127,7 @@
        Lastes sist så siden vises raskt. site.js styrer mobilmenyen. *@
 
 <script src="~/js/site.js" asp-append-version="true"></script>
-
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 @* Plass for ekstra script fra andre views (f.eks. Leaflet-JS og kartkode). Valgfri. *@
 
 @await RenderSectionAsync("Scripts", required: false)
