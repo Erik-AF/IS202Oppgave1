@@ -1,0 +1,23 @@
+@model _202Oppgave.Models.Resource
+
+@{
+    ViewData["Title"] = "Ressursdetaljer";
+}
+
+<h1>@Model.Type</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Område</dt>
+    <dd class="col-sm-9">@Model.Area</dd>
+
+    <dt class="col-sm-3">Beskrivelse</dt>
+    <dd class="col-sm-9">@Model.Description</dd>
+
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+
+    <dt class="col-sm-3">Kontakt</dt>
+    <dd class="col-sm-9">@Model.ContactName, @Model.ContactPhone</dd>
+</dl>
+
+<a asp-action="Index" class="btn btn-secondary">Tilbake</a>
