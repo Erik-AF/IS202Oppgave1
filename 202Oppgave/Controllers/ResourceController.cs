@@ -99,4 +99,20 @@ public class ResourceController : Controller
 
         return Json(data);
     }
+    
+// Sletter en registrert ressurs. 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Delete(int id)
+    {
+        var resource = _resources.FirstOrDefault(r => r.Id == id);
+        if (resource is null)
+        {
+            return NotFound();
+        }
+        
+        _resources.Remove(resource);
+
+        return RedirectToAction(nameof(Index));
+    }
 }
