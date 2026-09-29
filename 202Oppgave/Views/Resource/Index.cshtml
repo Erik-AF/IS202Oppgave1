@@ -4,37 +4,32 @@
     ViewData["Title"] = "Registrerte ressurser";
 }
 
-<h1>Registrerte ressurser</h1>
-
-<a asp-action="Register" class="btn btn-primary mb-3">Registrer ny ressurs</a>
-
-@if (!Model.Any())
-{
-    <p>Ingen ressurser registrert ennå.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Type</th>
-            <th>Område</th>
-            <th>Status</th>
-            <th>Kontakt</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var resource in Model)
-        {
-            <tr>
-                <td>@resource.Type</td>
-                <td>@resource.Area</td>
-                <td>@resource.Status</td>
-                <td>@resource.ContactName</td>
-                <td><a asp-action="Details" asp-route-id="@resource.Id">Se detaljer</a></td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+<div class="container home-content">
+    <h1>Registrerte ressurser</h1>
+    <p><a asp-action="Create" class="btn btn-primary" style="color:#fff; 
+    text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Registrer ny ressurs</a></p>
+    @if (!Model.Any())
+    {
+        <p>Ingen ressurser registrert ennå.</p>
+    }
+    else
+    {
+        <div class="grid-3">
+            @foreach (var resource in Model)
+            {
+                var statusColor = resource.Status switch
+                {
+                    "Tilgjengelig" => "var(--map-available)",
+                    "Reservert" => "var(--map-planned)",
+                    _ => "var(--muted)"
+                };
+                <div class="card" style="padding:1.5rem;">
+                    <h3>@resource.Type</h3>
+                    <p>@resource.Area</p>
+                    <p style="color:@statusColor; font-weight:600;">@resource.Status</p>
+                    <p><a asp-action="Details" asp-route-id="@resource.Id">Se detaljer</a></p>
+                </div>
+            }
+        </div>
+    }
+</div>
