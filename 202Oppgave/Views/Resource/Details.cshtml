@@ -27,5 +27,14 @@
         <p><strong>Status:</strong> <span style="color:@statusColor; font-weight:600;">@Model.Status</span></p>
         <p><strong>Kontakt:</strong> @Model.ContactName, @Model.ContactPhone</p>
         <p><a asp-action="Index" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Tilbake</a></p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+              onsubmit="return confirm('Er du sikker på at du vil slette denne ressursen?');"
+              style="display:inline;">
+            <button type="submit"
+                    class="btn"
+                    style="background:var(--brick); color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
+                Slett
+            </button>
+        </form>
     </div>
 </div>
