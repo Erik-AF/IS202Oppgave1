@@ -46,5 +46,51 @@
             .catch(error => {
                 console.error('Klarte ikke å hente kartdata:', error);
             });
+        fetch('@Url.Action("Geo", "Resource")')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Kunne ikke hente ressurser');
+                }
+                return response.json();
+            })
+            .then(resources => {
+                resources.forEach(function (r) {
+                    const marker = L.circleMarker(
+                        [r.latitude, r.longitude],
+                        {
+                            radius: 9,
+                            fillColor: getMarkerColor({
+                                kategori: 'ressurs',
+                                status: r.status
+                            }),
+                            color: '#000',
+                            weight: 1,
+                            fillOpacity: 0.9
+                        }
+                    ).addTo(map);
+
+                    const popup = document.createElement('div');
+
+                    const title = document.createElement('strong');
+                    title.textContent = r.type;
+
+                    const info = document.createElement('p');
+                    info.textContent =
+                        'Område: ' + (r.area ?? '') +
+                        ' – Status: ' + (r.status ?? '');
+
+                    const link = document.createElement('a');
+                    link.href = '@Url.Action("Details", "Resource")'
+                        + '?id=' + encodeURIComponent(r.id);
+                    link.textContent = 'Se detaljer';
+
+                    popup.append(title, info, link);
+                    marker.bindPopup(popup);
+                });
+            })
+            .catch(error => {
+                console.error('Klarte ikke å hente ressurser:', error);
+            });
+        
     </script>
 }
