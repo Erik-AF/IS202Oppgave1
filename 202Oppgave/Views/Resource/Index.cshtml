@@ -1,0 +1,40 @@
+@model List<_202Oppgave.Models.Resource>
+
+@{
+    ViewData["Title"] = "Registrerte ressurser";
+}
+
+<h1>Registrerte ressurser</h1>
+
+<a asp-action="Register" class="btn btn-primary mb-3">Registrer ny ressurs</a>
+
+@if (!Model.Any())
+{
+    <p>Ingen ressurser registrert ennå.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Område</th>
+            <th>Status</th>
+            <th>Kontakt</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var resource in Model)
+        {
+            <tr>
+                <td>@resource.Type</td>
+                <td>@resource.Area</td>
+                <td>@resource.Status</td>
+                <td>@resource.ContactName</td>
+                <td><a asp-action="Details" asp-route-id="@resource.Id">Se detaljer</a></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
