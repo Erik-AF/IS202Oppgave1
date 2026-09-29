@@ -1,7 +1,13 @@
 @model _202Oppgave.Models.Resource
 
+@*
+    Details.cshtml – detaljvisning for én registrert ressurs.
+*@
+
 @{
     ViewData["Title"] = "Ressursdetaljer";
+
+    // Samme fargelogikk som i Index.cshtml, se kommentar der.
     var statusColor = Model.Status switch
     {
         "Tilgjengelig" => "var(--map-available)",
@@ -20,7 +26,6 @@
         }
         <p><strong>Status:</strong> <span style="color:@statusColor; font-weight:600;">@Model.Status</span></p>
         <p><strong>Kontakt:</strong> @Model.ContactName, @Model.ContactPhone</p>
-        <p><a asp-action="Index" class="btn btn-primary" style="color:#fff; 
-        text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Tilbake</a></p>
+        <p><a asp-action="Index" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Tilbake</a></p>
     </div>
 </div>
