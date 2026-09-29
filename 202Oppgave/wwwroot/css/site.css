@@ -261,3 +261,24 @@ a { color: inherit; }
 @media (max-width: 640px) {
     .grid-2 { grid-template-columns: 1fr; }
 }
+
+.resource-layout{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+}
+.resource-map-panel{
+    min-width; 0;
+}
+#resource-map {
+    height: 550px;
+    width: 100%;
+    border-radius: 12px;
+}
+
+@media (max-width: 800px) {
+    -resoure-layout{
+        grid-template-columns: 1fr;
+    }
+}

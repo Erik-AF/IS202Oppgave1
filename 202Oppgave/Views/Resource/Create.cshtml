@@ -13,9 +13,8 @@
 
 <div class="container home-content">
     <h1>Registrer ressurs</h1>
-
-    <form asp-action="Create" method="post" class="card" style="padding:2rem; max-width:600px;">
-        <div asp-validation-summary="ModelOnly" style="color:var(--brick); margin-bottom:1rem;"></div>
+<div class="resource-layout">
+    <form asp-action="Create" method="post" class="card" style="padding:2rem; min-width:0;">        <div asp-validation-summary="ModelOnly" style="color:var(--brick); margin-bottom:1rem;"></div>
 
         <div style="margin-bottom:1rem;">
             <label asp-for="Type"></label>
@@ -90,8 +89,43 @@
            padding/hvit tekst/avrunding, se melding til Sarah. *@
         <button type="submit" class="btn btn-primary" style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">Registrer</button>
     </form>
+    <div class="resource-map-panel">
+        <p>Klikk i kartet for å velge hvor ressursen befinner seg.</p>
+        <div id="resource-map"></div>
+    </div>
+</div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        const map = L.map('resource-map')
+            .setView([58.1467, 7.9956], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        const latitudeInput = document.getElementById('Latitude');
+        const longitudeInput = document.getElementById('Longitude');
+        
+        let marker;
+        
+        map.on('click', function (e) {
+            latitudeInput.value = e.latlng.lat;
+            longitudeInput.value = e.latlng.lng;
+            
+            if (marker) 
+            {
+                marker.setLatLng(e.latlng);
+            } else
+            {
+                marker = L.marker(e.latlng).addTo(map);
+             
+            }
+        });
+
+
+    </script>
 }
