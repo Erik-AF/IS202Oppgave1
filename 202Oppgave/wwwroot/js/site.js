@@ -2,12 +2,12 @@
 // JavaScript code.
 
 /**
- * site.js – felles JavaScript for alle sider.
+ * site.js – logikk for mobilmenyen.
  * Eier: Sarah (Frontend/UI).
  *
- * Inneholder kun mobilmenyen. Kartkode (Leaflet) ligger i Marius sin fil
- * og lastes via @section Scripts i viewet, ikke her.
+ * Leaflet-koden ligger i kartsiden siden den kun brukes der.
  */
+
 (function () {
     const toggle = document.querySelector('.nav-toggle');
     const nav = document.getElementById('main-nav');

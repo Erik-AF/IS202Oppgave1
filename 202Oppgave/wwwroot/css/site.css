@@ -1,15 +1,15 @@
 
 
-/* ==========================================================================
-   site.css – designgrunnlag og sidestruktur
-   Eier: Sarah (Frontend/UI)
+/*  * site.css – felles layout og grunnstil
+* Eier: Sarah (Frontend/UI) 
+* 
+* Inneholder grunnleggende farger, typografi, header, footer,
+* forside og responsive grid-klasser.
+* 
+* Fargene er hentet fra designskissen. Felles farger ligger i
+* :root slik at de kan KUN endres ett sted evt.
+*/
 
-   Innhold: 1) Designvariabler  2) Grunnstiler  3) Header/meny
-            4) Footer  5) Forside (hero + innhold)  6) Grid-hjelpere
-
-   Fargene er anslått ut fra designskissen. Evt. endring KUN i :root,
-   så oppdateres hele siden.
-   ========================================================================== */
 
 /* 1) Designvariabler */
 
@@ -25,9 +25,11 @@
     --brick: #a94434;
     --ink: #26282c;
     --muted: #5d6066;
+    
 
-    /* Kartfarger fra case-beskrivelsen (Rød/Gul/Grønn/Blå).
-       Marius bruker disse i Leaflet-markørene, Emma i badges (components.css). */
+    /* Kartfarger brukt for behov/ressurser i kart og badges.
+       Leaflet-markørene ligger i Marius sin kartkode. */
+    
     --map-urgent: #d64541;     /* rød  = akutt behov */
     --map-planned: #e0a800;    /* gul  = planlagt behov */
     --map-available: #2e9e5b;  /* grønn = tilgjengelig ressurs */
@@ -37,8 +39,8 @@
     --radius-md: 10px;
     --radius-pill: 999px;
     --container: 1100px;
-
-    /* Systemfonter: null nettverkskall, fungerer også ved dårlig dekning */
+    
+    /* Systemfonter – siden prosjektet også skal fungere med dårlig dekning. */
     --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -62,7 +64,7 @@ body {
 img, svg { max-width: 100%; }
 a { color: inherit; }
 
-/* Synlig tastaturfokus (fungerer på både mørk og lys bakgrunn) */
+/* Tydelig fokus ved tastaturnavigasjon. */
 :focus-visible {
     outline: 3px solid #4a90d9;
     outline-offset: 2px;
@@ -154,7 +156,7 @@ a { color: inherit; }
     cursor: pointer;
 }
 
-/* Mobil: menyen blir en nedtrekksliste under headeren */
+/* På mindre skjermer åpnes menyen som en dropdown. */
 @media (max-width: 760px) {
     .nav-toggle { display: inline-grid; place-items: center; }
 

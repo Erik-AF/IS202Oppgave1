@@ -1,18 +1,21 @@
-﻿@*
-    _Layout.cshtml – felles ramme for alle sider (header, meny, footer).
-    Eier: Sarah (Frontend/UI).
+﻿@* 
 
-    Andre kan legge til egne ting via to sections i sin egen view:
-      @section Head    { ... }   -> havner i <head> (f.eks. Leaflet-CSS)
-      @section Scripts { ... }   -> havner sist på siden (f.eks. Leaflet-JS, kartkode)
+_Layout.cshtml – felles layout for hele applikasjonen.
+Eier: Sarah (Frontend/UI).
+
+Inneholder header, navigasjon, hovedinnhold og footer.
+Enkeltsider kan legge til egne styles/scripts gjennom
+@section Head og @section Scripts.
+
 *@
+
 @{
-    // Finner ut hvilken controller vi er på akkurat nå (f.eks. "Home" eller "Need").
-    // Brukes lenger ned til å markere aktiv lenke i menyen.
+    // Finner hvilken controller som er aktiv, slik at riktig lenke
+    // kan markeres som aktiv i menyen.
     
     var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     
-    // Hjelpemetode: gir true hvis lenken tilhører siden brukeren er på nå.
+    // Hjelpemetode for å sjekke om en menylenke tilhører aktiv controller.
     
     bool IsActive(string controller) =>
         string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
@@ -21,7 +24,8 @@
 <html lang="nb">
 
 @* ========== 1. HEAD ==========
-   Usynlig del av siden: metadata, sidetittel og CSS-filer. Vises ikke for brukeren. *@
+  Felles metadata, sidetittel og stylesheets.
+    *@
 
 <head>
     
@@ -30,11 +34,11 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     
-    @* Sidetittel i nettleserfanen. Hentes fra ViewData["Title"] i hver enkelt view. *@
+    @* SideTittelen settes i det enkelte viewet via ViewData["Title"]. *@
     
     <title>@ViewData["Title"] – CrisisSystem</title>
-
-    @* Felles CSS: site.css = grunnstil, header, footer og forside. components.css = knapper, kort, skjema, tabell. *@
+    
+    @* Felles styling. Enkeltsider kan legge til CSS via @section Head. *@
     
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/components.css" asp-append-version="true"/>
@@ -50,25 +54,23 @@
 <body>
 
 @* ---------- 2a. HEADER ----------
-       Den mørke stripen øverst med logo, meny og «Logg inn». Vises på alle sider.
-       Ikke det samme som banneret på forsiden (det ligger i Home/Index.cshtml).
-       Styling: .site-header i site.css *@
+       Felles header og navigasjon for alle sider. *@
 
 <header class="site-header">
     <div class="container header-inner">
         
-        @* Logo/navn til venstre. Klikk sender brukeren til forsiden. *@
+        @* Logo – går alltid tilbake til forsiden. *@
         
         <a class="brand" asp-controller="Home" asp-action="Index">CrisisSystem</a>
         
-        @* Hamburger-knapp. Vises kun på mobil og åpner/lukker menyen (logikk i site.js). *@
+        @* Mobilmeny – vises på mindre skjermer og styres av site.js. *@
 
         <button class="nav-toggle" type="button" aria-label="Åpne meny"
                 aria-expanded="false" aria-controls="main-nav">
             <span aria-hidden="true">☰</span>
         </button>
         
-        @* Hovedmeny. aria-current="page" markerer siden brukeren er på nå (se IsActive øverst). *@
+        @* aria-current markerer hvilken side som er aktiv. *@
 
         <nav id="main-nav" class="main-nav" aria-label="Hovedmeny">
             <a asp-controller="Home" asp-action="Index"
@@ -91,8 +93,7 @@
 
 <main class="site-main">
     
-    @* Grønn bekreftelsesmelding etter registrering (f.eks. «Ressurs registrert»).
-           Vises kun hvis en controller har satt TempData["Success"] før omdirigering. *@
+    @* Viser en bekreftelsesmelding når controlleren har satt    TempData["Success"]. *@
     
     @if (TempData["Success"] is string successMessage)
     {
@@ -107,8 +108,7 @@
 </main>
 
 @* ---------- 2c. FOOTER ----------
-       Mørk stripe nederst med navn og lenker til infosidene (InfoController, Emma).
-       Styling: .site-footer i site.css *@
+       Felles footer med lenker til infosidene. *@
 
 <footer class="site-footer">
     <div class="container footer-inner">
