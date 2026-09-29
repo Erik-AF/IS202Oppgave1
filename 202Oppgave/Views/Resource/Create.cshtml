@@ -1,0 +1,97 @@
+@model _202Oppgave.ViewModels.ResourceViewModel
+
+@*
+    Create.cshtml – registreringsskjema for ressurser.
+
+    Feltnavnene her matcher ResourceViewModel. Latitude/Longitude fylles
+    ut av kartet
+*@
+
+@{
+    ViewData["Title"] = "Registrer ressurs";
+}
+
+<div class="container home-content">
+    <h1>Registrer ressurs</h1>
+
+    <form asp-action="Create" method="post" class="card" style="padding:2rem; max-width:600px;">
+        <div asp-validation-summary="ModelOnly" style="color:var(--brick); margin-bottom:1rem;"></div>
+
+        <div style="margin-bottom:1rem;">
+            <label asp-for="Type"></label>
+            <input asp-for="Type" class="form-control" />
+            <span asp-validation-for="Type" style="color:var(--brick);"></span>
+        </div>
+
+        <div style="margin-bottom:1rem;">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+        </div>
+
+        <div style="margin-bottom:1rem;">
+            <label asp-for="Area"></label>
+            <input asp-for="Area" class="form-control" />
+            <span asp-validation-for="Area" style="color:var(--brick);"></span>
+        </div>
+
+        @* Latitude/Longitude: vanlige tallfelt inntil kartet er koblet på. *@
+        <div style="margin-bottom:1rem;">
+            <label asp-for="Latitude"></label>
+            <input asp-for="Latitude" class="form-control" />
+        </div>
+
+        <div style="margin-bottom:1rem;">
+            <label asp-for="Longitude"></label>
+            <input asp-for="Longitude" class="form-control" />
+        </div>
+
+        <div style="margin-bottom:1rem;">
+            <label asp-for="AvailableFrom"></label>
+            <input asp-for="AvailableFrom" class="form-control" type="date" />
+        </div>
+
+        <div style="margin-bottom:1rem;">
+            <label asp-for="AvailableTo"></label>
+            <input asp-for="AvailableTo" class="form-control" type="date" />
+        </div>
+
+        <div style="margin-bottom:1rem;">
+            <label asp-for="ContactName"></label>
+            <input asp-for="ContactName" class="form-control" />
+            <span asp-validation-for="ContactName" style="color:var(--brick);"></span>
+        </div>
+
+        <div style="margin-bottom:1rem;">
+            <label asp-for="ContactPhone"></label>
+            <input asp-for="ContactPhone" class="form-control" />
+            <span asp-validation-for="ContactPhone" style="color:var(--brick);"></span>
+        </div>
+
+        <div style="margin-bottom:1rem;">
+            <label asp-for="ContactEmail"></label>
+            <input asp-for="ContactEmail" class="form-control" />
+        </div>
+
+        <div style="margin-bottom:1rem;">
+            <label asp-for="Status"></label>
+            <select asp-for="Status" class="form-select">
+                <option value="Tilgjengelig">Tilgjengelig</option>
+                <option value="Reservert">Reservert</option>
+                <option value="Utilgjengelig">Utilgjengelig</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom:1.5rem;">
+            <label asp-for="OwnerName"></label>
+            <input asp-for="OwnerName" class="form-control" />
+        </div>
+
+        @* Inline style her fordi .btn i components.css foreløpig mangler
+           padding/hvit tekst/avrunding, se melding til Sarah. *@
+        <button type="submit" class="btn btn-primary" style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">Registrer</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

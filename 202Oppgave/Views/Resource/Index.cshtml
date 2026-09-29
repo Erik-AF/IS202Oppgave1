@@ -1,0 +1,42 @@
+@model List<_202Oppgave.Models.Resource>
+
+@*
+    Index.cshtml – oversikt over alle registrerte ressurser.
+    
+*@
+
+@{
+    ViewData["Title"] = "Registrerte ressurser";
+}
+
+<div class="container home-content">
+    <h1>Registrerte ressurser</h1>
+    <p><a asp-action="Create" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Registrer ny ressurs</a></p>
+
+    @if (!Model.Any())
+    {
+        <p>Ingen ressurser registrert ennå.</p>
+    }
+    else
+    {
+        <div class="grid-3">
+            @foreach (var resource in Model)
+            {
+                // Samme fargelogikk som Marius bruker i kartet:
+                // grønn = tilgjengelig, gul = reservert, grå = resten.
+                var statusColor = resource.Status switch
+                {
+                    "Tilgjengelig" => "var(--map-available)",
+                    "Reservert" => "var(--map-planned)",
+                    _ => "var(--muted)"
+                };
+                <div class="card" style="padding:1.5rem;">
+                    <h3>@resource.Type</h3>
+                    <p>@resource.Area</p>
+                    <p style="color:@statusColor; font-weight:600;">@resource.Status</p>
+                    <p><a asp-action="Details" asp-route-id="@resource.Id">Se detaljer</a></p>
+                </div>
+            }
+        </div>
+    }
+</div>

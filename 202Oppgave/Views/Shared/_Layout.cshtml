@@ -1,5 +1,32 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@* 
+
+_Layout.cshtml – felles layout for hele applikasjonen.
+Eier: Sarah (Frontend/UI).
+
+Inneholder header, navigasjon, hovedinnhold og footer.
+Enkeltsider kan legge til egne styles/scripts gjennom
+@section Head og @section Scripts.
+
+*@
+
+@{
+    // Finner hvilken controller som er aktiv, slik at riktig lenke
+    // kan markeres som aktiv i menyen.
+    
+    var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    
+    // Hjelpemetode for å sjekke om en menylenke tilhører aktiv controller.
+    
+    bool IsActive(string controller) =>
+        string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
+}
+<!DOCTYPE html>
+<html lang="nb">
+
+@* ========== 1. HEAD ==========
+  Felles metadata, sidetittel og stylesheets.
+    *@
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,7 +39,14 @@
     <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/_202Oppgave.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    @* Plass for ekstra <head>-innhold fra andre views (f.eks. Leaflet-CSS på kartsiden). Valgfri. *@
+    
+    @await RenderSectionAsync("Head", required: false)
 </head>
+
+@* ========== 2. BODY ==========
+   Alt brukeren ser: header, hovedinnhold og footer. *@
+
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -51,22 +85,49 @@
                 </div>
             </div>
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
     </div>
+</header>
 
-    <footer class="border-top footer text-muted">
+@* ---------- 2b. HOVEDINNHOLD ----------
+       Området som skifter fra side til side. Styling: .site-main i site.css (bakgrunn med fargeflekker). *@
+
+<main class="site-main">
+    
+    @* Viser en bekreftelsesmelding når controlleren har satt    TempData["Success"]. *@
+    
+    @if (TempData["Success"] is string successMessage)
+    {
         <div class="container">
-            &copy; 2026 - _202Oppgave - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="alert alert-success" role="status">@successMessage</div>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    }
+    
+    @* Her settes innholdet fra den aktuelle viewen inn (Index, Create, Map osv.). *@
+
+    @RenderBody()
+</main>
+
+@* ---------- 2c. FOOTER ----------
+       Felles footer med lenker til infosidene. *@
+
+<footer class="site-footer">
+    <div class="container footer-inner">
+        <span class="footer-brand">CrisisSystem</span>
+        <nav class="footer-links" aria-label="Bunnmeny">
+                <a asp-controller="Information" asp-action="Om">Om</a>
+                <a asp-controller="Information" asp-action="Kontakt">Kontakt</a>
+                <a asp-controller="Information" asp-action="Hjelp">Hjelp</a>
+        </nav>
+    </div>
+</footer>
+
+@* ---------- 2d. JAVASCRIPT ----------
+       Lastes sist så siden vises raskt. site.js styrer mobilmenyen. *@
+
 <script src="~/js/site.js" asp-append-version="true"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+@* Plass for ekstra script fra andre views (f.eks. Leaflet-JS og kartkode). Valgfri. *@
+
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
