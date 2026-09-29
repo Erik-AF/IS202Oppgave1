@@ -3,16 +3,20 @@
 @{
     ViewData["Title"] = "Innsendt behov";
 }
-
+<div class="container home-content">
 <h1>Innsendt behov</h1>
 
-<p>Her er opplysningene du sendte inn. Behovet er foreløpig ikke lagret.</p>
+<p>Behovet er registrert og vises i behovsoversikten. Opplysningene lagres midlertidig og forsvinner når appen starter på nytt.</p>
 
 <dl>
     <dt>Type behov</dt>
     <dd>@Model.Type</dd>
     <dt>Lokasjon</dt>
     <dd>@Model.Location</dd>
+    <dt>Breddegrad</dt>
+    <dd>@Model.Latitude</dd>
+    <dt>Lengdegrad</dt>
+    <dd>@Model.Longitude</dd>
     <dt>Prioritet</dt>
     <dd>@Model.Priority</dd>
     <dt>Beskrivelse</dt>
@@ -22,3 +26,5 @@
 </dl>
 
 <a asp-controller="Need" asp-action="Create">Registrer et nytt behov</a>
+<a asp-controller="Need" asp-action="Index">Se alle behov</a>
+</div>

@@ -6,6 +6,14 @@ namespace _202Oppgave.Controllers
 {
     public class NeedController : Controller
     {
+        private static readonly List<NeedViewModel> _needs = new();
+
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return View(_needs);
+        }
+
         [HttpGet]
         public IActionResult Create()
         {
@@ -19,6 +27,8 @@ namespace _202Oppgave.Controllers
             {
                 return View(model);
             }
+
+            _needs.Add(model);
 
             return View("Confirmation", model);
         }

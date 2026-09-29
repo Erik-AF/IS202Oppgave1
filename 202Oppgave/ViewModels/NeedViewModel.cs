@@ -21,6 +21,15 @@ namespace _202Oppgave.ViewModels
 
         [Required(ErrorMessage = "Oppgi når hjelpen trengs.")]
         public DateTime? Deadline { get; set; }
+
+
+        [Required(ErrorMessage = "Velg et punkt på kartet.")]
+        [Range(-90, 90, ErrorMessage = "Ugyldig breddegrad.")]
+        public double? Latitude { get; set; }
+
+        [Required(ErrorMessage = "Velg et punkt på kartet.")]
+        [Range(-180, 180, ErrorMessage = "Ugyldig lengdegrad.")]
+        public double? Longitude { get; set; }
     }
     public enum NeedPriority
     {
