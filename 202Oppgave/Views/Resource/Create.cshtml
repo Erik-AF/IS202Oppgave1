@@ -1,5 +1,12 @@
 @model _202Oppgave.ViewModels.ResourceViewModel
 
+@*
+    Create.cshtml – registreringsskjema for ressurser.
+
+    Feltnavnene her matcher ResourceViewModel. Latitude/Longitude fylles
+    ut av kartet
+*@
+
 @{
     ViewData["Title"] = "Registrer ressurs";
 }
@@ -26,6 +33,7 @@
             <span asp-validation-for="Area" style="color:var(--brick);"></span>
         </div>
 
+        @* Latitude/Longitude: vanlige tallfelt inntil kartet er koblet på. *@
         <div style="margin-bottom:1rem;">
             <label asp-for="Latitude"></label>
             <input asp-for="Latitude" class="form-control" />
@@ -77,8 +85,9 @@
             <input asp-for="OwnerName" class="form-control" />
         </div>
 
-        <button type="submit" class="btn btn-primary" style="color:#fff; 
-        padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">Registrer</button>
+        @* Inline style her fordi .btn i components.css foreløpig mangler
+           padding/hvit tekst/avrunding, se melding til Sarah. *@
+        <button type="submit" class="btn btn-primary" style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">Registrer</button>
     </form>
     <div class="resource-map-panel">
         <p>Klikk i kartet for å velge hvor ressursen befinner seg.</p>
