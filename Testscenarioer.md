@@ -18,9 +18,9 @@ Eier: Emma. Alle gruppemedlemmer fyller ut egne rader når de tester sin funksjo
 
 | ID | Scenario | Forutsetninger | Steg | Forventet resultat | Faktisk resultat | Status | Kommentar/Issue |
 |---|---|---|---|---|---|---|---|
-| RES-01 | Registrere ny ressurs med gyldige data | Bruker er innlogget som ressursleverandør | 1. Gå til Ressurser → Registrer ny<br>2. Fyll ut alle felt<br>3. Trykk "Registrer" | Ressursen lagres og vises på oversiktssiden | | Ikke testet | |
-| RES-02 | Registrere ressurs uten påkrevd felt | Bruker er innlogget | 1. La et påkrevd felt stå tomt<br>2. Trykk "Registrer" | Valideringsfeil vises, ressurs lagres ikke | | Ikke testet | |
-| RES-03 | Slette egen ressurs | Ressurs er registrert av innlogget bruker | 1. Gå til egen ressurs<br>2. Trykk "Slett" | Ressursen fjernes fra listen | | Ikke testet | |
+| RES-01 | Registrere ny ressurs med gyldige data | Ingen innlogging implementert ennå, alle kan registrere | 1. Gå til Ressurser → Registrer ny<br>2. Fyll ut alle felt<br>3. Trykk "Registrer" | Ressursen lagres og vises på oversiktssiden | Lander på detaljside med informasjon om ressursen og mulighet til å slette. Ressursen vises også på oversiktssiden (/Resource). | Bestått | Testet uten innlogging siden autentisering ikke er bygget ennå, jf. gruppens plan. Retestes når innlogging er på plass. |
+| RES-02 | Registrere ressurs uten påkrevd felt | Ingen innlogging implementert ennå, alle kan registrere | 1. La et påkrevd felt stå tomt<br>2. Trykk "Registrer" | Valideringsfeil vises, ressurs lagres ikke | Feilmelding vises ("Velg type ressurs" / "Velg sted"), skjemaet sendes ikke inn. Ressursen dukker ikke opp på oversiktssiden (/Resource) etterpå. | Bestått | Testet uten innlogging siden autentisering ikke er bygget ennå, jf. gruppens plan. Bør retestes når innlogging er på plass. |
+| RES-03 | Slette egen ressurs | Ressurs er registrert. Ingen innlogging implementert ennå, så eierskap sjekkes ikke | 1. Gå til egen ressurs<br>2. Trykk "Slett" | Ressursen fjernes fra listen | Bekreftelsesdialog vises, ressursen fjernes fra oversiktssiden (/Resource) etter bekreftelse. | Bestått | Testet uten innlogging siden autentisering ikke er bygget ennå. Eierskapssjekk må legges inn i ResourceController.Delete når innlogging er på plass. |
 
 ## Need (Sindre)
 
