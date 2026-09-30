@@ -23,9 +23,9 @@ The prompts were originally written in Norwegian and are translated to English h
 - "When I press send on the contact form I get no confirmation, what is wrong with KontaktBekreftelse.cshtml?"
 
 **Sarah**
-- Vi holder på med et prosjekt for korverket og heimevernet i år i IT og informasjonssystemer. Hjelp og forklar hver steg og evt. løsningsforslag. Jeg limer inn en oppgavebeskrivelse,  case-beskrivelsen av prosjektet og fordeling av ansvarsområder. Vent til jeg skriver klar
-- Kom med spesifikk inndeling av løsningsforslaget til koden
-- Chat har refaktorert planen. Hvordan fordele 4 og 5 mellom Sarah og Emma uten partial?
+- We are working on a project for Kartverket and Heimevernet as part of the IT and Information Systems programme this year. Help me and explain each step, including possible solution approaches where relevant. I will paste the assignment description, the project case description, and the division of responsibilities. Wait until I write “ready” before responding.
+- Provide a specific breakdown of the proposed code solution.
+- Chat has refactored the plan. How should areas 4 and 5 be divided between Sarah and Emma without using partial/shared ownership?
 
 
 **Erik**
