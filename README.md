@@ -29,7 +29,8 @@ The prompts were originally written in Norwegian and are translated to English h
 
 
 **Erik**
-- 
+- "How does the AppHost.cs builder work and give insight to how i would use a docker container as a builder?"
+
 
 **Sindre**
 - 
