@@ -26,8 +26,7 @@ Eier: Emma. Alle gruppemedlemmer fyller ut egne rader når de tester sin funksjo
 
 | ID | Scenario | Forutsetninger | Steg | Forventet resultat | Faktisk resultat | Status | Kommentar/Issue |
 |---|---|---|---|---|---|---|---|
-| NEED-01 | Registrere nytt behov med prioritet | Bruker er innlogget som offentlig aktør | 1. Gå til Behov → Registrer nytt<br>2. Sett prioritet = Akutt<br>3. Fyll ut resten og trykk "Registrer" | Behovet lagres og vises med rød markør i kartet | | Ikke testet | |
-| NEED-02 | Endre status på behov | Et behov er registrert | 1. Åpne behovet<br>2. Endre status fra "Ny" til "Vurderes"<br>3. Lagre | Ny status vises på behovet | | Ikke testet | |
+| NEED-01 | Registrere nytt behov med prioritet | Appen kjører. Ingen innlogging er implementert | 1. Åpne Registrer behov<br>2. Fyll ut alle felt og velg Akutt<br>3. Velg kartpunkt og trykk Registrer<br>4. Åpne Kart | Behovet registreres og vises med rød markør på valgt sted i kart | Behovet ble registrert og vist med rød markør på riktig sted | Bestått |
 
 ## Kart (Marius)
 
