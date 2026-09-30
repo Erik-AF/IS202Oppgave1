@@ -33,7 +33,11 @@ The prompts were originally written in Norwegian and are translated to English h
 
 
 **Sindre**
-- 
+- "Explain Vetle's code step by step so I understand how it works in depth."
+- "Check my code for mistakes and duplicate sections."
+- "Help me troubleshoot why the application will not start."
+- "Explain how i can adapt the NEED code to the group's existing solution better."
+- "Explain what changes i can make to the need registration page so its consistent with the resource page."
 
 **Marius**
 - "Help me identify why the map is not appearing by reviewing my code and screenshots"
