@@ -1,28 +1,34 @@
-﻿@model List<_202Oppgave.ViewModels.NeedViewModel>
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@model List<_202Oppgave.Models.Need>
+
+
 @{
     ViewData["Title"] = "Registrerte behov";
 }
 
 <div class="container home-content">
     <h1>Registrerte behov</h1>
+    <p><a asp-action="Create" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Registrer nytt behov</a></p>
 
-    @if (Model.Count == 0)
-{
-    <p>Ingen behov er registrert ennå.</p>
-}
-
-@foreach (var need in Model)
-{
-    <div class="card" style="padding:1rem; margin-bottom:1rem;">
-        <h2>@need.Type</h2>
-        <p>Lokasjon: @need.Location</p>
-        <p>Prioritet: @need.Priority</p>
-        <p>Beskrivelse: @need.Description</p>
-        <p>Frist for hjelp: @need.Deadline?.ToString("dd.MM.yyyy HH:mm")</p>
-    </div>
-}
-
+    @if (!Model.Any())
+    {
+        <p>Ingen behov er registrert ennå.</p>
+    }
+    else
+    {
+        <div class="grid-3">
+            @foreach (var need in Model)
+            {
+                var priorityColor = need.Priority == _202Oppgave.ViewModels.NeedPriority.Akutt
+                    ? "var(--brick)" : "var(--map-planned)";
+                <div class="card" style="padding:1.5rem; overflow-wrap:anywhere;">
+                    <h3>@need.Type</h3>
+                    <p>@need.Location</p>
+                    <p style="color:@priorityColor; font-weight:600;">@need.Priority</p>
+                    <p>@need.Description</p>
+                    <p>Frist: @need.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
+                    <p><a asp-action="Confirmation" asp-route-id="@need.Id">Se detaljer</a></p>
+                </div>
+            }
+        </div>
+    }
 </div>

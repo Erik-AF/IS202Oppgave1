@@ -1,86 +1,119 @@
 @model _202Oppgave.ViewModels.NeedViewModel
 
+@* Bruker samme oppsett som ressursskjemaet for å gi sidene et felles utseende. *@
 @{
     ViewData["Title"] = "Registrer behov";
 }
+
+@section Head {
+    <style>
+        #need-map {
+            height: 550px;
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        #need-layout .resource-map-panel {
+            min-width: 0;
+        }
+
+        @@media (max-width: 800px) {
+            #need-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}
+
 <div class="container home-content">
-<h1>Registrer behov</h1>
+    <h1>Registrer behov</h1>
+    <div id="need-layout" class="resource-layout">
+        <form asp-controller="Need" asp-action="Create" method="post"
+              class="card" style="padding:2rem; min-width:0;">
+            <div asp-validation-summary="ModelOnly" style="color:var(--brick); margin-bottom:1rem;"></div>
 
-<form asp-controller="Need" asp-action="Create" method="post"
-          class="card" style="padding:2rem; max-width:600px;">
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Type">Type behov</label>
+                <input asp-for="Type" class="form-control" />
+                <span asp-validation-for="Type" style="color:var(--brick);"></span>
+            </div>
 
-          <input asp-for="Latitude" type="hidden" />
-<input asp-for="Longitude" type="hidden" />
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Description">Beskrivelse</label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" style="color:var(--brick);"></span>
+            </div>
 
-<span asp-validation-for="Latitude" style="color:var(--brick);"></span>
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Location">Lokasjon</label>
+                <input asp-for="Location" class="form-control" />
+                <span asp-validation-for="Location" style="color:var(--brick);"></span>
+            </div>
 
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Latitude">Breddegrad</label>
+                <input asp-for="Latitude" class="form-control" readonly />
+                <span asp-validation-for="Latitude" style="color:var(--brick);"></span>
+            </div>
 
-        <div style="margin-bottom:1rem;">
-        <label asp-for="Type" class="form-label">Type behov</label>
-        <input asp-for="Type" class="form-control" />
-        <span asp-validation-for="Type" style="color:var(--brick);"></span>
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Longitude">Lengdegrad</label>
+                <input asp-for="Longitude" class="form-control" readonly />
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Deadline">Frist for hjelp</label>
+                <input asp-for="Deadline" class="form-control" type="datetime-local" />
+                <span asp-validation-for="Deadline" style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Priority">Prioritet</label>
+                <select asp-for="Priority" asp-items="Html.GetEnumSelectList<_202Oppgave.ViewModels.NeedPriority>()" class="form-select">
+                    <option value="">Velg prioritet</option>
+                </select>
+                <span asp-validation-for="Priority" style="color:var(--brick);"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary"
+                    style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">Registrer</button>
+        </form>
+        <div class="resource-map-panel">
+            <p>Klikk i kartet for å velge hvor hjelpen trengs.</p>
+            <div id="need-map"></div>
+        </div>
     </div>
-
-        <div style="margin-bottom:1rem;">
-        <label asp-for="Location" class="form-label">Lokasjon</label>
-        <input asp-for="Location" class="form-control" />
-        <span asp-validation-for="Location" style="color:var(--brick);"></span>
-    </div>
-
-        <div style="margin-bottom:1rem;">
-        <label asp-for="Priority" class="form-label">Prioritet</label>
-        <select asp-for="Priority"
-                asp-items="Html.GetEnumSelectList<_202Oppgave.ViewModels.NeedPriority>()"
-                class="form-select">
-            <option value="">Velg prioritet</option>
-        </select>
-        <span asp-validation-for="Priority" style="color:var(--brick);"></span>
-    </div>
-
-        <div style="margin-bottom:1rem;">
-        <label asp-for="Description" class="form-label">Beskrivelse</label>
-        <textarea asp-for="Description"
-                  class="form-control"
-                  rows="4"></textarea>
-        <span asp-validation-for="Description" style="color:var(--brick);"></span>
-    </div>
-
-        <div style="margin-bottom:1rem;">
-        <label asp-for="Deadline" class="form-label">Frist for hjelp</label>
-        <input asp-for="Deadline"
-               type="datetime-local"
-               class="form-control" />
-        <span asp-validation-for="Deadline" style="color:var(--brick);"></span>
-    </div>
-
-    <p>Klikk på kartet for å velge hvor hjelpen trengs.</p>
-<div id="map" style="height:400px; margin-bottom:1rem;"></div>
-
-        <button type="submit" class="btn btn-primary"
-                style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
-            Registrer behov
-        </button>
-</form>
 </div>
 
-        @section Scripts {
+@section Scripts {
     <script>
-        var map = L.map('map').setView([58.1467, 7.9956], 13);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        const map = L.map('need-map').setView([58.1467, 7.9956], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
-        var marker;
 
-map.on('click', function (e) {
-    document.getElementById('Latitude').value = e.latlng.lat;
-    document.getElementById('Longitude').value = e.latlng.lng;
+        const latitude = document.getElementById('Latitude');
+        const longitude = document.getElementById('Longitude');
+        let marker;
 
-    if (marker) {
-        map.removeLayer(marker);
-    }
+        // Kartpunktet vises igjen etter en skjemafeil, så brukeren slipper å velge på nytt.
+        if (latitude.value && longitude.value) {
+            const position = [
+                Number(latitude.value.replace(',', '.')),
+                Number(longitude.value.replace(',', '.'))
+            ];
+            marker = L.marker(position).addTo(map);
+            map.setView(position, 13);
+        }
 
-    marker = L.marker(e.latlng).addTo(map);
-});
+        map.on('click', function (e) {
+            latitude.value = e.latlng.lat;
+            longitude.value = e.latlng.lng;
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker(e.latlng).addTo(map);
+        });
     </script>
 }

@@ -2,8 +2,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace _202Oppgave.ViewModels
 {
+    // Jeg bruker nullable typer for valg og koordinater, slik at manglende verdier
+    // oppdages av Required i stedet for å få en standardverdi.
     public class NeedViewModel
     {
+
         [Required(ErrorMessage = "Oppgi hvilken type ressurs det er behov for.")]
         public string Type { get; set; } = string.Empty;
 

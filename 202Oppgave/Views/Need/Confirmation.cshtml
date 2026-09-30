@@ -1,30 +1,36 @@
-@model _202Oppgave.ViewModels.NeedViewModel
+@model _202Oppgave.Models.Need
+
+@* Gjenbruker bekreftelsessiden når et behov åpnes fra oversikten. *@
 
 @{
-    ViewData["Title"] = "Innsendt behov";
+    ViewData["Title"] = "Registrert behov";
 }
+
 <div class="container home-content">
-<h1>Innsendt behov</h1>
-
-<p>Behovet er registrert og vises i behovsoversikten. Opplysningene lagres midlertidig og forsvinner når appen starter på nytt.</p>
-
-<dl>
-    <dt>Type behov</dt>
-    <dd>@Model.Type</dd>
-    <dt>Lokasjon</dt>
-    <dd>@Model.Location</dd>
-    <dt>Breddegrad</dt>
-    <dd>@Model.Latitude</dd>
-    <dt>Lengdegrad</dt>
-    <dd>@Model.Longitude</dd>
-    <dt>Prioritet</dt>
-    <dd>@Model.Priority</dd>
-    <dt>Beskrivelse</dt>
-    <dd>@Model.Description</dd>
-    <dt>Frist for hjelp</dt>
-    <dd>@Model.Deadline?.ToString("dd.MM.yyyy HH:mm")</dd>
-</dl>
-
-<a asp-controller="Need" asp-action="Create">Registrer et nytt behov</a>
-<a asp-controller="Need" asp-action="Index">Se alle behov</a>
+    <div class="card" style="padding:2rem; max-width:600px; overflow-wrap:anywhere;">
+        <h1>@Model.Type</h1>
+        <p>Behovet er registrert. Opplysningene lagres midlertidig og forsvinner når appen starter på nytt.</p>
+        <p><strong>Lokasjon:</strong> @Model.Location</p>
+        <p><strong>Prioritet:</strong> @Model.Priority</p>
+        <p><strong>Beskrivelse:</strong> @Model.Description</p>
+        <p><strong>Frist for hjelp:</strong> @Model.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
+        <p><strong>Breddegrad:</strong> @Model.Latitude</p>
+        <p><strong>Lengdegrad:</strong> @Model.Longitude</p>
+        <div id="details-map" style="height:350px; width:100%; margin-bottom:1rem;"></div>
+        <p><a asp-action="Index" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Se alle behov</a></p>
+        <a asp-action="Create">Registrer et nytt behov</a>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        // JSON sørger for at koordinatene får punktum som desimalskille i JavaScript.
+        const position = [@Json.Serialize(Model.Latitude), @Json.Serialize(Model.Longitude)];
+        const map = L.map('details-map').setView(position, 15);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        L.marker(position).addTo(map);
+    </script>
+}
