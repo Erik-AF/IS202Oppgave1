@@ -35,7 +35,14 @@ The prompts were originally written in Norwegian and are translated to English h
 - 
 
 **Vetle**
--
+
+- "help me understand my part of the assignment by seperating everything into spesific tasks"
+- "Which classes should I create for the Resource module"
+- "Which methods should I use to register a resource"
+- "What's the difference between a controller and a view model, and which one should my form data go through"
+- "Why am I getting 'Cannot resolve symbol' for ResourceViewModel in ResourceController.cs"
+- "How do I resolve a merge conflict in _Layout.cshtml between my branch and main"
+  
 
 
 ---
