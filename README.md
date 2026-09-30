@@ -35,7 +35,10 @@ The prompts were originally written in Norwegian and are translated to English h
 - 
 
 **Marius**
-- 
+- "Help me identify why the map is not appearing by reviewing my code and screenshots"
+- "Help me move the 'back' button below the map on the resource details page"
+- "Explain how to commit, push, and merge my changes into main using Rider and Github"
+- "Help me add my existing Leaflet map to the resource registration form"
 
 **Vetle**
 - "help me understand my part of the assignment by seperating everything into spesific tasks"
