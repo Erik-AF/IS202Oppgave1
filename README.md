@@ -23,7 +23,10 @@ The prompts were originally written in Norwegian and are translated to English h
 - "When I press send on the contact form I get no confirmation, what is wrong with KontaktBekreftelse.cshtml?"
 
 **Sarah**
-- 
+- Vi holder på med et prosjekt for korverket og heimevernet i år i IT og informasjonssystemer. Hjelp og forklar hver steg og evt. løsningsforslag. Jeg limer inn en oppgavebeskrivelse,  case-beskrivelsen av prosjektet og fordeling av ansvarsområder. Vent til jeg skriver klar
+- Kom med spesifikk inndeling av løsningsforslaget til koden
+- Chat har refaktorert planen. Hvordan fordele 4 og 5 mellom Sarah og Emma uten partial?
+
 
 **Erik**
 - 
