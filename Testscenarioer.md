@@ -31,10 +31,10 @@ Eier: Emma. Alle gruppemedlemmer fyller ut egne rader når de tester sin funksjo
 
 ## Kart (Marius)
 
-| ID | Scenario | Forutsetninger | Steg | Forventet resultat | Faktisk resultat | Status | Kommentar/Issue |
-|---|---|---|---|---|---|---|---|
-| MAP-01 | Velge punkt i kart under registrering | Bruker er på registreringsskjema | 1. Klikk et punkt i kartet | Koordinater fylles automatisk inn i skjema | | Ikke testet | |
-| MAP-02 | Se registrerte ressurser/behov på kart | Minst én ressurs og ett behov er registrert | 1. Gå til Kart-siden | Riktig fargekode vises per type (rød/gul/grønn/blå) | | Ikke testet | |
+| ID | Scenario | Forutsetninger | Steg | Forventet resultat | Faktisk resultat                                                       | Status  | Kommentar/Issue                                             |
+|---|---|---|---|---|------------------------------------------------------------------------|---------|-------------------------------------------------------------|
+| MAP-01 | Velge punkt i kart under registrering | Bruker er på registreringsskjema | 1. Klikk et punkt i kartet | Koordinater fylles automatisk inn i skjema | Koordinater fylles inn automatisk utifra hvor bruker trykker på kartet | Bestått |  |
+| MAP-02 | Se registrerte ressurser/behov på kart | Minst én ressurs og ett behov er registrert | 1. Gå til Kart-siden | Riktig fargekode vises per type (rød/gul/grønn/blå) | Riktig fargekode vises per type                                        | Bestått |  |
 
 ## Frontend / UI (Sarah og Emma)
 
