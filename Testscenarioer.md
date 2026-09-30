@@ -38,12 +38,12 @@ Eier: Emma. Alle gruppemedlemmer fyller ut egne rader når de tester sin funksjo
 
 ## Frontend / UI (Sarah og Emma)
 
-| ID | Scenario | Forutsetninger | Steg | Forventet resultat | Faktisk resultat | Status | Kommentar/Issue |
-|---|---|---|---|---|---|---|---|
-| UI-01 | Responsivitet på mobil (< 400px) | Ingen | 1. Åpne forsiden i mobilvisning i DevTools | Meny kollapser til hamburgermeny, ingen sideveis scroll | | Ikke testet | |
-| UI-02 | Responsivitet på nettbrett (~768px) | Ingen | 1. Åpne forsiden i nettbrettvisning | Kort-grid går til riktig antall kolonner | | Ikke testet | |
-| UI-03 | Tastaturnavigasjon | Ingen | 1. Naviger hele forsiden kun med Tab | Alle lenker/knapper er synlig fokuserbare i logisk rekkefølge | | Ikke testet | |
-| UI-04 | Utskrift av ressursliste | Minst én ressurs er registrert | 1. Åpne ressursliste<br>2. Ctrl+P / Skriv ut | Header, footer og kart skjules; tabellen er lesbar på papir | | Ikke testet | |
+| ID | Scenario | Forutsetninger                                | Steg | Forventet resultat                        | Faktisk resultat | Status      | Kommentar/Issue |
+|---|---|-----------------------------------------------|---|-------------------------------------------|---|-------------|---|
+| UI-01 | Responsivitet på mobil (< 400px) | testes på mobil eller et minimert vindu på pc | 1. Åpne forsiden i mobilvisning i DevTools | rask respons tid og funker når trykket på |funket, men kartet blir et hakke treigere når zoomer inn og ut. | bestått     | |
+| UI-02 | Responsivitet på nettbrett (~768px) | testes på pc i developertool i nettbrettmodus | 1. Åpne forsiden i nettbrettvisning | hastigheten er optimal,                   |hastighet funker som den skal | bestått     | |
+| UI-03 | Tastaturnavigasjon | Ha en fungerende tastatur og skjerm           | 1. Naviger hele forsiden kun med Tab | vellykket opp og ned navigering           |fikk til å navigere med tab | bestått     | |
+| UI-04 | Utskrift av ressursliste | ikke testet                                   | 1. Åpne ressursliste<br>2. Ctrl+P / Skriv ut | ikke testet                               | | Ikke testet | |
 
 ## Informasjonssider (Emma)
 
