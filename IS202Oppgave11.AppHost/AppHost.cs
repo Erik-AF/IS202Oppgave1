@@ -1,5 +1,19 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+// MariaDB-container
+var mariadb = builder.AddContainer(
+        "mariadb",
+        "mariadb",
+        "11")
+    .WithEnvironment("MARIADB_ROOT_PASSWORD", "rootpassord")
+    .WithEnvironment("MARIADB_DATABASE", "resourcesdb")
+    .WithEnvironment("MARIADB_USER", "appuser")
+    .WithEnvironment("MARIADB_PASSWORD", "erikerkul")
+    .WithEndpoint(
+        targetPort: 3306,
+        name: "mysql");
+
+// MVC-applikasjon
 builder.AddDockerfile(
     "Oppgave202",
     "..",

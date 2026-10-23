@@ -1,8 +1,13 @@
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+using _202Oppgave.DataAccess.Repositories;
 using _202Oppgave.Models;
 using _202Oppgave.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+
+// Skiller mellom den gamle modellen og database-entity
+using ResourceModel = _202Oppgave.Models.Resource;
+using ResourceEntity = _202Oppgave.Models.Entities.Resource;
 
 namespace _202Oppgave.Controllers;
 
@@ -13,14 +18,26 @@ namespace _202Oppgave.Controllers;
  */
 public class ResourceController : Controller
 {
-   
+    private readonly IResourceRepository _repo;
+
+    // Dependency Injection
+    public ResourceController(IResourceRepository repo)
+    {
+        _repo = repo;
+
+    }
+
     private static readonly List<Resource> _resources = new();
 
     // GET: /Resource
-    // Viser alle registrerte ressurser, som kort med statusfarge.
-    public IActionResult Index()
+    // Henter alle ressurser fra MariaDB
+    public async Task<IActionResult> Index()
     {
-        return View(_resources);
+        var entities = await _repo.GetAllAsync();
+
+        var resources = entities.Select(ToModel).ToList();
+
+        return View(resources);
     }
 
     // GET: /Resource/Create
@@ -31,24 +48,22 @@ public class ResourceController : Controller
     }
 
     // POST: /Resource/Create
-    // Tar imot utfylt skjema, validerer, og lagrer ressursen.
+    // Lagrer en ny ressurs i MariaDB
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(ResourceViewModel model)
+    public async Task<IActionResult> Create(ResourceViewModel model)
     {
         if (!ModelState.IsValid)
         {
-            // Ugyldig innsending: send brukeren tilbake til samme skjema
-            // med feilmeldingene fra valideringsattributtene i ViewModel.
             return View(model);
         }
 
-        var resource = new Resource
+        // Konverterer ViewModel til database-entity
+        var resource = new ResourceEntity
         {
-            Id = _resources.Count + 1,
             Type = model.Type,
             Description = model.Description,
-            Area = model.Area,
+            Name = model.Area,
             Latitude = model.Latitude,
             Longitude = model.Longitude,
             AvailableFrom = model.AvailableFrom,
@@ -60,38 +75,45 @@ public class ResourceController : Controller
             OwnerName = model.OwnerName
         };
 
-        _resources.Add(resource);
+        // Lagrer i MariaDB
+        await _repo.AddAsync(resource);
 
-        // Redirect (ikke bare View) etter POST, så brukeren ikke sender
-        // samme skjema på nytt ved refresh.
-        return RedirectToAction(nameof(Details), new { id = resource.Id });
+        // Sender brukeren til detaljsiden
+        return RedirectToAction(
+            nameof(Details),
+            new { id = resource.Id });
     }
 
+
     // GET: /Resource/Details/5
-    // Viser én registrert ressurs.
-    public IActionResult Details(int id)
+    // Henter én ressurs fra MariaDB
+    public async Task<IActionResult> Details(int id)
     {
-        var resource = _resources.FirstOrDefault(r => r.Id == id);
-        if (resource is null)
+        var entity = await _repo.GetByIdAsync(id);
+
+        if (entity == null)
         {
             return NotFound();
         }
 
-        return View(resource);
+        return View(ToModel(entity));
     }
 
     // GET: /Resource/Geo
-    // Returnerer registrerte ressurser med posisjon som JSON.
+    // Henter kartdata fra MariaDB
     [HttpGet]
-    public IActionResult Geo()
+    public async Task<IActionResult> Geo()
     {
-        var data = _resources
-            .Where(r => r.Latitude != null && r.Longitude != null)
+        var resources = await _repo.GetAllAsync();
+
+        var data = resources
+            .Where(r => r.Latitude != null &&
+                        r.Longitude != null)
             .Select(r => new
             {
                 r.Id,
                 r.Type,
-                r.Area,
+                Area = r.Name,
                 r.Status,
                 r.Latitude,
                 r.Longitude
@@ -99,20 +121,43 @@ public class ResourceController : Controller
 
         return Json(data);
     }
-    
-// Sletter en registrert ressurs. 
+
+    // POST: /Resource/Delete
+    // Sletter ressurs fra MariaDB
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var resource = _resources.FirstOrDefault(r => r.Id == id);
-        if (resource is null)
+        var resource = await _repo.GetByIdAsync(id);
+
+        if (resource == null)
         {
             return NotFound();
         }
-        
-        _resources.Remove(resource);
+
+        await _repo.DeleteAsync(id);
 
         return RedirectToAction(nameof(Index));
+    }
+    // Konverterer database-entity til modellen
+    // som MVC Views allerede bruker
+    private static ResourceModel ToModel(ResourceEntity entity)
+    {
+        return new ResourceModel
+        {
+            Id = entity.Id,
+            Type = entity.Type,
+            Description = entity.Description,
+            Area = entity.Name,
+            Latitude = entity.Latitude,
+            Longitude = entity.Longitude,
+            AvailableFrom = entity.AvailableFrom,
+            AvailableTo = entity.AvailableTo,
+            ContactName = entity.ContactName,
+            ContactPhone = entity.ContactPhone,
+            ContactEmail = entity.ContactEmail,
+            Status = entity.Status,
+            OwnerName = entity.OwnerName
+        };
     }
 }
