@@ -43,6 +43,7 @@ Enkeltsider kan legge til egne styles/scripts gjennom
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/components.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
     @* Plass for ekstra <head>-innhold fra andre views (f.eks. Leaflet-CSS på kartsiden). Valgfri. *@
     
     @await RenderSectionAsync("Head", required: false)
@@ -128,6 +129,7 @@ Enkeltsider kan legge til egne styles/scripts gjennom
 
 <script src="~/js/site.js" asp-append-version="true"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 @* Plass for ekstra script fra andre views (f.eks. Leaflet-JS og kartkode). Valgfri. *@
 
 @await RenderSectionAsync("Scripts", required: false)

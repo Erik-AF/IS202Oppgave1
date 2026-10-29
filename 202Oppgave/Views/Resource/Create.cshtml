@@ -1,131 +1,309 @@
+
 @model _202Oppgave.ViewModels.ResourceViewModel
 
-@*
-    Create.cshtml – registreringsskjema for ressurser.
-
-    Feltnavnene her matcher ResourceViewModel. Latitude/Longitude fylles
-    ut av kartet
-*@
-
 @{
-    ViewData["Title"] = "Registrer ressurs";
+ViewData["Title"] = "Registrer ressurs";
+}
+
+@section Head {
+<style>
+    #resource-map {
+        height: 550px;
+        width: 100%;
+        border-radius: 12px;
+    }
+
+    #resource-layout .resource-map-panel {
+        min-width: 0;
+    }
+
+    @@media (max-width: 800px) {
+        #resource-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 }
 
 <div class="container home-content">
     <h1>Registrer ressurs</h1>
-<div class="resource-layout">
-    <form asp-action="Create" method="post" class="card" style="padding:2rem; min-width:0;">        <div asp-validation-summary="ModelOnly" style="color:var(--brick); margin-bottom:1rem;"></div>
 
-        <div style="margin-bottom:1rem;">
-            <label asp-for="Type"></label>
-            <input asp-for="Type" class="form-control" />
-            <span asp-validation-for="Type" style="color:var(--brick);"></span>
+    <div id="resource-layout" class="resource-layout">
+
+        <form asp-controller="Resource"
+              asp-action="Create"
+              method="post"
+              class="card"
+              style="padding:2rem; min-width:0;">
+
+            <div asp-validation-summary="ModelOnly"
+                 style="color:var(--brick); margin-bottom:1rem;">
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Type"></label>
+                <input asp-for="Type" class="form-control" />
+                <span asp-validation-for="Type"
+                      style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description"
+                          class="form-control"></textarea>
+                <span asp-validation-for="Description"
+                      style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Area"></label>
+                <input asp-for="Area" class="form-control" />
+                <span asp-validation-for="Area"
+                      style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Latitude"></label>
+                <input asp-for="Latitude"
+                       class="form-control"
+                       readonly />
+                <span asp-validation-for="Latitude"
+                      style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Longitude"></label>
+                <input asp-for="Longitude"
+                       class="form-control"
+                       readonly />
+                <span asp-validation-for="Longitude"
+                      style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="AvailableFrom"></label>
+                <input asp-for="AvailableFrom"
+                       class="form-control"
+                       type="date" />
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="AvailableTo"></label>
+                <input asp-for="AvailableTo"
+                       class="form-control"
+                       type="date" />
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="ContactName"></label>
+                <input asp-for="ContactName"
+                       class="form-control" />
+                <span asp-validation-for="ContactName"
+                      style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="ContactPhone"></label>
+                <input asp-for="ContactPhone"
+                       class="form-control" />
+                <span asp-validation-for="ContactPhone"
+                      style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="ContactEmail"></label>
+                <input asp-for="ContactEmail"
+                       class="form-control" />
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Status"></label>
+                <select asp-for="Status" class="form-select">
+                    <option value="Tilgjengelig">Tilgjengelig</option>
+                    <option value="Reservert">Reservert</option>
+                    <option value="Utilgjengelig">Utilgjengelig</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom:1.5rem;">
+                <label asp-for="OwnerName"></label>
+                <input asp-for="OwnerName"
+                       class="form-control" />
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary"
+                    style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
+                Registrer
+            </button>
+
+        </form>
+
+        <div class="resource-map-panel">
+            <p>
+                Velg en posisjon eller tegn et område på kartet.
+                Kun én markering kan registreres om gangen.
+            </p>
+
+            <div id="resource-map"></div>
         </div>
 
-        <div style="margin-bottom:1rem;">
-            <label asp-for="Description"></label>
-            <textarea asp-for="Description" class="form-control"></textarea>
-        </div>
-
-        <div style="margin-bottom:1rem;">
-            <label asp-for="Area"></label>
-            <input asp-for="Area" class="form-control" />
-            <span asp-validation-for="Area" style="color:var(--brick);"></span>
-        </div>
-
-        @* Latitude/Longitude: vanlige tallfelt inntil kartet er koblet på. *@
-        <div style="margin-bottom:1rem;">
-            <label asp-for="Latitude"></label>
-            <input asp-for="Latitude" class="form-control" />
-        </div>
-
-        <div style="margin-bottom:1rem;">
-            <label asp-for="Longitude"></label>
-            <input asp-for="Longitude" class="form-control" />
-        </div>
-
-        <div style="margin-bottom:1rem;">
-            <label asp-for="AvailableFrom"></label>
-            <input asp-for="AvailableFrom" class="form-control" type="date" />
-        </div>
-
-        <div style="margin-bottom:1rem;">
-            <label asp-for="AvailableTo"></label>
-            <input asp-for="AvailableTo" class="form-control" type="date" />
-        </div>
-
-        <div style="margin-bottom:1rem;">
-            <label asp-for="ContactName"></label>
-            <input asp-for="ContactName" class="form-control" />
-            <span asp-validation-for="ContactName" style="color:var(--brick);"></span>
-        </div>
-
-        <div style="margin-bottom:1rem;">
-            <label asp-for="ContactPhone"></label>
-            <input asp-for="ContactPhone" class="form-control" />
-            <span asp-validation-for="ContactPhone" style="color:var(--brick);"></span>
-        </div>
-
-        <div style="margin-bottom:1rem;">
-            <label asp-for="ContactEmail"></label>
-            <input asp-for="ContactEmail" class="form-control" />
-        </div>
-
-        <div style="margin-bottom:1rem;">
-            <label asp-for="Status"></label>
-            <select asp-for="Status" class="form-select">
-                <option value="Tilgjengelig">Tilgjengelig</option>
-                <option value="Reservert">Reservert</option>
-                <option value="Utilgjengelig">Utilgjengelig</option>
-            </select>
-        </div>
-
-        <div style="margin-bottom:1.5rem;">
-            <label asp-for="OwnerName"></label>
-            <input asp-for="OwnerName" class="form-control" />
-        </div>
-
-        @* Inline style her fordi .btn i components.css foreløpig mangler
-           padding/hvit tekst/avrunding, se melding til Sarah. *@
-        <button type="submit" class="btn btn-primary" style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">Registrer</button>
-    </form>
-    <div class="resource-map-panel">
-        <p>Klikk i kartet for å velge hvor ressursen befinner seg.</p>
-        <div id="resource-map"></div>
     </div>
-</div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    
-    <script>
-        const map = L.map('resource-map')
-            .setView([58.1467, 7.9956], 13);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-        
-        const latitudeInput = document.getElementById('Latitude');
-        const longitudeInput = document.getElementById('Longitude');
-        
-        let marker;
-        
-        map.on('click', function (e) {
-            latitudeInput.value = e.latlng.lat;
-            longitudeInput.value = e.latlng.lng;
-            
-            if (marker) 
-            {
-                marker.setLatLng(e.latlng);
-            } else
-            {
-                marker = L.marker(e.latlng).addTo(map);
-             
+<partial name="_ValidationScriptsPartial" />
+
+<script>
+    // Opprett kartet
+    const map = L.map('resource-map')
+        .setView([58.1467, 7.9956], 13);
+
+    // OpenStreetMap
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Gruppe for tegninger
+    const drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    // Tilpass linjeverktøyet:
+    // Klikk på første punkt for å lukke og avslutte linjen.
+    const originalAddVertex = L.Draw.Polyline.prototype.addVertex;
+
+    L.Draw.Polyline.include({
+        addVertex: function (latlng) {
+            const result = originalAddVertex.call(this, latlng);
+
+            // Når første punkt opprettes, kobles
+            // en egen klikkhendelse til denne markøren.
+            if (this._markers.length === 1) {
+                const firstMarker = this._markers[0];
+
+                firstMarker.off('click');
+
+                firstMarker.on('click', (event) => {
+                    // Krev minst tre punkter før figuren lukkes.
+                    if (this._markers.length < 3) {
+                        return;
+                    }
+
+                    if (event.originalEvent) {
+                        L.DomEvent.stop(event.originalEvent);
+                    }
+
+                    // Hent startpunktets koordinater.
+                    const firstPoint =
+                        this._markers[0].getLatLng();
+
+                    // Legg til startpunktet som siste punkt.
+                    // Dette tegner den siste linjestrekningen.
+                    originalAddVertex.call(this, firstPoint);
+
+                    // Avslutt tegningen.
+                    this.completeShape();
+                });
             }
+
+            return result;
+        }
+    });
+
+    // Leaflet.Draw-verktøy
+    const drawControl = new L.Control.Draw({
+        draw: {
+            polygon: true,
+            polyline: true,
+            circle: true,
+            rectangle: true,
+            marker: true,
+            circlemarker: false
+        },
+        edit: {
+            featureGroup: drawnItems,
+            remove: true
+        }
+    });
+
+    map.addControl(drawControl);
+
+    // Koordinatfeltene
+    const latitudeInput =
+        document.getElementById('Latitude');
+
+    const longitudeInput =
+        document.getElementById('Longitude');
+
+    // Oppdater koordinater for alle figurtyper
+    function updateCoordinates(layer) {
+        let latlng;
+
+        if (layer instanceof L.Marker ||
+            layer instanceof L.Circle) {
+
+            latlng = layer.getLatLng();
+
+        } else if (typeof layer.getBounds === 'function') {
+
+            latlng = layer.getBounds().getCenter();
+        }
+
+        if (latlng) {
+            latitudeInput.value = latlng.lat.toFixed(6);
+            longitudeInput.value = latlng.lng.toFixed(6);
+        }
+    }
+
+    // Gjenopprett markør etter skjemafeil
+    if (latitudeInput.value && longitudeInput.value) {
+        const lat = Number(
+            latitudeInput.value.replace(',', '.')
+        );
+
+        const lng = Number(
+            longitudeInput.value.replace(',', '.')
+        );
+
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+            const existingMarker = L.marker([lat, lng]);
+
+            drawnItems.addLayer(existingMarker);
+            map.setView([lat, lng], 13);
+        }
+    }
+
+    // Når en ny markering opprettes
+    map.on('draw:created', function (e) {
+
+        // Fjern den gamle markeringen
+        drawnItems.clearLayers();
+
+        // Legg til den nye markeringen
+        const layer = e.layer;
+        drawnItems.addLayer(layer);
+
+        // Oppdater koordinatene
+        updateCoordinates(layer);
+    });
+
+    // Når markeringen redigeres
+    map.on('draw:edited', function (e) {
+        e.layers.eachLayer(function (layer) {
+            updateCoordinates(layer);
         });
+    });
 
+    // Når markeringen slettes
+    map.on('draw:deleted', function () {
+        latitudeInput.value = '';
+        longitudeInput.value = '';
+    });
 
-    </script>
+    // Oppdater kartstørrelsen
+    setTimeout(function () {
+        map.invalidateSize();
+    }, 100);
+</script>
 }
