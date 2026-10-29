@@ -46,15 +46,15 @@ Eier: Emma. Alle gruppemedlemmer fyller ut egne rader når de tester sin funksjo
 
 ## Informasjonssider (Emma)
 
-| ID | Scenario | Forutsetninger | Steg | Forventet resultat | Faktisk resultat                                                                                        | Status  | Kommentar/Issue |
-|---|---|---|---|---|---------------------------------------------------------------------------------------------------------|---------|---|
-| INFO-01 | Om-siden vises | Ingen | 1. Klikk "Om oss" i menyen | Om-siden vises med alle seksjoner | Om-siden vises med alle seksjoner.                                                                      | Bestått | |
-| INFO-02 | Hjelp-siden, spørsmål åpnes | Ingen | 1. Klikk "Hjelp" i menyen<br>2. Klikk på et spørsmål | Svaret åpnes, bare ett svar er åpent om gangen | Alle spørsmål er tydelige på skjermen. Når man trykker på et spørsmål, blir det mer tydelig enn resten. | Bestått | |
-| INFO-03 | Kontaktskjema sendt tomt | Ingen | 1. Gå til Kontakt<br>2. Trykk "Send" uten å fylle ut | Rød feilmelding vises, brukeren blir på Kontakt-siden | Skjemaet blir ikke sendt, og man får opp en tydelig feilmelding.                                        | Bestått | |
-| INFO-04 | Kontaktskjema delvis utfylt | Ingen | 1. Fyll inn bare navn og e-post<br>2. Trykk "Send" | Feilmelding vises, navn og e-post står fortsatt i feltene | Navn og e-post står fortsatt i feltene og feilmelding vises.                                            | Bestått | |
-| INFO-05 | Kontaktskjema sendt riktig | Ingen | 1. Fyll ut alle feltene<br>2. Trykk "Send" | Bekreftelsessiden viser "Takk, [navn]!" og det som ble sendt | Bekreftelsesmeldingen kommer opp midt på skjermen.                                                      | Bestått | |
-| INFO-06 | Informasjonssider på mobil | Ingen | 1. Åpne Om, Hjelp og Kontakt i mobilvisning i DevTools | Innhold legger seg under hverandre, knapper fyller bredden, ingen sideveis scroll | Tydelig og riktig formatering på mobil.                                                                 | Bestått | |
-| INFO-07 | Lenker mellom sidene | Ingen | 1. Klikk "Kontakt oss" på Om og Hjelp<br>2. Klikk "Tilbake til forsiden" på bekreftelsessiden | Hver knapp går til riktig side | Man kommer inn på riktig side.                                                                          | Bestått | |
+| ID | Scenario | Forutsetninger | Steg | Forventet resultat | Faktisk resultat | Status  | Kommentar/Issue |
+|---|---|---|---|---|---|---------|---|
+| INFO-01 | Om-siden vises | Ingen | 1. Klikk "Om oss" i menyen | Om-siden vises med alle seksjoner | Om-siden vises med alle seksjoner.	 | Bestått | |
+| INFO-02 | Hjelp-siden, spørsmål åpnes | Ingen | 1. Klikk "Hjelp" i menyen<br>2. Klikk på et spørsmål | Svaret åpnes, bare ett svar er åpent om gangen | Alle spørsmål er tydelige på skjermen. Når man trykker på et spørsmål, blir det mer tydelig enn resten.	| Bestått | |
+| INFO-03 | Kontaktskjema sendt tomt | Ingen | 1. Gå til Kontakt<br>2. Trykk "Send" uten å fylle ut | Rød feilmelding vises, brukeren blir på Kontakt-siden | Skjemaet blir ikke sendt, og man får opp en tydelig feilmelding.	| Bestått | |
+| INFO-04 | Kontaktskjema delvis utfylt | Ingen | 1. Fyll inn bare navn og e-post<br>2. Trykk "Send" | Feilmelding vises, navn og e-post står fortsatt i feltene | Navn og e-post står fortsatt i feltene og feilmelding vises. | Bestått | |
+| INFO-05 | Kontaktskjema sendt riktig | Ingen | 1. Fyll ut alle feltene<br>2. Trykk "Send" | Bekreftelsessiden viser "Takk, [navn]!" og det som ble sendt | Bekreftelsesmeldingen kommer opp midt på skjermen. | Bestått | |
+| INFO-06 | Informasjonssider på mobil | Ingen | 1. Åpne Om, Hjelp og Kontakt i mobilvisning i DevTools | Innhold legger seg under hverandre, knapper fyller bredden, ingen sideveis scroll | Tydelig og riktig formatering på mobil.	 | Bestått | |
+| INFO-07 | Lenker mellom sidene | Ingen | 1. Klikk "Kontakt oss" på Om og Hjelp<br>2. Klikk "Tilbake til forsiden" på bekreftelsessiden | Hver knapp går til riktig side | Man kommer inn på riktig side. | Bestått | |
 
 ## Autentisering (når implementert)
 
@@ -65,14 +65,14 @@ Eier: Emma. Alle gruppemedlemmer fyller ut egne rader når de tester sin funksjo
 
 ---
 
-## Oppsummering 
+## Oppsummering (fylles ut av Emma før innlevering)
 
 | Kategori | Antall scenarioer | Bestått | Feilet | Verifisert OK |
 |---|---|---------|--------|---|
-| Resource | 3 | 3       | 0      | |
-| Need | 2 | 2       | 0      | |
-| Kart | 2 | 2       | 0      | |
-| Frontend / UI | 4 | 4       | 0      | |
+| Resource | 3 |         |        | |
+| Need | 2 |         |        | |
+| Kart | 2 |         |        | |
+| Frontend / UI | 4 |         |        | |
 | Informasjonssider | 7 | 7       | 0      | |
-| Autentisering | 2 | 2       | 0      | |
-| **Totalt** | **20** | 20      |        | |
+| Autentisering | 2 |         |        | |
+| **Totalt** | **20** |         |        | |
