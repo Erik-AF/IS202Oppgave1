@@ -36,7 +36,10 @@
             <p>Ingen kartposisjon er lagret for denne ressursen.</p>
         }
         <p><a asp-action="Index" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Tilbake</a></p>
+        <p><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary" style="color:#fff; 
+        text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Rediger</a></p>
         <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+              
               onsubmit="return confirm('Er du sikker på at du vil slette denne ressursen?');"
               style="display:inline;">
             <button type="submit"
