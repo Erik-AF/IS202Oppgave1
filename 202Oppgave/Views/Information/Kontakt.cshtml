@@ -11,22 +11,18 @@
         <h1 class="mb-3">Kontakt oss</h1>
         <p class="mb-4">Har du spørsmål eller tilbakemeldinger? Fyll ut skjemaet, så tar vi kontakt snarest.</p>
 
-        <!-- Viser feilmelding hvis noen felt mangler -->
-        @if (ViewBag.Feil != null)
-        {
-            <div class="alert alert-danger">@ViewBag.Feil</div>
-        }
-
         <form asp-controller="Information" asp-action="Kontakt" method="post">
 
             <div class="mb-3">
                 <label asp-for="Navn" class="form-label">Navn</label>
                 <input asp-for="Navn" class="form-control" />
+                <span asp-validation-for="Navn" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Epost" class="form-label">E-post</label>
                 <input asp-for="Epost" type="email" class="form-control" />
+                <span asp-validation-for="Epost" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
@@ -38,11 +34,13 @@
                     <option>Samarbeid</option>
                     <option>Annet</option>
                 </select>
+                <span asp-validation-for="Emne" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Melding" class="form-label">Melding</label>
                 <textarea asp-for="Melding" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Melding" class="text-danger"></span>
             </div>
 
             <button type="submit" class="btn btn-primary">Send</button>

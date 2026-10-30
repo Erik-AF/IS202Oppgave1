@@ -1,47 +1,186 @@
-/* Felles styling for Om-, Kontakt- og Hjelp-sidene */
+
+/* Felles styling for Om-, Kontakt- og Hjelp-sidene, samt andre komponenter i systemet */
 
 /* Kortene: litt skygge og myke hjørner */
-.card {
-    border: none;
-    border-radius: 12px;
+.card,
+.content-card {
+    background-color: #fff;
+    border: 1px solid var(--sand-border);
+    border-radius: var(--radius-md);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Spørsmålene på Hjelp-siden: fetere tekst */
-.accordion-button {
+/* Innholdskortene: ekstra luft rundt innholdet */
+.content-card {
+    padding: 1.5rem;
+}
+
+/* Overskriftene i kortene: mørkeblå tekst */
+.card h2,
+.card h3,
+.content-card h2,
+.content-card h3 {
+    color: var(--lake);
+}
+
+/* Knappene: avrundede hjørner og tydelig tekst */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     font-weight: 600;
+    border-radius: var(--radius-pill);
+    transition:
+            background-color 0.2s ease,
+            border-color 0.2s ease;
+}
+
+/* Hovedknappene: mørkeblå farge som passer resten av systemet */
+.btn-primary {
+    background-color: var(--lake-button);
+    border-color: var(--lake-button);
+    color: #fff;
+}
+
+/* Hovedknappene: mørkere blåfarge når man holder musen over */
+.btn-primary:hover {
+    background-color: var(--lake-dark);
+    border-color: var(--lake-dark);
+    color: #fff;
+}
+
+/* Sekundære knapper: hvit bakgrunn med mørkeblå ramme */
+.btn-secondary {
+    background-color: #fff;
+    border: 1px solid var(--lake);
+    color: var(--lake);
+}
+
+/* Sekundære knapper: lys bakgrunn når man holder musen over */
+.btn-secondary:hover {
+    background-color: var(--sand);
+    border-color: var(--lake);
+    color: var(--lake);
+}
+
+/* Skjemafeltene: tydelige rammer og myke hjørner */
+.form-control,
+.form-select {
+    border: 1px solid var(--sand-border);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    color: var(--ink);
+    background-color: #fff;
 }
 
 /* Skjemafeltene: tydeligere ramme når man klikker i dem */
 .form-control:focus,
 .form-select:focus {
-    border-color: #1f4e79;
-    box-shadow: 0 0 0 3px rgba(31, 78, 121, 0.2);
+    border-color: var(--lake);
+    box-shadow: 0 0 0 3px rgba(34, 56, 79, 0.2);
+    outline: none;
 }
 
-/* Knappene: mørkeblå farge som passer beredskapstemaet */
-.btn-primary {
-    background-color: #1f4e79;
-    border-color: #1f4e79;
+/* Plassholdertekst i skjemafeltene: dempet gråfarge */
+.form-control::placeholder {
+    color: var(--muted);
 }
 
-.btn-primary:hover {
-    background-color: #163a5a;
-    border-color: #163a5a;
+/* Skrivebeskyttede felt: hvit bakgrunn som passer resten av skjemaet */
+.form-control[readonly] {
+    background-color: #fff;
+    color: var(--ink);
+}
+
+/* Tekstfeltene: større skriveområde som kan justeres i høyden */
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Etikettene i skjemaene: tydelig mørkeblå tekst */
+.form-label,
+.card label {
+    color: var(--lake);
+    font-weight: 600;
+}
+
+/* Spørsmålene på Hjelp-siden: fetere tekst */
+.accordion-button {
+    font-weight: 600;
+    color: var(--lake);
+}
+
+/* Åpne spørsmål på Hjelp-siden: lys bakgrunn */
+.accordion-button:not(.collapsed) {
+    background-color: var(--sand);
+    color: var(--lake);
+}
+
+/* Spørsmålene på Hjelp-siden: tydelig ramme når de velges */
+.accordion-button:focus {
+    border-color: var(--lake);
+    box-shadow: 0 0 0 3px rgba(34, 56, 79, 0.2);
+}
+
+/* Tabellene: tydelig oppsett med mørk tekst */
+.table {
+    width: 100%;
+    color: var(--ink);
+}
+
+/* Tabelloverskriftene: lys bakgrunn og fetere tekst */
+.table thead {
+    background-color: var(--sand);
+}
+
+.table th {
+    font-weight: 700;
+}
+
+/* Tabellradene: luft mellom innholdet og tydelige skillelinjer */
+.table th,
+.table td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--sand-border);
+}
+
+/* Statusmerkene: avrundede hjørner og tydelig tekst */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-pill);
+    padding: 0.3rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Grønne statusmerker: viser tilgjengelige ressurser */
+.badge-success {
+    background-color: #e5f5ec;
+    color: #17663a;
+}
+
+/* Gule statusmerker: viser planlagte behov eller advarsler */
+.badge-warning {
+    background-color: #fff2d9;
+    color: #805500;
+}
+
+/* Røde statusmerker: viser kritiske behov eller feil */
+.badge-danger {
+    background-color: #fde8e8;
+    color: var(--brick);
 }
 
 /* Tilpasninger for mobil (skjermer smalere enn 768px) */
 @media (max-width: 768px) {
-    h1 {
-        font-size: 1.8rem;
-    }
-
-    section {
-        padding-top: 2rem !important;
-        padding-bottom: 2rem !important;
+    .content-card {
+        padding: 1rem;
     }
 
     .btn {
-        width: 100%;
+        max-width: 100%;
     }
 }
