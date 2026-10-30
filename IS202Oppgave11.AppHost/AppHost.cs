@@ -11,7 +11,8 @@ var mariadb = builder.AddContainer(
     .WithEnvironment("MARIADB_PASSWORD", "erikerkul")
     .WithEndpoint(
         targetPort: 3306,
-        name: "mysql");
+        name: "mysql")
+    .WithLifetime(ContainerLifetime.Persistent);
 
 // MVC-applikasjon
 builder.AddDockerfile(
@@ -20,6 +21,7 @@ builder.AddDockerfile(
     "202Oppgave/Dockerfile")
     .WithHttpEndpoint(
         port: 5027,
-        targetPort: 8080);
+        targetPort: 8080)
+    .WithLifetime(ContainerLifetime.Persistent);
 
 builder.Build().Run();
