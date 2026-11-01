@@ -26,36 +26,35 @@ Eier: Emma. Alle gruppemedlemmer fyller ut egne rader når de tester sin funksjo
 
 | ID | Scenario | Forutsetninger | Steg | Forventet resultat | Faktisk resultat | Status | Kommentar/Issue |
 |---|---|---|---|---|---|---|---|
-| NEED-01 | Registrere nytt behov med prioritet | Bruker er innlogget som offentlig aktør | 1. Gå til Behov → Registrer nytt<br>2. Sett prioritet = Akutt<br>3. Fyll ut resten og trykk "Registrer" | Behovet lagres og vises med rød markør i kartet | | Ikke testet | |
-| NEED-02 | Endre status på behov | Et behov er registrert | 1. Åpne behovet<br>2. Endre status fra "Ny" til "Vurderes"<br>3. Lagre | Ny status vises på behovet | | Ikke testet | |
+| NEED-01 | Registrere nytt behov med prioritet | Appen kjører. Ingen innlogging er implementert | 1. Åpne Registrer behov<br>2. Fyll ut alle felt og velg Akutt<br>3. Velg kartpunkt og trykk Registrer<br>4. Åpne Kart | Behovet registreres og vises med rød markør på valgt sted i kart | Behovet ble registrert og vist med rød markør på riktig sted | Bestått |
 
 ## Kart (Marius)
 
-| ID | Scenario | Forutsetninger | Steg | Forventet resultat | Faktisk resultat | Status | Kommentar/Issue |
-|---|---|---|---|---|---|---|---|
-| MAP-01 | Velge punkt i kart under registrering | Bruker er på registreringsskjema | 1. Klikk et punkt i kartet | Koordinater fylles automatisk inn i skjema | | Ikke testet | |
-| MAP-02 | Se registrerte ressurser/behov på kart | Minst én ressurs og ett behov er registrert | 1. Gå til Kart-siden | Riktig fargekode vises per type (rød/gul/grønn/blå) | | Ikke testet | |
+| ID | Scenario | Forutsetninger | Steg | Forventet resultat | Faktisk resultat                                                       | Status  | Kommentar/Issue                                             |
+|---|---|---|---|---|------------------------------------------------------------------------|---------|-------------------------------------------------------------|
+| MAP-01 | Velge punkt i kart under registrering | Bruker er på registreringsskjema | 1. Klikk et punkt i kartet | Koordinater fylles automatisk inn i skjema | Koordinater fylles inn automatisk utifra hvor bruker trykker på kartet | Bestått |  |
+| MAP-02 | Se registrerte ressurser/behov på kart | Minst én ressurs og ett behov er registrert | 1. Gå til Kart-siden | Riktig fargekode vises per type (rød/gul/grønn/blå) | Riktig fargekode vises per type                                        | Bestått |  |
 
 ## Frontend / UI (Sarah og Emma)
 
-| ID | Scenario | Forutsetninger | Steg | Forventet resultat | Faktisk resultat | Status | Kommentar/Issue |
-|---|---|---|---|---|---|---|---|
-| UI-01 | Responsivitet på mobil (< 400px) | Ingen | 1. Åpne forsiden i mobilvisning i DevTools | Meny kollapser til hamburgermeny, ingen sideveis scroll | | Ikke testet | |
-| UI-02 | Responsivitet på nettbrett (~768px) | Ingen | 1. Åpne forsiden i nettbrettvisning | Kort-grid går til riktig antall kolonner | | Ikke testet | |
-| UI-03 | Tastaturnavigasjon | Ingen | 1. Naviger hele forsiden kun med Tab | Alle lenker/knapper er synlig fokuserbare i logisk rekkefølge | | Ikke testet | |
-| UI-04 | Utskrift av ressursliste | Minst én ressurs er registrert | 1. Åpne ressursliste<br>2. Ctrl+P / Skriv ut | Header, footer og kart skjules; tabellen er lesbar på papir | | Ikke testet | |
+| ID | Scenario | Forutsetninger                                | Steg | Forventet resultat                        | Faktisk resultat | Status      | Kommentar/Issue |
+|---|---|-----------------------------------------------|---|-------------------------------------------|---|-------------|---|
+| UI-01 | Responsivitet på mobil (< 400px) | testes på mobil eller et minimert vindu på pc | 1. Åpne forsiden i mobilvisning i DevTools | rask respons tid og funker når trykket på |funket, men kartet blir et hakke treigere når zoomer inn og ut. | bestått     | |
+| UI-02 | Responsivitet på nettbrett (~768px) | testes på pc i developertool i nettbrettmodus | 1. Åpne forsiden i nettbrettvisning | hastigheten er optimal,                   |hastighet funker som den skal | bestått     | |
+| UI-03 | Tastaturnavigasjon | Ha en fungerende tastatur og skjerm           | 1. Naviger hele forsiden kun med Tab | vellykket opp og ned navigering           |fikk til å navigere med tab | bestått     | |
+| UI-04 | Utskrift av ressursliste | ikke testet                                   | 1. Åpne ressursliste<br>2. Ctrl+P / Skriv ut | ikke testet                               | | Ikke testet | |
 
 ## Informasjonssider (Emma)
 
 | ID | Scenario | Forutsetninger | Steg | Forventet resultat | Faktisk resultat | Status  | Kommentar/Issue |
 |---|---|---|---|---|---|---------|---|
-| INFO-01 | Om-siden vises | Ingen | 1. Klikk "Om oss" i menyen | Om-siden vises med alle seksjoner | | Bestått | |
-| INFO-02 | Hjelp-siden, spørsmål åpnes | Ingen | 1. Klikk "Hjelp" i menyen<br>2. Klikk på et spørsmål | Svaret åpnes, bare ett svar er åpent om gangen | | Bestått | |
-| INFO-03 | Kontaktskjema sendt tomt | Ingen | 1. Gå til Kontakt<br>2. Trykk "Send" uten å fylle ut | Rød feilmelding vises, brukeren blir på Kontakt-siden | | Bestått | |
-| INFO-04 | Kontaktskjema delvis utfylt | Ingen | 1. Fyll inn bare navn og e-post<br>2. Trykk "Send" | Feilmelding vises, navn og e-post står fortsatt i feltene | | Bestått | |
-| INFO-05 | Kontaktskjema sendt riktig | Ingen | 1. Fyll ut alle feltene<br>2. Trykk "Send" | Bekreftelsessiden viser "Takk, [navn]!" og det som ble sendt | | Bestått | |
-| INFO-06 | Informasjonssider på mobil | Ingen | 1. Åpne Om, Hjelp og Kontakt i mobilvisning i DevTools | Innhold legger seg under hverandre, knapper fyller bredden, ingen sideveis scroll | | Bestått | |
-| INFO-07 | Lenker mellom sidene | Ingen | 1. Klikk "Kontakt oss" på Om og Hjelp<br>2. Klikk "Tilbake til forsiden" på bekreftelsessiden | Hver knapp går til riktig side | | Bestått | |
+| INFO-01 | Om-siden vises | Ingen | 1. Klikk "Om oss" i menyen | Om-siden vises med alle seksjoner | Om-siden vises med alle seksjoner.	 | Bestått | |
+| INFO-02 | Hjelp-siden, spørsmål åpnes | Ingen | 1. Klikk "Hjelp" i menyen<br>2. Klikk på et spørsmål | Svaret åpnes, bare ett svar er åpent om gangen | Alle spørsmål er tydelige på skjermen. Når man trykker på et spørsmål, blir det mer tydelig enn resten.	| Bestått | |
+| INFO-03 | Kontaktskjema sendt tomt | Ingen | 1. Gå til Kontakt<br>2. Trykk "Send" uten å fylle ut | Rød feilmelding vises, brukeren blir på Kontakt-siden | Skjemaet blir ikke sendt, og man får opp en tydelig feilmelding.	| Bestått | |
+| INFO-04 | Kontaktskjema delvis utfylt | Ingen | 1. Fyll inn bare navn og e-post<br>2. Trykk "Send" | Feilmelding vises, navn og e-post står fortsatt i feltene | Navn og e-post står fortsatt i feltene og feilmelding vises. | Bestått | |
+| INFO-05 | Kontaktskjema sendt riktig | Ingen | 1. Fyll ut alle feltene<br>2. Trykk "Send" | Bekreftelsessiden viser "Takk, [navn]!" og det som ble sendt | Bekreftelsesmeldingen kommer opp midt på skjermen. | Bestått | |
+| INFO-06 | Informasjonssider på mobil | Ingen | 1. Åpne Om, Hjelp og Kontakt i mobilvisning i DevTools | Innhold legger seg under hverandre, knapper fyller bredden, ingen sideveis scroll | Tydelig og riktig formatering på mobil.	 | Bestått | |
+| INFO-07 | Lenker mellom sidene | Ingen | 1. Klikk "Kontakt oss" på Om og Hjelp<br>2. Klikk "Tilbake til forsiden" på bekreftelsessiden | Hver knapp går til riktig side | Man kommer inn på riktig side. | Bestått | |
 
 ## Autentisering (når implementert)
 

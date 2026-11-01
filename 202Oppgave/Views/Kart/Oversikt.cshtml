@@ -91,6 +91,50 @@
             .catch(error => {
                 console.error('Klarte ikke å hente ressurser:', error);
             });
-        
+
+
+            // Henter registrerte behov fra NeedController og viser dem på felleskartet.
+fetch('@Url.Action("Geo", "Need")')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Kunne ikke hente behov');
+        }
+        return response.json();
+    })
+    .then(needs => {
+        needs.forEach(function (need) {
+            const marker = L.circleMarker(
+                [need.latitude, need.longitude],
+                {
+                    radius: 9,
+                    fillColor: getMarkerColor(need),
+                    color: '#000',
+                    weight: 1,
+                    fillOpacity: 0.9
+                }
+            ).addTo(map);
+
+            // Tekstinnhold slik at brukerens tekst ikke tolkes som HTML.
+            const popup = document.createElement('div');
+
+            const title = document.createElement('strong');
+            title.textContent = need.type;
+
+            const info = document.createElement('p');
+            info.textContent = need.beskrivelse;
+
+            const link = document.createElement('a');
+            link.href = '@Url.Action("Confirmation", "Need")'
+                + '?id=' + encodeURIComponent(need.id);
+            link.textContent = 'Se detaljer';
+
+            popup.append(title, info, link);
+            marker.bindPopup(popup);
+        });
+    })
+    .catch(error => {
+        console.error('Klarte ikke å hente behov:', error);
+    });
+
     </script>
 }
