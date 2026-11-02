@@ -26,9 +26,7 @@ public class ResourceController : Controller
         _repo = repo;
 
     }
-
-    private static readonly List<Resource> _resources = new();
-
+    
     // GET: /Resource
     // Henter alle ressurser fra MariaDB
     public async Task<IActionResult> Index()
