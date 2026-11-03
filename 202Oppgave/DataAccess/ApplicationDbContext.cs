@@ -23,6 +23,7 @@ namespace _202Oppgave.DataAccess
                 entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.Description).HasMaxLength(1000);
                 entity.Property(e => e.Type).HasMaxLength(100);
+                entity.Property(e => e.ImagePath).HasMaxLength(300);
             });
         }
     }

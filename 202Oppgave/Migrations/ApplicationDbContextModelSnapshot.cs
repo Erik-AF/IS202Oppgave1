@@ -51,6 +51,10 @@ namespace _202Oppgave.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("varchar(1000)");
 
+                    b.Property<string>("ImagePath")
+                        .HasMaxLength(300)
+                        .HasColumnType("varchar(300)");
+
                     b.Property<double?>("Latitude")
                         .HasColumnType("double");
 
