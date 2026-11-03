@@ -20,13 +20,18 @@ public class ResourceController : Controller
 {
     private readonly IResourceRepository _repo;
 
-    // Dependency Injection
-    public ResourceController(IResourceRepository repo)
+// Gir tilgang til wwwroot-mappen, der opplastede bilder lagres
+    private readonly IWebHostEnvironment _env;
+
+// Mappen bildene lagres i, under wwwroot
+    private const string UploadFolder = "uploads/ressurser";
+
+// Dependency Injection
+    public ResourceController(IResourceRepository repo, IWebHostEnvironment env)
     {
         _repo = repo;
-
+        _env = env;
     }
-    
     // GET: /Resource
     // Henter alle ressurser fra MariaDB
     public async Task<IActionResult> Index()
@@ -74,6 +79,12 @@ public class ResourceController : Controller
         };
 
         // Lagrer i MariaDB
+        if (model.Image != null)
+        {
+            resource.ImagePath = await SaveImageAsync(model.Image);
+        }
+        
+        // Lagrer bildet på disk hvis brukeren har valgt et
         await _repo.AddAsync(resource);
 
         // Sender brukeren til detaljsiden
@@ -122,7 +133,8 @@ public class ResourceController : Controller
             ContactPhone = entity.ContactPhone,
             ContactEmail = entity.ContactEmail,
             Status = entity.Status,
-            OwnerName = entity.OwnerName
+            OwnerName = entity.OwnerName,
+            ImagePath = entity.ImagePath
         };
         ViewBag.ResourceID = id;
         return View(model);
@@ -164,6 +176,9 @@ public class ResourceController : Controller
         {
             return NotFound();
         }
+        
+        // Sletter bildefilen også, så den ikke blir liggende igjen
+        DeleteImage(resource.ImagePath);
 
         await _repo.DeleteAsync(id);
 
@@ -201,6 +216,8 @@ public class ResourceController : Controller
         if (!ModelState.IsValid)
         {
             ViewBag.ResourceId = id;
+            // Viser dagens bilde igjen, siden det ikke sendes med skjemaet
+            model.ImagePath = (await _repo.GetByIdAsync(id))?.ImagePath;
             return View(model);
         }
 
@@ -209,6 +226,14 @@ public class ResourceController : Controller
         if (entity == null)
         {
             return NotFound();
+        }
+        
+        // Nytt bilde valgt: lagre det nye og slett det gamle.
+        // Ikke valgt: behold bildet som allerede er lagret.
+        if (model.Image != null)
+        {
+            DeleteImage(entity.ImagePath);
+            entity.ImagePath = await SaveImageAsync(model.Image);
         }
 
         // Kopier verdiene fra skjemaet over i ressursen
@@ -229,5 +254,40 @@ public class ResourceController : Controller
         await _repo.UpdateAsync(entity);
 
         return RedirectToAction(nameof(Details), new { id });
+    }
+    // Lagrer et opplastet bilde i wwwroot/uploads/ressurser.
+    // Filen får et tilfeldig navn (Guid), så to bilder med samme navn
+    // ikke overskriver hverandre.
+    // Returnerer stien som lagres i databasen.
+    private async Task<string> SaveImageAsync(IFormFile image)
+    {
+        var folder = Path.Combine(_env.WebRootPath, UploadFolder);
+        Directory.CreateDirectory(folder); // lager mappen første gang
+
+        var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
+        var fileName = $"{Guid.NewGuid()}{extension}";
+        var fullPath = Path.Combine(folder, fileName);
+
+        await using var stream = new FileStream(fullPath, FileMode.Create);
+        await image.CopyToAsync(stream);
+
+        return $"/{UploadFolder}/{fileName}";
+    }
+    
+    // Sletter et opplastet bilde fra disk.
+    // Sletter bare filer i uploads-mappen, aldri standardbildene.
+    private void DeleteImage(string? imagePath)
+    {
+        if (string.IsNullOrWhiteSpace(imagePath) ||
+            !imagePath.StartsWith($"/{UploadFolder}/"))
+        {
+            return;
+        }
+
+        var fullPath = Path.Combine(_env.WebRootPath, imagePath.TrimStart('/'));
+        if (System.IO.File.Exists(fullPath))
+        {
+            System.IO.File.Delete(fullPath);
+        }
     }
 }
