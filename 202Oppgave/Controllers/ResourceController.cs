@@ -26,9 +26,7 @@ public class ResourceController : Controller
         _repo = repo;
 
     }
-
-    private static readonly List<Resource> _resources = new();
-
+    
     // GET: /Resource
     // Henter alle ressurser fra MariaDB
     public async Task<IActionResult> Index()
@@ -98,6 +96,38 @@ public class ResourceController : Controller
 
         return View(ToModel(entity));
     }
+    
+    //GET: /Resource/Edit/5
+    // Henter ressursen fra Maria DB og viser skjeamet ferdig utfylt. 
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        var entity = await _repo.GetByIdAsync(id);
+        
+        if (entity == null)
+            {
+            return NotFound();
+            }
+        //Kopierer verdier fra databsen over i skjemaet
+        var model = new ResourceViewModel
+        {
+            Type = entity.Type,
+            Description = entity.Description,
+            Area = entity.Name,
+            Latitude = entity.Latitude,
+            Longitude = entity.Longitude,
+            AvailableFrom = entity.AvailableFrom,
+            AvailableTo = entity.AvailableTo,
+            ContactName = entity.ContactName,
+            ContactPhone = entity.ContactPhone,
+            ContactEmail = entity.ContactEmail,
+            Status = entity.Status,
+            OwnerName = entity.OwnerName
+        };
+        ViewBag.ResourceID = id;
+        return View(model);
+    }
+    
 
     // GET: /Resource/Geo
     // Henter kartdata fra MariaDB
@@ -159,5 +189,44 @@ public class ResourceController : Controller
             Status = entity.Status,
             OwnerName = entity.OwnerName
         };
+    }
+    // POST: /Resource/Edit/5
+// Lagrer endringene i MariaDB.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, ResourceViewModel model)
+    {
+        // Ugyldig skjema: vis det på nytt med feilmeldinger
+        if (!ModelState.IsValid)
+        {
+            ViewBag.ResourceId = id;
+            return View(model);
+        }
+
+        // Hent den ekte ressursen fra databasen
+        var entity = await _repo.GetByIdAsync(id);
+        if (entity == null)
+        {
+            return NotFound();
+        }
+
+        // Kopier verdiene fra skjemaet over i ressursen
+        entity.Type = model.Type;
+        entity.Description = model.Description;
+        entity.Name = model.Area;
+        entity.Latitude = model.Latitude;
+        entity.Longitude = model.Longitude;
+        entity.AvailableFrom = model.AvailableFrom;
+        entity.AvailableTo = model.AvailableTo;
+        entity.ContactName = model.ContactName;
+        entity.ContactPhone = model.ContactPhone;
+        entity.ContactEmail = model.ContactEmail;
+        entity.Status = model.Status;
+        entity.OwnerName = model.OwnerName;
+
+        // Lagre i MariaDB
+        await _repo.UpdateAsync(entity);
+
+        return RedirectToAction(nameof(Details), new { id });
     }
 }

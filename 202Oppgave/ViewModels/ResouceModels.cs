@@ -1,32 +1,41 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
 namespace _202Oppgave.ViewModels;
 
 /*
- * ResourceViewModel – data mellom registreringsskjemaet og ResourceController.
- *
- * Speiler feltene i Resource.cs, men er det brukeren faktisk sender inn.
- * Display-attributtene styrer de norske labelene i Create.cshtml, siden
- * asp-for henter navnet derfra automatisk.
+ * ResourceViewModel – data mellom ressursskjemaet og ResourceController.
+ * Brukes av både Create og Edit. Valideringsreglene her styrer
+ * feilmeldingene i skjemaet.
  */
-public class ResourceViewModel
+public class ResourceViewModel : IValidatableObject
 {
     [Required(ErrorMessage = "Velg type ressurs")]
+    [StringLength(100, ErrorMessage = "Maks 100 tegn")]
     [Display(Name = "Type ressurs")]
     public string Type { get; set; } = string.Empty;
 
+    [StringLength(500, ErrorMessage = "Maks 500 tegn")]
     [Display(Name = "Beskrivelse")]
     public string? Description { get; set; }
 
     [Required(ErrorMessage = "Oppgi sted")]
+    [StringLength(100, ErrorMessage = "Maks 100 tegn")]
     [Display(Name = "Sted")]
     public string Area { get; set; } = string.Empty;
 
-    // Fylles ut av kartet, ikke skrevet inn manuelt av bruker.
+    // Fylles ut ved klikk i kartet. Påkrevd, ellers vises ikke ressursen på kartet.
+    [Required(ErrorMessage = "Velg en posisjon i kartet")]
+    [Range(-90, 90, ErrorMessage = "Breddegrad må være mellom -90 og 90")]
     [Display(Name = "Breddegrad")]
     public double? Latitude { get; set; }
 
+    [Required(ErrorMessage = "Velg en posisjon i kartet")]
+    [Range(-180, 180, ErrorMessage = "Lengdegrad må være mellom -180 og 180")]
     [Display(Name = "Lengdegrad")]
     public double? Longitude { get; set; }
 
@@ -37,13 +46,17 @@ public class ResourceViewModel
     public DateTime? AvailableTo { get; set; }
 
     [Required(ErrorMessage = "Oppgi kontaktperson")]
+    [StringLength(100, ErrorMessage = "Maks 100 tegn")]
     [Display(Name = "Kontaktperson")]
     public string ContactName { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Oppgi telefonnummer")]
+    [StringLength(20, ErrorMessage = "Maks 20 tegn")]
     [Display(Name = "Telefon")]
     public string ContactPhone { get; set; } = string.Empty;
 
+    [EmailAddress(ErrorMessage = "Ugyldig e-postadresse")]
+    [StringLength(150, ErrorMessage = "Maks 150 tegn")]
     [Display(Name = "E-post")]
     public string? ContactEmail { get; set; }
 
@@ -51,6 +64,19 @@ public class ResourceViewModel
     [Display(Name = "Status")]
     public string Status { get; set; } = "Tilgjengelig";
 
+    [StringLength(100, ErrorMessage = "Maks 100 tegn")]
     [Display(Name = "Eier")]
     public string? OwnerName { get; set; }
+
+    // Sjekker regler som gjelder flere felt samtidig.
+    // Kjøres automatisk av ModelState.IsValid i Create og Edit.
+    public IEnumerable<ValidationResult> Validate(ValidationContext context)
+    {
+        if (AvailableFrom.HasValue && AvailableTo.HasValue && AvailableTo < AvailableFrom)
+        {
+            yield return new ValidationResult(
+                "Tilgjengelig til kan ikke være før tilgjengelig fra",
+                new[] { nameof(AvailableTo) });
+        }
+    }
 }

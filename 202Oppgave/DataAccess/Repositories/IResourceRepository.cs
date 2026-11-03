@@ -6,7 +6,10 @@ public interface IResourceRepository
 {
     // Legg til en ressurs
     Task AddAsync(Resource resource);
-
+    
+    // Oppdaterer en eksisterende ressurs i MariaDB
+    Task UpdateAsync(Resource resource);
+    
     // Hent alle ressurser
     Task<List<Resource>> GetAllAsync();
 
