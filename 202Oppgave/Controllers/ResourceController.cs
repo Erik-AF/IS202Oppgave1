@@ -20,13 +20,18 @@ public class ResourceController : Controller
 {
     private readonly IResourceRepository _repo;
 
-    // Dependency Injection
-    public ResourceController(IResourceRepository repo)
+// Gir tilgang til wwwroot-mappen, der opplastede bilder lagres
+    private readonly IWebHostEnvironment _env;
+
+// Mappen bildene lagres i, under wwwroot
+    private const string UploadFolder = "uploads/ressurser";
+
+// Dependency Injection
+    public ResourceController(IResourceRepository repo, IWebHostEnvironment env)
     {
         _repo = repo;
-
+        _env = env;
     }
-    
     // GET: /Resource
     // Henter alle ressurser fra MariaDB
     public async Task<IActionResult> Index()
@@ -73,6 +78,12 @@ public class ResourceController : Controller
             OwnerName = model.OwnerName
         };
 
+        // Lagrer i MariaDB
+        if (model.Image != null)
+        {
+            resource.ImagePath = await SaveImageAsync(model.Image);
+        }
+        
         // Lagrer i MariaDB
         await _repo.AddAsync(resource);
 
@@ -122,7 +133,8 @@ public class ResourceController : Controller
             ContactPhone = entity.ContactPhone,
             ContactEmail = entity.ContactEmail,
             Status = entity.Status,
-            OwnerName = entity.OwnerName
+            OwnerName = entity.OwnerName,
+            ImagePath = entity.ImagePath
         };
         ViewBag.ResourceID = id;
         return View(model);
@@ -187,7 +199,8 @@ public class ResourceController : Controller
             ContactPhone = entity.ContactPhone,
             ContactEmail = entity.ContactEmail,
             Status = entity.Status,
-            OwnerName = entity.OwnerName
+            OwnerName = entity.OwnerName,
+            ImagePath = entity.ImagePath
         };
     }
     // POST: /Resource/Edit/5
@@ -228,5 +241,23 @@ public class ResourceController : Controller
         await _repo.UpdateAsync(entity);
 
         return RedirectToAction(nameof(Details), new { id });
+    }
+    // Lagrer et opplastet bilde i wwwroot/uploads/ressurser.
+    // Filen får et tilfeldig navn (Guid), så to bilder med samme navn
+    // ikke overskriver hverandre.
+    // Returnerer stien som lagres i databasen.
+    private async Task<string> SaveImageAsync(IFormFile image)
+    {
+        var folder = Path.Combine(_env.WebRootPath, UploadFolder);
+        Directory.CreateDirectory(folder); // lager mappen første gang
+
+        var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
+        var fileName = $"{Guid.NewGuid()}{extension}";
+        var fullPath = Path.Combine(folder, fileName);
+
+        await using var stream = new FileStream(fullPath, FileMode.Create);
+        await image.CopyToAsync(stream);
+
+        return $"/{UploadFolder}/{fileName}";
     }
 }

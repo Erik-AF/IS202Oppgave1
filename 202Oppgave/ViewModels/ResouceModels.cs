@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace _202Oppgave.ViewModels;
 
@@ -67,6 +68,18 @@ public class ResourceViewModel : IValidatableObject
     [StringLength(100, ErrorMessage = "Maks 100 tegn")]
     [Display(Name = "Eier")]
     public string? OwnerName { get; set; }
+    
+    // det bilde brukerer laster opp i skjemaet
+    
+    [Display(Name = "Bilde")]
+    public IFormFile? Image { get; set; }
+    
+    // Bilde som er lagret, brtukes i edit for å vise dagens bilde
+    
+    public string? ImagePath { get; set; }  
+    // Tillatte bildetyper og maks størrelse (5 MB)
+    public static readonly string[] AllowedImageTypes = { ".jpg", ".jpeg", ".png", ".webp" };
+    public const long MaxImageBytes = 5 * 1024 * 1024;
 
     // Sjekker regler som gjelder flere felt samtidig.
     // Kjøres automatisk av ModelState.IsValid i Create og Edit.
@@ -78,5 +91,26 @@ public class ResourceViewModel : IValidatableObject
                 "Tilgjengelig til kan ikke være før tilgjengelig fra",
                 new[] { nameof(AvailableTo) });
         }
+        // Sjekker bildet hvis brukeren har valgt et
+        if (Image != null)
+        {
+            var extension = Path.GetExtension(Image.FileName).ToLowerInvariant();
+
+            if (!AllowedImageTypes.Contains(extension))
+            {
+                yield return new ValidationResult(
+                    "Bildet må være JPG, PNG eller WEBP",
+                    new[] { nameof(Image) });
+            }
+
+            if (Image.Length > MaxImageBytes)
+            {
+                yield return new ValidationResult(
+                    "Bildet kan ikke være større enn 5 MB",
+                    new[] { nameof(Image) });
+            }
+        }
     }
+    
 }
+
