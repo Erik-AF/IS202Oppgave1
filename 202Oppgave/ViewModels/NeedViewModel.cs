@@ -33,6 +33,8 @@ namespace _202Oppgave.ViewModels
         [Required(ErrorMessage = "Velg et punkt på kartet.")]
         [Range(-180, 180, ErrorMessage = "Ugyldig lengdegrad.")]
         public double? Longitude { get; set; }
+        
+        public string? GeometryJson { get; set; }
     }
     public enum NeedPriority
     {
