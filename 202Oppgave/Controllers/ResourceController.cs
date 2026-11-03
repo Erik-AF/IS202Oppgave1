@@ -187,7 +187,8 @@ public class ResourceController : Controller
             ContactPhone = entity.ContactPhone,
             ContactEmail = entity.ContactEmail,
             Status = entity.Status,
-            OwnerName = entity.OwnerName
+            OwnerName = entity.OwnerName,
+            ImagePath = entity.ImagePath
         };
     }
     // POST: /Resource/Edit/5
