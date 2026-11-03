@@ -32,15 +32,66 @@ public class ResourceController : Controller
         _repo = repo;
         _env = env;
     }
-    // GET: /Resource
-    // Henter alle ressurser fra MariaDB
-    public async Task<IActionResult> Index()
+    
+    // GET: /Resource?q=drone&type=Traktor&status=Tilgjengelig&area=Kristiansand&sort=type
+    // Henter alle ressurser fra MariaDB, filtrerer og sorterer etter det brukeren har valgt.
+    public async Task<IActionResult> Index(string? q, string? type, string? status, string? area, string? sort)
     {
         var entities = await _repo.GetAllAsync();
+        var all = entities.Select(ToModel).ToList();
 
-        var resources = entities.Select(ToModel).ToList();
+        // Valgene i nedtrekkslistene lages fra ALLE ressursene, før filtrering
+        var model = new ResourceIndexViewModel
+        {
+            Q = q,
+            Type = type,
+            Status = status,
+            Area = area,
+            Sort = sort,
+            TypeOptions = all.Select(r => r.Type).Distinct().OrderBy(t => t).ToList(),
+            StatusOptions = all.Select(r => r.Status).Distinct().OrderBy(s => s).ToList(),
+            AreaOptions = all.Select(r => r.Area).Distinct().OrderBy(a => a).ToList()
+        };
 
-        return View(resources);
+        // Starter med alle, og fjerner det som ikke passer for hvert filter
+        IEnumerable<Models.Resource> result = all;
+
+        // Søk i type, beskrivelse, sted og eier
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            var search = q.Trim().ToLower();
+            result = result.Where(r =>
+                r.Type.ToLower().Contains(search) ||
+                (r.Description ?? "").ToLower().Contains(search) ||
+                r.Area.ToLower().Contains(search) ||
+                (r.OwnerName ?? "").ToLower().Contains(search));
+        }
+
+        if (!string.IsNullOrWhiteSpace(type))
+        {
+            result = result.Where(r => r.Type == type);
+        }
+
+        if (!string.IsNullOrWhiteSpace(status))
+        {
+            result = result.Where(r => r.Status == status);
+        }
+
+        if (!string.IsNullOrWhiteSpace(area))
+        {
+            result = result.Where(r => r.Area == area);
+        }
+
+        // Sortering. Standard er nyeste først (høyest Id).
+        result = sort switch
+        {
+            "type" => result.OrderBy(r => r.Type),
+            "area" => result.OrderBy(r => r.Area),
+            _ => result.OrderByDescending(r => r.Id)
+        };
+
+        model.Resources = result.ToList();
+        return View(model);
     }
 
     // GET: /Resource/Create
@@ -78,13 +129,13 @@ public class ResourceController : Controller
             OwnerName = model.OwnerName
         };
 
-        // Lagrer i MariaDB
+        // Lagrer bildet på disk hvis brukeren har valgt et
         if (model.Image != null)
         {
             resource.ImagePath = await SaveImageAsync(model.Image);
         }
         
-        // Lagrer bildet på disk hvis brukeren har valgt et
+        //Lagrer bildet i MariaDB
         await _repo.AddAsync(resource);
 
         // Sender brukeren til detaljsiden

@@ -1,42 +1,149 @@
-@model List<_202Oppgave.Models.Resource>
+@model _202Oppgave.ViewModels.ResourceIndexViewModel
 
 @*
     Index.cshtml – oversikt over alle registrerte ressurser.
-    
+    Filtreringen skjer i ResourceController.Index (GET).
+    Skjemaet sender valgene i adressen, f.eks. /Resource?type=Traktor
 *@
 
 @{
-    ViewData["Title"] = "Registrerte ressurser";
+    ViewData["Title"] = "Ressurser";
+
+    // Standardbilde ut fra typen, når ressursen ikke har eget bilde
+    string ImageFor(string? type)
+    {
+        var t = (type ?? "").ToLowerInvariant();
+        if (t.Contains("helikopter")) return "~/images/ressurser/helikopter.jpg";
+        if (t.Contains("ambulanse")) return "~/images/ressurser/ambulanse.jpg";
+        if (t.Contains("aggregat") || t.Contains("strøm")) return "~/images/ressurser/aggregat.jpg";
+        if (t.Contains("båt")) return "~/images/ressurser/bat.jpg";
+        return "~/images/ressurser/standard.jpg";
+    }
+
+    // Klasse for fargeprikken. Samme farger som kartet til Marius.
+    string DotClass(string? status) => status switch
+    {
+        "Tilgjengelig" => "rl-dot--green",
+        "Reservert" => "rl-dot--yellow",
+        _ => "rl-dot--grey"
+    };
 }
 
-<div class="container home-content">
-    <h1>Registrerte ressurser</h1>
-    <p><a asp-action="Create" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Registrer ny ressurs</a></p>
+<div class="container rl">
 
-    @if (!Model.Any())
-    {
-        <p>Ingen ressurser registrert ennå.</p>
-    }
-    else
-    {
-        <div class="grid-3">
-            @foreach (var resource in Model)
-            {
-                // Samme fargelogikk som Marius bruker i kartet:
-                // grønn = tilgjengelig, gul = reservert, grå = resten.
-                var statusColor = resource.Status switch
+    @* ===== Topp: tittel og knapp ===== *@
+    <div class="rl-head">
+        <div>
+            <h1>Tilgjengelige ressurser</h1>
+            <p>Kjøretøy, maskiner, utstyr og mannskap som kan brukes i en krise.</p>
+        </div>
+        <a class="rl-btn" asp-action="Create">Registrer ressurs <span aria-hidden="true">→</span></a>
+    </div>
+
+    <div class="rl-layout">
+
+        @* ===== Filter =====
+           method="get": valgene sendes i adressen til Index i controlleren.
+           Ingen antiforgery-token trengs, fordi GET ikke endrer noe. *@
+        <form class="rl-filter" asp-action="Index" method="get">
+            <h2>Filtrer</h2>
+
+            <label for="q" class="rl-label">Søk</label>
+            <input id="q" name="q" value="@Model.Q" class="rl-input" placeholder="Søk i ressurser" />
+
+            <label for="type" class="rl-label">Type</label>
+            <select id="type" name="type" class="rl-input">
+                <option value="">Alle typer</option>
+                @foreach (var t in Model.TypeOptions)
                 {
-                    "Tilgjengelig" => "var(--map-available)",
-                    "Reservert" => "var(--map-planned)",
-                    _ => "var(--muted)"
-                };
-                <div class="card" style="padding:1.5rem;">
-                    <h3>@resource.Type</h3>
-                    <p>@resource.Area</p>
-                    <p style="color:@statusColor; font-weight:600;">@resource.Status</p>
-                    <p><a asp-action="Details" asp-route-id="@resource.Id">Se detaljer</a></p>
+                    <option value="@t" selected="@(t == Model.Type)">@t</option>
+                }
+            </select>
+
+            <label for="status" class="rl-label">Status</label>
+            <select id="status" name="status" class="rl-input">
+                <option value="">Alle statuser</option>
+                @foreach (var s in Model.StatusOptions)
+                {
+                    <option value="@s" selected="@(s == Model.Status)">@s</option>
+                }
+            </select>
+
+            <label for="area" class="rl-label">Sted</label>
+            <select id="area" name="area" class="rl-input">
+                <option value="">Alle steder</option>
+                @foreach (var a in Model.AreaOptions)
+                {
+                    <option value="@a" selected="@(a == Model.Area)">@a</option>
+                }
+            </select>
+
+            <label for="sort" class="rl-label">Sorter</label>
+            <select id="sort" name="sort" class="rl-input">
+                <option value="" selected="@(string.IsNullOrEmpty(Model.Sort))">Nyeste først</option>
+                <option value="type" selected="@(Model.Sort == "type")">Type A–Å</option>
+                <option value="area" selected="@(Model.Sort == "area")">Sted A–Å</option>
+            </select>
+
+            <button type="submit" class="rl-btn rl-btn--full">Filtrer</button>
+            <a asp-action="Index" class="rl-reset">Nullstill filter</a>
+        </form>
+
+                @* ===== Listen =====
+           Én rad per ressurs: bilde, tekst, status og lenke til Details. *@
+        <section>
+            <p class="rl-found">@Model.Resources.Count ressurser funnet</p>
+
+            @if (!Model.Resources.Any())
+            {
+                @* Ingen treff, eller ingen ressurser i det hele tatt *@
+                <div class="rl-empty">
+                    <h3>Ingen ressurser funnet</h3>
+                    <p>Prøv et annet filter, eller registrer en ny ressurs.</p>
                 </div>
             }
-        </div>
-    }
+            else
+            {
+                <ul class="rl-list">
+                    @foreach (var r in Model.Resources)
+                    {
+                        <li>
+                            @* hele raden er en lenke til detaljsiden *@
+                            <a class="rl-row" asp-action="Details" asp-route-id="@r.Id">
+
+                                @* eget bilde hvis det finnes, ellers standardbilde ut fra typen *@
+                                <img class="rl-img" src="@Url.Content(r.ImagePath ?? ImageFor(r.Type))" alt="" loading="lazy" />
+
+                                <div>
+                                    <h3>@r.Type</h3>
+                                    @if (!string.IsNullOrWhiteSpace(r.Description))
+                                    {
+                                        <p class="rl-desc">@r.Description</p>
+                                    }
+                                    <ul class="rl-meta">
+                                        @if (!string.IsNullOrWhiteSpace(r.OwnerName))
+                                        {
+                                            <li>@r.OwnerName</li>
+                                        }
+                                        <li>@r.Area</li>
+                                        @if (r.AvailableFrom != null || r.AvailableTo != null)
+                                        {
+                                            <li>@(r.AvailableFrom?.ToString("dd.MM.yyyy") ?? "nå") – @(r.AvailableTo?.ToString("dd.MM.yyyy") ?? "ubestemt")</li>
+                                        }
+                                    </ul>
+                                </div>
+
+                                <div class="rl-side">
+                                    <span class="rl-status">
+                                        <span class="rl-dot @DotClass(r.Status)" aria-hidden="true"></span>@r.Status
+                                    </span>
+                                    <span class="rl-more">Se detaljer <span aria-hidden="true">→</span></span>
+                                </div>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    </div>
 </div>
