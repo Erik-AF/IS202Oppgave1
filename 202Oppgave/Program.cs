@@ -12,6 +12,9 @@ builder.Services.AddControllersWithViews();
 // Register repository
 builder.Services.AddScoped<_202Oppgave.DataAccess.Repositories.IResourceRepository, _202Oppgave.DataAccess.Repositories.ResourceRepository>();
 
+// Gjør NeedRepository tilgjengelig for controlleren gjennom INeedRepository.
+builder.Services.AddScoped<INeedRepository, NeedRepository>();
+
 var connectionString = builder.Configuration
     .GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException(

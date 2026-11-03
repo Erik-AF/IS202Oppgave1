@@ -12,6 +12,7 @@ namespace _202Oppgave.DataAccess
         }
 
         public DbSet<Resource> Resources { get; set; }
+        public DbSet<Need> Needs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
