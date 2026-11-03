@@ -17,8 +17,4 @@
     <ProjectReference Include="..\IS202Oppgave11.ServiceDefaults\IS202Oppgave11.ServiceDefaults.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\images\" />
-  </ItemGroup>
-
 </Project>
