@@ -27,7 +27,7 @@
             border-radius: 12px;
         }
 
-        /* Mobilregel – overstyres foreløpig av inline-stylingen */
+        /* På mobil legges kartet under skjemaet */
         @@media (max-width: 800px) {
             #need-layout {
                 grid-template-columns: 1fr;
@@ -39,9 +39,7 @@
 <div class="container home-content">
     <h1>Registrer behov</h1>
 
-    <div id="need-layout"
-         class="resource-layout"
-         style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:2rem; align-items:start;">
+    <div id="need-layout" class="resource-layout">
 
         <form asp-controller="Need"
               asp-action="Create"
@@ -99,12 +97,22 @@
 
             <div style="margin-bottom:1rem;">
                 <label asp-for="Priority">Prioritet</label>
+
                 <select asp-for="Priority"
-                        asp-items="Html.GetEnumSelectList<_202Oppgave.ViewModels.NeedPriority>()"
                         class="form-select">
                     <option value="">Velg prioritet</option>
+
+                    @foreach (var priority in Html.GetEnumSelectList<_202Oppgave.ViewModels.NeedPriority>())
+                    {
+                        <option value="@priority.Value"
+                                selected="@priority.Selected">
+                            @(priority.Text == "IkkeAkutt" ? "Ikke akutt" : priority.Text)
+                        </option>
+                    }
                 </select>
-                <span asp-validation-for="Priority" class="text-danger"></span>
+
+                <span asp-validation-for="Priority"
+                      class="text-danger"></span>
             </div>
 
             <button type="submit"
@@ -268,5 +276,6 @@
         }, 100);
     </script>
 }
+
 
 
