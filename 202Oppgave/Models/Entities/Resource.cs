@@ -23,5 +23,9 @@
         public string Status { get; set; } = "Tilgjengelig";
 
         public string? OwnerName { get; set; }
+        
+        // Sti til opplastet bilde, f.eks. "/uploads/ressurser/abc.jpg".
+        // Null betyr at ressursen ikke har eget bilde.
+        public string? ImagePath { get; set; }
     }
 }
