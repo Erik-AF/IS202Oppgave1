@@ -84,7 +84,7 @@ public class ResourceController : Controller
             resource.ImagePath = await SaveImageAsync(model.Image);
         }
         
-        // Lagrer i MariaDB
+        // Lagrer bildet på disk hvis brukeren har valgt et
         await _repo.AddAsync(resource);
 
         // Sender brukeren til detaljsiden
@@ -176,6 +176,9 @@ public class ResourceController : Controller
         {
             return NotFound();
         }
+        
+        // Sletter bildefilen også, så den ikke blir liggende igjen
+        DeleteImage(resource.ImagePath);
 
         await _repo.DeleteAsync(id);
 
@@ -213,6 +216,8 @@ public class ResourceController : Controller
         if (!ModelState.IsValid)
         {
             ViewBag.ResourceId = id;
+            // Viser dagens bilde igjen, siden det ikke sendes med skjemaet
+            model.ImagePath = (await _repo.GetByIdAsync(id))?.ImagePath;
             return View(model);
         }
 
@@ -221,6 +226,14 @@ public class ResourceController : Controller
         if (entity == null)
         {
             return NotFound();
+        }
+        
+        // Nytt bilde valgt: lagre det nye og slett det gamle.
+        // Ikke valgt: behold bildet som allerede er lagret.
+        if (model.Image != null)
+        {
+            DeleteImage(entity.ImagePath);
+            entity.ImagePath = await SaveImageAsync(model.Image);
         }
 
         // Kopier verdiene fra skjemaet over i ressursen
@@ -259,5 +272,22 @@ public class ResourceController : Controller
         await image.CopyToAsync(stream);
 
         return $"/{UploadFolder}/{fileName}";
+    }
+    
+    // Sletter et opplastet bilde fra disk.
+    // Sletter bare filer i uploads-mappen, aldri standardbildene.
+    private void DeleteImage(string? imagePath)
+    {
+        if (string.IsNullOrWhiteSpace(imagePath) ||
+            !imagePath.StartsWith($"/{UploadFolder}/"))
+        {
+            return;
+        }
+
+        var fullPath = Path.Combine(_env.WebRootPath, imagePath.TrimStart('/'));
+        if (System.IO.File.Exists(fullPath))
+        {
+            System.IO.File.Delete(fullPath);
+        }
     }
 }
