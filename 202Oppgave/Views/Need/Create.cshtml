@@ -2,33 +2,46 @@
 @model _202Oppgave.ViewModels.NeedViewModel
 
 @{
-ViewData["Title"] = "Registrer behov";
+    ViewData["Title"] = "Registrer behov";
 }
 
 @section Head {
-<style>
-    #need-map {
-        height: 550px;
-        width: 100%;
-        border-radius: 12px;
-    }
-
-    #need-layout .resource-map-panel {
-        min-width: 0;
-    }
-
-    @@media (max-width: 800px) {
+    <style>
+        /* Skjema til venstre og kart til høyre */
         #need-layout {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 2rem;
+            align-items: start;
         }
-    }
-</style>
+
+        /* Sørger for at kartet passer i kolonnen */
+        #need-layout .resource-map-panel {
+            min-width: 0;
+        }
+
+        /* Kartets størrelse */
+        #need-map {
+            height: 550px;
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        /* Mobilregel – overstyres foreløpig av inline-stylingen */
+        @@media (max-width: 800px) {
+            #need-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 }
 
 <div class="container home-content">
     <h1>Registrer behov</h1>
 
-    <div id="need-layout" class="resource-layout">
+    <div id="need-layout"
+         class="resource-layout"
+         style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:2rem; align-items:start;">
 
         <form asp-controller="Need"
               asp-action="Create"
@@ -37,29 +50,27 @@ ViewData["Title"] = "Registrer behov";
               style="padding:2rem; min-width:0;">
 
             <div asp-validation-summary="ModelOnly"
-                 style="color:var(--brick); margin-bottom:1rem;">
+                 class="text-danger"
+                 style="margin-bottom:1rem;">
             </div>
 
             <div style="margin-bottom:1rem;">
                 <label asp-for="Type">Type behov</label>
                 <input asp-for="Type" class="form-control" />
-                <span asp-validation-for="Type"
-                      style="color:var(--brick);"></span>
+                <span asp-validation-for="Type" class="text-danger"></span>
             </div>
 
             <div style="margin-bottom:1rem;">
                 <label asp-for="Description">Beskrivelse</label>
                 <textarea asp-for="Description"
                           class="form-control"></textarea>
-                <span asp-validation-for="Description"
-                      style="color:var(--brick);"></span>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
             <div style="margin-bottom:1rem;">
                 <label asp-for="Location">Lokasjon</label>
                 <input asp-for="Location" class="form-control" />
-                <span asp-validation-for="Location"
-                      style="color:var(--brick);"></span>
+                <span asp-validation-for="Location" class="text-danger"></span>
             </div>
 
             <div style="margin-bottom:1rem;">
@@ -67,8 +78,7 @@ ViewData["Title"] = "Registrer behov";
                 <input asp-for="Latitude"
                        class="form-control"
                        readonly />
-                <span asp-validation-for="Latitude"
-                      style="color:var(--brick);"></span>
+                <span asp-validation-for="Latitude" class="text-danger"></span>
             </div>
 
             <div style="margin-bottom:1rem;">
@@ -76,8 +86,7 @@ ViewData["Title"] = "Registrer behov";
                 <input asp-for="Longitude"
                        class="form-control"
                        readonly />
-                <span asp-validation-for="Longitude"
-                      style="color:var(--brick);"></span>
+                <span asp-validation-for="Longitude" class="text-danger"></span>
             </div>
 
             <div style="margin-bottom:1rem;">
@@ -85,8 +94,7 @@ ViewData["Title"] = "Registrer behov";
                 <input asp-for="Deadline"
                        class="form-control"
                        type="datetime-local" />
-                <span asp-validation-for="Deadline"
-                      style="color:var(--brick);"></span>
+                <span asp-validation-for="Deadline" class="text-danger"></span>
             </div>
 
             <div style="margin-bottom:1rem;">
@@ -96,8 +104,7 @@ ViewData["Title"] = "Registrer behov";
                         class="form-select">
                     <option value="">Velg prioritet</option>
                 </select>
-                <span asp-validation-for="Priority"
-                      style="color:var(--brick);"></span>
+                <span asp-validation-for="Priority" class="text-danger"></span>
             </div>
 
             <button type="submit"
@@ -121,158 +128,145 @@ ViewData["Title"] = "Registrer behov";
 </div>
 
 @section Scripts {
-<partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial" />
 
-<script>
-    // Opprett kartet
-    const map = L.map('need-map')
-        .setView([58.1467, 7.9956], 13);
+    <script>
+        // Opprett kartet
+        const map = L.map('need-map')
+            .setView([58.1467, 7.9956], 13);
 
-    // OpenStreetMap
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+        // OpenStreetMap
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-    // Gruppe for tegninger
-    const drawnItems = new L.FeatureGroup();
-    map.addLayer(drawnItems);
+        // Gruppe for tegninger
+        const drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
 
-    // Tilpass linjeverktøyet:
-    // Klikk på første punkt for å lukke og avslutte linjen.
-    const originalAddVertex = L.Draw.Polyline.prototype.addVertex;
+        // Tilpass linjeverktøyet
+        const originalAddVertex = L.Draw.Polyline.prototype.addVertex;
 
-    L.Draw.Polyline.include({
-        addVertex: function (latlng) {
-            const result = originalAddVertex.call(this, latlng);
+        L.Draw.Polyline.include({
+            addVertex: function (latlng) {
+                const result = originalAddVertex.call(this, latlng);
 
-            // Når første punkt opprettes, kobles
-            // en egen klikkhendelse til denne markøren.
-            if (this._markers.length === 1) {
-                const firstMarker = this._markers[0];
+                if (this._markers.length === 1) {
+                    const firstMarker = this._markers[0];
 
-                firstMarker.off('click');
+                    firstMarker.off('click');
 
-                firstMarker.on('click', (event) => {
-                    // Krev minst tre punkter før figuren lukkes.
-                    if (this._markers.length < 3) {
-                        return;
-                    }
+                    firstMarker.on('click', (event) => {
+                        if (this._markers.length < 3) {
+                            return;
+                        }
 
-                    if (event.originalEvent) {
-                        L.DomEvent.stop(event.originalEvent);
-                    }
+                        if (event.originalEvent) {
+                            L.DomEvent.stop(event.originalEvent);
+                        }
 
-                    // Hent startpunktets koordinater.
-                    const firstPoint =
-                        this._markers[0].getLatLng();
+                        const firstPoint =
+                            this._markers[0].getLatLng();
 
-                    // Legg til startpunktet på slutten av linjen.
-                    // Dette tegner den manglende linjestrekningen.
-                    originalAddVertex.call(this, firstPoint);
+                        originalAddVertex.call(this, firstPoint);
 
-                    // Avslutt tegningen.
-                    this.completeShape();
-                });
+                        this.completeShape();
+                    });
+                }
+
+                return result;
+            }
+        });
+
+        // Leaflet.Draw-verktøy
+        const drawControl = new L.Control.Draw({
+            draw: {
+                polygon: true,
+                polyline: true,
+                circle: true,
+                rectangle: true,
+                marker: true,
+                circlemarker: false
+            },
+            edit: {
+                featureGroup: drawnItems,
+                remove: true
+            }
+        });
+
+        map.addControl(drawControl);
+
+        // Koordinatfeltene
+        const latitudeInput =
+            document.getElementById('Latitude');
+
+        const longitudeInput =
+            document.getElementById('Longitude');
+
+        // Oppdater koordinater for alle figurtyper
+        function updateCoordinates(layer) {
+            let latlng;
+
+            if (layer instanceof L.Marker ||
+                layer instanceof L.Circle) {
+                latlng = layer.getLatLng();
+            } else if (typeof layer.getBounds === 'function') {
+                latlng = layer.getBounds().getCenter();
             }
 
-            return result;
-        }
-    });
-
-    // Leaflet.Draw-verktøy
-    const drawControl = new L.Control.Draw({
-        draw: {
-            polygon: true,
-            polyline: true,
-            circle: true,
-            rectangle: true,
-            marker: true,
-            circlemarker: false
-        },
-        edit: {
-            featureGroup: drawnItems,
-            remove: true
-        }
-    });
-
-    map.addControl(drawControl);
-
-    // Koordinatfeltene
-    const latitudeInput =
-        document.getElementById('Latitude');
-
-    const longitudeInput =
-        document.getElementById('Longitude');
-
-    // Oppdater koordinater for alle figurtyper
-    function updateCoordinates(layer) {
-        let latlng;
-
-        if (layer instanceof L.Marker ||
-            layer instanceof L.Circle) {
-
-            latlng = layer.getLatLng();
-
-        } else if (typeof layer.getBounds === 'function') {
-
-            latlng = layer.getBounds().getCenter();
+            if (latlng) {
+                latitudeInput.value = latlng.lat.toFixed(6);
+                longitudeInput.value = latlng.lng.toFixed(6);
+            }
         }
 
-        if (latlng) {
-            latitudeInput.value = latlng.lat.toFixed(6);
-            longitudeInput.value = latlng.lng.toFixed(6);
+        // Gjenopprett markør etter skjemafeil
+        if (latitudeInput.value && longitudeInput.value) {
+            const lat = Number(
+                latitudeInput.value.replace(',', '.')
+            );
+
+            const lng = Number(
+                longitudeInput.value.replace(',', '.')
+            );
+
+            if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                const existingMarker = L.marker([lat, lng]);
+
+                drawnItems.addLayer(existingMarker);
+                map.setView([lat, lng], 13);
+            }
         }
-    }
 
-    // Gjenopprett markør etter skjemafeil
-    if (latitudeInput.value && longitudeInput.value) {
-        const lat = Number(
-            latitudeInput.value.replace(',', '.')
-        );
+        // Når en ny markering opprettes
+        map.on('draw:created', function (e) {
+            drawnItems.clearLayers();
 
-        const lng = Number(
-            longitudeInput.value.replace(',', '.')
-        );
+            const layer = e.layer;
+            drawnItems.addLayer(layer);
 
-        if (Number.isFinite(lat) && Number.isFinite(lng)) {
-            const existingMarker = L.marker([lat, lng]);
-
-            drawnItems.addLayer(existingMarker);
-            map.setView([lat, lng], 13);
-        }
-    }
-
-    // Når en ny markering opprettes
-    map.on('draw:created', function (e) {
-
-        // Fjern den gamle markeringen
-        drawnItems.clearLayers();
-
-        // Legg til den nye markeringen
-        const layer = e.layer;
-        drawnItems.addLayer(layer);
-
-        // Oppdater koordinatene
-        updateCoordinates(layer);
-    });
-
-    // Når markeringen redigeres
-    map.on('draw:edited', function (e) {
-        e.layers.eachLayer(function (layer) {
             updateCoordinates(layer);
         });
-    });
 
-    // Når markeringen slettes
-    map.on('draw:deleted', function () {
-        latitudeInput.value = '';
-        longitudeInput.value = '';
-    });
+        // Når markeringen redigeres
+        map.on('draw:edited', function (e) {
+            e.layers.eachLayer(function (layer) {
+                updateCoordinates(layer);
+            });
+        });
 
-    // Oppdater kartstørrelsen
-    setTimeout(function () {
-        map.invalidateSize();
-    }, 100);
-</script>
+        // Når markeringen slettes
+        map.on('draw:deleted', function () {
+            latitudeInput.value = '';
+            longitudeInput.value = '';
+        });
+
+        // Oppdater kartstørrelsen
+        setTimeout(function () {
+            map.invalidateSize();
+        }, 100);
+    </script>
 }
+
+
