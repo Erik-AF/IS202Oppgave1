@@ -5,7 +5,7 @@ Eier: Sarah (Frontend/UI).
 
 Inneholder header, navigasjon, hovedinnhold og footer.
 Enkeltsider kan legge til egne styles/scripts gjennom
-@section Head og @section Scripts.
+@section Head og @section Scripts..
 
 *@
 
@@ -39,10 +39,12 @@ Enkeltsider kan legge til egne styles/scripts gjennom
     <title>@ViewData["Title"] – CrisisSystem</title>
     
     @* Felles styling. Enkeltsider kan legge til CSS via @section Head. *@
-    
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true"/>
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+   
     @* Plass for ekstra <head>-innhold fra andre views (f.eks. Leaflet-CSS på kartsiden). Valgfri. *@
     
     @await RenderSectionAsync("Head", required: false)
@@ -60,11 +62,13 @@ Enkeltsider kan legge til egne styles/scripts gjennom
     <div class="container header-inner">
         
         @* Logo – går alltid tilbake til forsiden. *@
-        
-        <a class="brand" asp-controller="Home" asp-action="Index">CrisisSystem</a>
-        
-        @* Mobilmeny – vises på mindre skjermer og styres av site.js. *@
 
+        <a class="brand" asp-controller="Home" asp-action="Index">
+            <img class="brand-logo" src="~/images/logo.svg" alt="" width="48" height="48" />
+            CrisisSystem
+        </a>
+
+        @* Hamburger-knapp. Vises kun på mobil og åpner/lukker menyen (logikk i site.js). *@
         <button class="nav-toggle" type="button" aria-label="Åpne meny"
                 aria-expanded="false" aria-controls="main-nav">
             <span aria-hidden="true">☰</span>
@@ -84,8 +88,14 @@ Enkeltsider kan legge til egne styles/scripts gjennom
             <a asp-controller="Information" asp-action="Om"
                aria-current="@(IsActive("Information") ? "page" : null)">Om oss</a>
 
-            @* TODO: Peker på Account/Login når innlogging er på plass *@
-            <a class="nav-login" asp-controller="Account" asp-action="Login">Logg inn</a>
+            @* Peker på Account/Login når innlogging er på plass *@
+            
+            <a class="nav-login" asp-controller="Account" asp-action="Login">
+
+                <span aria-hidden="true">👤</span> Logg inn
+            
+            </a>
+            
         </nav>
     </div>
 </header>
@@ -126,8 +136,10 @@ Enkeltsider kan legge til egne styles/scripts gjennom
 @* ---------- 2d. JAVASCRIPT ----------
        Lastes sist så siden vises raskt. site.js styrer mobilmenyen. *@
 
-<script src="~/js/site.js" asp-append-version="true"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+
 @* Plass for ekstra script fra andre views (f.eks. Leaflet-JS og kartkode). Valgfri. *@
 
 @await RenderSectionAsync("Scripts", required: false)
