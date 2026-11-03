@@ -29,6 +29,217 @@
     };
 }
 
+
+@section Head {
+    <style>
+        /* --- Farger og skrift for ressurssiden (prefiks rl- = resource list) --- */
+        :root {
+            --rl-ink: #111214; /* overskrifter */
+            --rl-text: #1f2124; /* brødtekst */
+            --rl-muted: #5b5f66; /* svakere tekst */
+            --rl-soft: #edeeec; /* lysegrå boks */
+            --rl-line: #d6d7d3; /* tynne linjer */
+        }
+        .rl {
+
+            -webkit-font-smoothing: antialiased;   /* skarpere tekst på Mac */
+            color: var(--rl-text);
+            font-weight: 300;
+            padding-block: 1.5rem 5rem;
+        }
+
+        /* ===== Topp ===== */
+        .rl-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .rl-head h1 {
+            margin: 0 0 0.5rem;
+            font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            color: var(--rl-ink);
+        }
+
+        .rl-head p { margin: 0; font-size: 1.1rem; }
+
+        /* knapp med mørk kant, fylles ved hover */
+        .rl-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            min-height: 48px;
+            padding: 0 1.4rem;
+            border: 1.5px solid var(--rl-ink);
+            background: transparent;
+            color: var(--rl-ink);
+            font: inherit;
+            font-weight: 400;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .rl-btn:hover { background: var(--rl-ink); color: #fff; }
+        .rl-btn--full { width: 100%; margin-top: 1.5rem; }
+
+        /* ===== Oppsett: filter til venstre, liste til høyre ===== */
+        .rl-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* ===== Filter ===== */
+        .rl-filter {
+            position: sticky;
+            top: 1.5rem;
+            padding: 1.75rem;
+            background: var(--rl-soft);
+        }
+
+        .rl-filter h2 {
+            margin: 0 0 1.25rem;
+            font-size: 1.3rem;
+            font-weight: 300;
+            color: var(--rl-ink);
+        }
+
+        .rl-label {
+            display: block;
+            margin: 1.1rem 0 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--rl-ink);
+        }
+
+        .rl-input {
+            width: 100%;
+            min-height: 44px;
+            padding: 0 0.8rem;
+            border: 1px solid #a9aba6;
+            border-radius: 0;
+            background: #fff;
+            color: var(--rl-ink);
+            font: inherit;
+        }
+
+        .rl-input:focus { outline: 2px solid var(--rl-ink); outline-offset: 0; }
+
+        .rl-reset {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--rl-ink);
+            text-underline-offset: 4px;
+        }
+
+        /* ===== Liste ===== */
+        .rl-found { margin: 0 0 0.75rem; color: var(--rl-muted); }
+
+        .rl-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            border-top: 1px solid var(--rl-ink);
+        }
+
+        .rl-list > li { border-bottom: 1px solid var(--rl-line); }
+
+        /* én rad: bilde | tekst | status */
+        .rl-row {
+            display: grid;
+            grid-template-columns: 220px 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+            padding: 1.5rem 1rem;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .rl-row:hover { background: #f5f5f3; }
+
+        .rl-img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            object-fit: cover;
+            background: var(--rl-soft);
+        }
+
+        .rl-row h3 {
+            margin: 0 0 0.35rem;
+            font-size: 1.35rem;
+            font-weight: 400;
+            color: var(--rl-ink);
+        }
+
+        .rl-desc { margin: 0 0 0.6rem; line-height: 1.5; }
+
+        .rl-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 1.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 0.92rem;
+            color: var(--rl-muted);
+        }
+
+        .rl-side {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.9rem;
+        }
+
+        .rl-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 400;
+            color: var(--rl-ink);
+            white-space: nowrap;
+        }
+
+        /* fargeprikken, eneste fargen på siden */
+        .rl-dot { width: 9px; height: 9px; border-radius: 50%; }
+        .rl-dot--green { background: var(--map-available); }
+        .rl-dot--yellow { background: var(--map-planned); }
+        .rl-dot--grey { background: #9a9c98; }
+
+        .rl-more { font-weight: 400; color: var(--rl-ink); white-space: nowrap; }
+
+        .rl-empty { padding: 2.5rem 2rem; background: var(--rl-soft); }
+        .rl-empty h3 { margin: 0 0 0.5rem; font-weight: 300; }
+        .rl-empty p { margin: 0; }
+
+        /* ===== Nettbrett: filteret over listen ===== */
+        @@media (max-width: 900px) {
+        .rl-layout { grid-template-columns: 1fr; }
+        .rl-filter { position: static; }
+        .rl-row { grid-template-columns: 160px 1fr; }
+        .rl-side { grid-column: 2; flex-direction: row; justify-content: space-between; }
+}
+
+        /* ===== Mobil: mindre bilde ===== */
+        @@media (max-width: 560px) {
+        .rl-row { grid-template-columns: 110px 1fr; align-items: start; padding-inline: 0.25rem; }
+        .rl-desc { display: none; }
+        .rl-side { grid-column: 1 / -1; }
+}
+        
+    </style>
+}
+ 
 <div class="container rl">
 
     @* ===== Topp: tittel og knapp ===== *@
