@@ -5,7 +5,7 @@
 .card,
 .content-card {
     background-color: #fff;
-    border: 1px solid var(--sand-border);
+    border: 1px solid var(--line);
     border-radius: var(--radius-md);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
@@ -20,7 +20,7 @@
 .card h3,
 .content-card h2,
 .content-card h3 {
-    color: var(--lake);
+    color: var(--navy);
 }
 
 /* Knappene: avrundede hjørner og tydelig tekst */
@@ -29,7 +29,10 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
     font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
     border-radius: var(--radius-pill);
     transition:
             background-color 0.2s ease,
@@ -38,47 +41,50 @@
 
 /* Hovedknappene: mørkeblå farge som passer resten av systemet */
 .btn-primary {
-    background-color: var(--lake-button);
-    border-color: var(--lake-button);
+    background-color: var(--navy);
+    border: 1px solid var(--navy);
     color: #fff;
 }
 
 /* Hovedknappene: mørkere blåfarge når man holder musen over */
 .btn-primary:hover {
-    background-color: var(--lake-dark);
-    border-color: var(--lake-dark);
+    background-color: var(--navy-dark);
+    border-color: var(--navy-dark);
     color: #fff;
 }
 
 /* Sekundære knapper: hvit bakgrunn med mørkeblå ramme */
 .btn-secondary {
     background-color: #fff;
-    border: 1px solid var(--lake);
-    color: var(--lake);
+    border: 1px solid var(--navy);
+    color: var(--navy);
 }
 
 /* Sekundære knapper: lys bakgrunn når man holder musen over */
 .btn-secondary:hover {
-    background-color: var(--sand);
-    border-color: var(--lake);
-    color: var(--lake);
+    background-color: var(--surface-soft);
+    border-color: var(--navy);
+    color: var(--navy);
 }
 
 /* Skjemafeltene: tydelige rammer og myke hjørner */
 .form-control,
 .form-select {
-    border: 1px solid var(--sand-border);
+    display: block;
+    width: 100%;
+    border: 1px solid var(--line-strong);
     border-radius: var(--radius-md);
     padding: 0.75rem 1rem;
     color: var(--ink);
     background-color: #fff;
+    font: inherit;
 }
 
 /* Skjemafeltene: tydeligere ramme når man klikker i dem */
 .form-control:focus,
 .form-select:focus {
-    border-color: var(--lake);
-    box-shadow: 0 0 0 3px rgba(34, 56, 79, 0.2);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 110, 165, 0.2);
     outline: none;
 }
 
@@ -102,26 +108,49 @@ textarea.form-control {
 /* Etikettene i skjemaene: tydelig mørkeblå tekst */
 .form-label,
 .card label {
-    color: var(--lake);
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--navy);
     font-weight: 600;
+}
+
+/* Avstand mellom feltene i skjemaet */
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+/* Luft over og under innholdet */
+.py-5 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+/* Valideringsmeldinger */
+.text-danger {
+    color: var(--red);
+    font-size: 0.9rem;
 }
 
 /* Spørsmålene på Hjelp-siden: fetere tekst */
 .accordion-button {
     font-weight: 600;
-    color: var(--lake);
+    color: var(--navy);
 }
 
 /* Åpne spørsmål på Hjelp-siden: lys bakgrunn */
 .accordion-button:not(.collapsed) {
-    background-color: var(--sand);
-    color: var(--lake);
+    background-color: var(--surface-soft);
+    color: var(--navy);
 }
 
 /* Spørsmålene på Hjelp-siden: tydelig ramme når de velges */
 .accordion-button:focus {
-    border-color: var(--lake);
-    box-shadow: 0 0 0 3px rgba(34, 56, 79, 0.2);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 110, 165, 0.2);
 }
 
 /* Tabellene: tydelig oppsett med mørk tekst */
@@ -132,7 +161,7 @@ textarea.form-control {
 
 /* Tabelloverskriftene: lys bakgrunn og fetere tekst */
 .table thead {
-    background-color: var(--sand);
+    background-color: var(--surface-soft);
 }
 
 .table th {
@@ -143,7 +172,7 @@ textarea.form-control {
 .table th,
 .table td {
     padding: 0.9rem 1rem;
-    border-bottom: 1px solid var(--sand-border);
+    border-bottom: 1px solid var(--line);
 }
 
 /* Statusmerkene: avrundede hjørner og tydelig tekst */
@@ -171,7 +200,7 @@ textarea.form-control {
 /* Røde statusmerker: viser kritiske behov eller feil */
 .badge-danger {
     background-color: #fde8e8;
-    color: var(--brick);
+    color: var(--red);
 }
 
 /* Tilpasninger for mobil (skjermer smalere enn 768px) */
@@ -184,3 +213,4 @@ textarea.form-control {
         max-width: 100%;
     }
 }
+
