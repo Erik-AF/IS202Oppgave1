@@ -27,5 +27,12 @@
         // Sti til opplastet bilde, f.eks. "/uploads/ressurser/abc.jpg".
         // Null betyr at ressursen ikke har eget bilde.
         public string? ImagePath { get; set; }
+        
+        //fremmednøkkel til Categories-tabellen.
+        // Nullable, så ressurser som allerede finnes ikke fpr feil i migrering
+        public int? CategoryId { get; set; }
+        
+        //Selve kategorien. Fyller når vi henter med Include() i reposetory∑
+        public Category Category { get; set; }
     }
 }

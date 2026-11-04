@@ -61,6 +61,11 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Serverer filer som lastes opp mens appen kjører (wwwroot/uploads).
+// MapStaticAssets kjenner bare filene som fantes da appen ble bygget.
+app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseAuthorization();
