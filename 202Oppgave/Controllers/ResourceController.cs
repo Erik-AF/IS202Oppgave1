@@ -35,7 +35,7 @@ public class ResourceController : Controller
     // Henter alle ressurser fra MariaDB
     // ResourceProvider og Admin kan åpne Create
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? q, string? category, string? status, string? area, string? sort)
     {
         var entities = await _repo.GetAllAsync();
 
@@ -48,7 +48,7 @@ public class ResourceController : Controller
     // Viser et tomt registreringsskjema.
     // ResourceProvider og Admin kan åpne Create
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         return View(new ResourceViewModel());
     }
