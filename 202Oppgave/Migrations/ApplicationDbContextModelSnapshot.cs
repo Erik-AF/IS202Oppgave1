@@ -57,6 +57,7 @@ namespace _202Oppgave.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Needs");
+                });
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
             {
                 b.Property<string>("Id")
