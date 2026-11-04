@@ -23,19 +23,35 @@ The prompts were originally written in Norwegian and are translated to English h
 - "When I press send on the contact form I get no confirmation, what is wrong with KontaktBekreftelse.cshtml?"
 
 **Sarah**
-- 
+- We are working on a project for Kartverket and Heimevernet as part of the IT and Information Systems programme this year. Help me and explain each step, including possible solution approaches where relevant. I will paste the assignment description, the project case description, and the division of responsibilities. Wait until I write “ready” before responding.
+- Provide a specific breakdown of the proposed code solution.
+- Chat has refactored the plan. How should areas 4 and 5 be divided between Sarah and Emma without using partial/shared ownership?
+
 
 **Erik**
-- 
+- "How does the AppHost.cs builder work and give insight to how i would use a docker container as a builder?"
+
 
 **Sindre**
-- 
+- "Explain Vetle's code step by step so I understand how it works in depth."
+- "Check my code for mistakes and duplicate sections."
+- "Help me troubleshoot why the application will not start."
+- "Explain how i can adapt the NEED code to the group's existing solution better."
+- "Explain what changes i can make to the need registration page so its consistent with the resource page."
 
 **Marius**
-- 
+- "Help me identify why the map is not appearing by reviewing my code and screenshots"
+- "Help me move the 'back' button below the map on the resource details page"
+- "Explain how to commit, push, and merge my changes into main using Rider and Github"
+- "Help me add my existing Leaflet map to the resource registration form"
 
 **Vetle**
--
+- "help me understand my part of the assignment by seperating everything into spesific tasks"
+- "Which classes should I create for the Resource module"
+- "Which methods should I use to register a resource"
+- "What's the difference between a controller and a view model, and which one should my form data go through"
+- "Why am I getting 'Cannot resolve symbol' for ResourceViewModel in ResourceController.cs"
+- "How do I resolve a merge conflict in _Layout.cshtml between my branch and main"
 
 
 ---

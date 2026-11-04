@@ -1,47 +1,316 @@
-/* Felles styling for Om-, Kontakt- og Hjelp-sidene */
+
+/* Felles styling for Om-, Kontakt- og Hjelp-sidene,
+   samt andre komponenter i systemet */
 
 /* Kortene: litt skygge og myke hjørner */
-.card {
-    border: none;
-    border-radius: 12px;
+.card,
+.content-card {
+    background-color: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Spørsmålene på Hjelp-siden: fetere tekst */
-.accordion-button {
+/* Innholdskortene: ekstra luft rundt innholdet */
+.content-card {
+    padding: 1.5rem;
+}
+
+/* Overskriftene i kortene: mørkeblå tekst */
+.card h2,
+.card h3,
+.content-card h2,
+.content-card h3 {
+    color: var(--navy);
+}
+
+/* Knappene: avrundede hjørner og tydelig tekst */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: var(--radius-pill);
+    transition:
+            background-color 0.2s ease,
+            border-color 0.2s ease;
+}
+
+/* Hovedknappene: mørkeblå farge */
+.btn-primary {
+    background-color: var(--navy);
+    border: 1px solid var(--navy);
+    color: #fff;
+}
+
+/* Hovedknappene: mørkere ved hover */
+.btn-primary:hover {
+    background-color: var(--navy-dark);
+    border-color: var(--navy-dark);
+    color: #fff;
+}
+
+/* Sekundære knapper */
+.btn-secondary {
+    background-color: #fff;
+    border: 1px solid var(--navy);
+    color: var(--navy);
+}
+
+/* Sekundære knapper ved hover */
+.btn-secondary:hover {
+    background-color: var(--surface-soft);
+    border-color: var(--navy);
+    color: var(--navy);
+}
+
+/* Skjemafeltene */
+.form-control,
+.form-select {
+    display: block;
+    width: 100%;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    color: var(--ink);
+    background-color: #fff;
+    font: inherit;
+}
+
+/* Fokus på skjemafeltene */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 110, 165, 0.2);
+    outline: none;
+}
+
+/* Plassholdertekst */
+.form-control::placeholder {
+    color: var(--muted);
+}
+
+/* Skrivebeskyttede felt */
+.form-control[readonly] {
+    background-color: #fff;
+    color: var(--ink);
+}
+
+/* Tekstområder */
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Etiketter i skjemaene */
+.form-label,
+.card label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--navy);
     font-weight: 600;
 }
 
-/* Skjemafeltene: tydeligere ramme når man klikker i dem */
-.form-control:focus,
-.form-select:focus {
-    border-color: #1f4e79;
-    box-shadow: 0 0 0 3px rgba(31, 78, 121, 0.2);
+/* Avstand mellom skjemafeltene */
+.mb-3 {
+    margin-bottom: 1rem;
 }
 
-/* Knappene: mørkeblå farge som passer beredskapstemaet */
-.btn-primary {
-    background-color: #1f4e79;
-    border-color: #1f4e79;
+.mb-4 {
+    margin-bottom: 1.5rem;
 }
 
-.btn-primary:hover {
-    background-color: #163a5a;
-    border-color: #163a5a;
+/* Luft over og under innhold */
+.py-5 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
 }
 
-/* Tilpasninger for mobil (skjermer smalere enn 768px) */
+/* Valideringsmeldinger */
+.text-danger {
+    color: var(--red);
+    font-size: 0.9rem;
+}
+
+/* Spørsmålene på Hjelp-siden */
+.accordion-button {
+    font-weight: 600;
+    color: var(--navy);
+}
+
+/* Åpne spørsmål på Hjelp-siden */
+.accordion-button:not(.collapsed) {
+    background-color: var(--surface-soft);
+    color: var(--navy);
+}
+
+/* Fokus på spørsmål */
+.accordion-button:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 110, 165, 0.2);
+}
+
+/* Tabellene */
+.table {
+    width: 100%;
+    color: var(--ink);
+}
+
+/* Tabelloverskrifter */
+.table thead {
+    background-color: var(--surface-soft);
+}
+
+.table th {
+    font-weight: 700;
+}
+
+/* Tabellceller */
+.table th,
+.table td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--line);
+}
+
+/* Statusmerker */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-pill);
+    padding: 0.3rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Tilgjengelige ressurser */
+.badge-success {
+    background-color: #e5f5ec;
+    color: #17663a;
+}
+
+/* Planlagte behov eller advarsler */
+.badge-warning {
+    background-color: #fff2d9;
+    color: #805500;
+}
+
+/* Kritiske behov eller feil */
+.badge-danger {
+    background-color: #fde8e8;
+    color: var(--red);
+}
+
+/* =========================================
+   FORSIDEN – HANDLINGSKORT OG OVERSIKT
+   ========================================= */
+
+/* Alle fem kortene på forsiden */
+.home-content .home-action-card,
+.home-content .home-overview-cards > .card-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1rem;
+
+    padding: 1.75rem;
+    min-width: 0;
+
+    background-color: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+
+    color: var(--navy);
+    text-decoration: none;
+    cursor: pointer;
+
+    transition:
+            box-shadow 0.2s ease,
+            transform 0.2s ease;
+}
+
+/* Mer skygge når musen holdes over kortet */
+.home-content .home-action-card:hover,
+.home-content .home-overview-cards > .card-link:hover {
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
+    transform: translateY(-3px);
+}
+
+/* Synlig fokus ved tastaturnavigasjon */
+.home-content .home-action-card:focus-visible,
+.home-content .home-overview-cards > .card-link:focus-visible {
+    outline: 3px solid var(--accent-blue);
+    outline-offset: 3px;
+}
+
+/* Midtstiller innholdet i de to øverste kortene */
+.home-content .home-action-card .card-text {
+    width: 100%;
+    text-align: center;
+}
+
+/* Overskriftene i handlingskortene */
+.home-content .home-action-card h2 {
+    color: var(--navy);
+    text-align: center;
+}
+
+/* Beskrivelsene i handlingskortene */
+.home-content .home-action-card p {
+    text-align: center;
+}
+
+/* Pilene i handlingskortene */
+.home-content .home-action-card .btn-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+/* Midtstiller tekst i de tre nederste kortene */
+.home-content .home-overview-cards > .card-link strong,
+.home-content .home-overview-cards > .card-link span {
+    display: block;
+    text-align: center;
+}
+
+/* Oversiktstitlene */
+.home-content .home-overview-cards > .card-link strong {
+    color: var(--navy);
+    font-weight: 700;
+}
+
+/* Beskrivelsene i oversiktskortene */
+.home-content .home-overview-cards > .card-link span {
+    color: var(--muted);
+}
+
+/* =========================================
+   MOBILTILPASNING
+   ========================================= */
+
 @media (max-width: 768px) {
-    h1 {
-        font-size: 1.8rem;
-    }
-
-    section {
-        padding-top: 2rem !important;
-        padding-bottom: 2rem !important;
+    .content-card {
+        padding: 1rem;
     }
 
     .btn {
-        width: 100%;
+        max-width: 100%;
+    }
+
+    .home-content .home-action-card,
+    .home-content .home-overview-cards > .card-link {
+        padding: 1.25rem;
     }
 }
+
+
