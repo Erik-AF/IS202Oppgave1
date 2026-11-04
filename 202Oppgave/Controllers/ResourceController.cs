@@ -1,21 +1,20 @@
 using _202Oppgave.DataAccess.Repositories;
 using _202Oppgave.Models;
+using _202Oppgave.Models.Authorization;
 using _202Oppgave.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-
+using ResourceEntity = _202Oppgave.Models.Entities.Resource;
 // Skiller mellom den gamle modellen og database-entity
 using ResourceModel = _202Oppgave.Models.Resource;
-using ResourceEntity = _202Oppgave.Models.Entities.Resource;
 
 namespace _202Oppgave.Controllers;
 
-/*
- * ResourceController – registrering og visning av ressurser.
 
- * Dekker kravet om GET/POST-forespørsler og en side som viser registrerte ressurser. 
- */
+ ///ResourceController – registrering og visning av ressurser.
+ 
 public class ResourceController : Controller
 {
     private readonly IResourceRepository _repo;
@@ -34,6 +33,8 @@ public class ResourceController : Controller
     }
     // GET: /Resource
     // Henter alle ressurser fra MariaDB
+    // ResourceProvider og Admin kan åpne Create
+    [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     public async Task<IActionResult> Index()
     {
         var entities = await _repo.GetAllAsync();
@@ -45,6 +46,8 @@ public class ResourceController : Controller
 
     // GET: /Resource/Create
     // Viser et tomt registreringsskjema.
+    // ResourceProvider og Admin kan åpne Create
+    [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     public IActionResult Create()
     {
         return View(new ResourceViewModel());
@@ -52,6 +55,8 @@ public class ResourceController : Controller
 
     // POST: /Resource/Create
     // Lagrer en ny ressurs i MariaDB
+    // ResourceProvider og Admin kan åpne Create
+    [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ResourceViewModel model)
@@ -96,6 +101,7 @@ public class ResourceController : Controller
 
     // GET: /Resource/Details/5
     // Henter én ressurs fra MariaDB
+    [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin + "," + RoleNames.PublicActor)]
     public async Task<IActionResult> Details(int id)
     {
         var entity = await _repo.GetByIdAsync(id);
@@ -107,10 +113,10 @@ public class ResourceController : Controller
 
         return View(ToModel(entity));
     }
-    
+
     //GET: /Resource/Edit/5
     // Henter ressursen fra Maria DB og viser skjeamet ferdig utfylt. 
-
+    [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
         var entity = await _repo.GetByIdAsync(id);
@@ -139,10 +145,11 @@ public class ResourceController : Controller
         ViewBag.ResourceID = id;
         return View(model);
     }
-    
+
 
     // GET: /Resource/Geo
     // Henter kartdata fra MariaDB
+    [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin + "," + RoleNames.PublicActor)]
     [HttpGet]
     public async Task<IActionResult> Geo()
     {
@@ -166,6 +173,7 @@ public class ResourceController : Controller
 
     // POST: /Resource/Delete
     // Sletter ressurs fra MariaDB
+    [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
@@ -207,7 +215,8 @@ public class ResourceController : Controller
         };
     }
     // POST: /Resource/Edit/5
-// Lagrer endringene i MariaDB.
+    // Lagrer endringene i MariaDB.
+    [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, ResourceViewModel model)
