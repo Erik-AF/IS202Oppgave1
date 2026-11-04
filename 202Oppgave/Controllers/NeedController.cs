@@ -1,18 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
-using _202Oppgave.Models;
+using _202Oppgave.DataAccess.Repositories;
+using Need = _202Oppgave.Models.Need;
+using NeedEntity = _202Oppgave.Models.Entities.Need;
 using _202Oppgave.ViewModels;
 
 namespace _202Oppgave.Controllers;
 
 public class NeedController : Controller
 {
-    // Bruker en liste i minnet, slik Resource gjør. Registreringene forsvinner ved omstart.
-    private static readonly List<Need> _needs = new();
+    private readonly INeedRepository _needRepository;
+
+    // Tar imot repositoryet som brukes til å hente og lagre behov i databasen.
+    public NeedController(INeedRepository needRepository)
+    {
+        _needRepository = needRepository;
+    }
 
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View(_needs);
+        var needs = await _needRepository.GetAllAsync();
+        return View(needs.Select(ToModel).ToList());
     }
 
     [HttpGet]
@@ -23,18 +31,16 @@ public class NeedController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(NeedViewModel model)
+    public async Task<IActionResult> Create(NeedViewModel model)
     {
-        // Ved feil vises skjemaet med verdiene brukeren allerede har fylt inn.
+        // Beholder skjemadataene dersom brukeren må rette opp feil.
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        // Etter validering kopieres skjemadataene til Need, slik at lagringen følger Resource.
-        var need = new Need
+        var need = new NeedEntity
         {
-            Id = _needs.Count + 1,
             Type = model.Type,
             Location = model.Location,
             Priority = model.Priority!.Value,
@@ -44,29 +50,105 @@ public class NeedController : Controller
             Longitude = model.Longitude!.Value
         };
 
-        _needs.Add(need);
-        // Videresender til GET for å unngå dobbeltregistrering ved oppdatering av siden.
+        await _needRepository.AddAsync(need);
+
         return RedirectToAction(nameof(Confirmation), new { id = need.Id });
     }
 
     [HttpGet]
-    public IActionResult Confirmation(int id)
+    public async Task<IActionResult> Confirmation(int id)
     {
-        var need = _needs.FirstOrDefault(n => n.Id == id);
+        var need = await _needRepository.GetByIdAsync(id);
+
         if (need is null)
         {
             return NotFound();
         }
 
-        return View(need);
+        return View(ToModel(need));
     }
 
     [HttpGet]
-    public IActionResult Geo()
+    public async Task<IActionResult> Edit(int id)
     {
-        // Tilpasser dataene til kartet: IkkeAkutt sendes som Planlagt
-        // fordi Marius sin fargefunksjon bruker dette navnet.
-        var data = _needs.Select(need => new
+        var need = await _needRepository.GetByIdAsync(id);
+
+        if (need is null)
+        {
+            return NotFound();
+        }
+
+        // Fyller redigeringsskjemaet med verdiene som allerede er lagret.
+        var model = new NeedViewModel
+        {
+            Type = need.Type,
+            Location = need.Location,
+            Priority = need.Priority,
+            Description = need.Description,
+            Deadline = need.Deadline,
+            Latitude = need.Latitude,
+            Longitude = need.Longitude
+        };
+
+        ViewBag.NeedId = id;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, NeedViewModel model)
+    {
+        var need = await _needRepository.GetByIdAsync(id);
+
+        if (need is null)
+        {
+            return NotFound();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.NeedId = id;
+            return View(model);
+        }
+
+        // Oppdaterer det eksisterende behovet med verdiene fra skjemaet.
+        need.Type = model.Type;
+        need.Location = model.Location;
+        need.Priority = model.Priority!.Value;
+        need.Description = model.Description;
+        need.Deadline = model.Deadline!.Value;
+        need.Latitude = model.Latitude!.Value;
+        need.Longitude = model.Longitude!.Value;
+
+        await _needRepository.UpdateAsync(need);
+
+        return RedirectToAction(nameof(Confirmation), new { id });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var need = await _needRepository.GetByIdAsync(id);
+
+        if (need is null)
+        {
+            return NotFound();
+        }
+
+        // Sletter behovet og sender brukeren tilbake til oversikten.
+        await _needRepository.DeleteAsync(id);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Geo()
+    {
+        var needs = await _needRepository.GetAllAsync();
+
+        // Kartet bruker navnet Planlagt for behov som ikke er akutte.
+        var data = needs.Select(need => new
         {
             need.Id,
             Kategori = "behov",
@@ -79,5 +161,20 @@ public class NeedController : Controller
         });
 
         return Json(data);
+    }
+    // Gjør databaseobjektet om til modellen som brukes i visningene.
+    private static Need ToModel(NeedEntity need)
+    {
+        return new Need
+        {
+            Id = need.Id,
+            Type = need.Type,
+            Location = need.Location,
+            Priority = need.Priority,
+            Description = need.Description,
+            Deadline = need.Deadline,
+            Latitude = need.Latitude,
+            Longitude = need.Longitude
+        };
     }
 }
