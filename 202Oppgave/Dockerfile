@@ -27,4 +27,11 @@ RUN dotnet publish "./202Oppgave.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Mappe for opplastede bilder. Appen kjører som brukeren "app" (ikke root),
+# så den må eie mappen for å kunne skrive bilder dit.
+USER root
+RUN mkdir -p /app/wwwroot/uploads/ressurser && chown -R $APP_UID /app/wwwroot/uploads
+USER $APP_UID
+
 ENTRYPOINT ["dotnet", "202Oppgave.dll"]
