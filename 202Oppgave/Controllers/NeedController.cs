@@ -69,6 +69,63 @@ public class NeedController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var need = await _needRepository.GetByIdAsync(id);
+
+        if (need is null)
+        {
+            return NotFound();
+        }
+
+        // Fyller redigeringsskjemaet med verdiene som allerede er lagret.
+        var model = new NeedViewModel
+        {
+            Type = need.Type,
+            Location = need.Location,
+            Priority = need.Priority,
+            Description = need.Description,
+            Deadline = need.Deadline,
+            Latitude = need.Latitude,
+            Longitude = need.Longitude
+        };
+
+        ViewBag.NeedId = id;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, NeedViewModel model)
+    {
+        var need = await _needRepository.GetByIdAsync(id);
+
+        if (need is null)
+        {
+            return NotFound();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.NeedId = id;
+            return View(model);
+        }
+
+        // Oppdaterer det eksisterende behovet med verdiene fra skjemaet.
+        need.Type = model.Type;
+        need.Location = model.Location;
+        need.Priority = model.Priority!.Value;
+        need.Description = model.Description;
+        need.Deadline = model.Deadline!.Value;
+        need.Latitude = model.Latitude!.Value;
+        need.Longitude = model.Longitude!.Value;
+
+        await _needRepository.UpdateAsync(need);
+
+        return RedirectToAction(nameof(Confirmation), new { id });
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Geo()
     {
         var needs = await _needRepository.GetAllAsync();
