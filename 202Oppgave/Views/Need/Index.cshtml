@@ -1,35 +1,178 @@
 @model List<_202Oppgave.Models.Need>
 
-
 @{
     ViewData["Title"] = "Registrerte behov";
 }
 
-<div class="container home-content">
-    <h1>Registrerte behov</h1>
-    <p><a asp-action="Create" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Registrer nytt behov</a></p>
+@section Head {
+    <style>
+        /* --- Farger og skrift for behovsoversikten (prefiks rl- = resource list) --- */
+        :root {
+            --rl-ink: #111214; /* overskrifter */
+            --rl-text: #1f2124; /* brødtekst */
+            --rl-muted: #5b5f66; /* svakere tekst */
+            --rl-soft: #edeeec; /* lysegrå boks */
+            --rl-line: #d6d7d3; /* tynne linjer */
+        }
+        .rl {
+
+            -webkit-font-smoothing: antialiased;   /* skarpere tekst på Mac */
+            color: var(--rl-text);
+            font-weight: 300;
+            padding-block: 1.5rem 5rem;
+        }
+
+        /* ===== Topp ===== */
+        .rl-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .rl-head h1 {
+            margin: 0 0 0.5rem;
+            font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            color: var(--rl-ink);
+        }
+
+        .rl-head p { margin: 0; font-size: 1.1rem; }
+
+        /* knapp med mørk kant, fylles ved hover */
+        .rl-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            min-height: 48px;
+            padding: 0 1.4rem;
+            border: 1.5px solid var(--rl-ink);
+            background: transparent;
+            color: var(--rl-ink);
+            font: inherit;
+            font-weight: 400;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .rl-btn:hover { background: var(--rl-ink); color: #fff; }
+        .rl-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            border-top: 1px solid var(--rl-ink);
+        }
+
+        .rl-list > li { border-bottom: 1px solid var(--rl-line); }
+
+        /* Behov vises med tekst og prioritet i hver rad. */
+        .rl-row {
+            overflow-wrap: anywhere;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 1.5rem;
+            align-items: center;
+            padding: 1.5rem 1rem;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .rl-row:hover { background: #f5f5f3; }
+
+
+        .rl-row h2 {
+            margin: 0 0 0.35rem;
+            font-size: 1.35rem;
+            font-weight: 400;
+            color: var(--rl-ink);
+        }
+
+        .rl-desc { margin: 0 0 0.6rem; line-height: 1.5; }
+
+        .rl-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 1.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 0.92rem;
+            color: var(--rl-muted);
+        }
+
+        .rl-side {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.9rem;
+        }
+
+        .rl-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 400;
+            color: var(--rl-ink);
+            white-space: nowrap;
+        }
+
+        /* fargeprikken, eneste fargen på siden */
+        .rl-dot { width: 9px; height: 9px; border-radius: 50%; }
+        .rl-dot--red { background: var(--brick); }
+        .rl-dot--yellow { background: var(--map-planned); }
+
+        .rl-more { font-weight: 400; color: var(--rl-ink); white-space: nowrap; }
+
+        .rl-empty { padding: 2.5rem 2rem; background: var(--rl-soft); }
+        .rl-empty p { margin: 0; }
+
+        @@media (max-width: 560px) {
+            .rl-row { grid-template-columns: 1fr; gap: 0.75rem; }
+            .rl-side { flex-direction: row; justify-content: space-between; }
+        }
+    </style>
+}
+
+<div class="container rl">
+    <header class="rl-head">
+        <h1>Registrerte behov</h1>
+        <a class="rl-btn" asp-action="Create">Registrer nytt behov</a>
+    </header>
 
     @if (!Model.Any())
     {
-        <p>Ingen behov er registrert ennå.</p>
+        <div class="rl-empty"><p>Ingen behov er registrert ennå.</p></div>
     }
     else
     {
-        <div class="grid-3">
+        <ul class="rl-list">
             @foreach (var need in Model)
             {
-                var priorityColor = need.Priority == _202Oppgave.ViewModels.NeedPriority.Akutt
-                    ? "var(--brick)" : "var(--map-planned)";
-                <div class="card" style="padding:1.5rem; overflow-wrap:anywhere;">
-                    <h3>@need.Type</h3>
-                    <p>@need.Location</p>
-                    <p style="color:@priorityColor; font-weight:600;">@need.Priority</p>
-                    <p>@need.Description</p>
-                    <p>Frist: @need.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
-                    <p><a asp-action="Confirmation" asp-route-id="@need.Id">Se detaljer</a></p>
-                </div>
+                var isUrgent = need.Priority == _202Oppgave.ViewModels.NeedPriority.Akutt;
+                <li>
+                    <a class="rl-row" asp-action="Confirmation" asp-route-id="@need.Id">
+                        <div>
+                            <h2>@need.Type</h2>
+                            <p class="rl-desc">@need.Description</p>
+                            <ul class="rl-meta">
+                                <li>@need.Location</li>
+                                <li>Frist: @need.Deadline.ToString("dd.MM.yyyy HH:mm")</li>
+                            </ul>
+                        </div>
+                        <div class="rl-side">
+                            <span class="rl-status">
+                                <span class="rl-dot @(isUrgent ? "rl-dot--red" : "rl-dot--yellow")" aria-hidden="true"></span>
+                                @(isUrgent ? "Akutt" : "Ikke akutt")
+                            </span>
+                            <span class="rl-more">Se detaljer</span>
+                        </div>
+                    </a>
+                </li>
             }
-
-        </div>
+        </ul>
     }
 </div>
