@@ -18,8 +18,16 @@
 
 <div class="container home-content">
     <div class="card" style="padding:2rem; max-width:600px;">
+        
+        @* Opplastet bilde. Vises bare hvis ressursen har et. *@
+        @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+        {
+            <img src="@Model.ImagePath" alt="Bilde av @Model.Type"
+                 style="display:block; width:100%; aspect-ratio:16/10; object-fit:cover; margin-bottom:1.25rem;" />
+        }
+        
         <h1>@Model.Type</h1>
-        <p><strong>Område:</strong> @Model.Area</p>
+        <p><strong>Kategori:</strong> @(Model.CategoryName ?? "Ikke satt")</p>
         @if (!string.IsNullOrWhiteSpace(Model.Description))
         {
             <p><strong>Beskrivelse:</strong> @Model.Description</p>

@@ -14,8 +14,17 @@
 <div class="container home-content">
     <h1>Rediger ressurs</h1>
     <div class="resource-layout">
-        <form asp-action="Edit" asp-route-id="@ViewBag.ResourceId" method="post" class="card" style="padding:2rem; min-width:0;">
+        <form asp-action="Edit" asp-route-id="@ViewBag.ResourceId" method="post" enctype="multipart/form-data" class="card" style="padding:2rem; min-width:0;">
             <div asp-validation-summary="ModelOnly" style="color:var(--brick); margin-bottom:1rem;"></div>
+            
+            @* Kategori. Listen fylles fra databasen av FillCategoryOptionsAsync i controlleren. *@
+            <div style="margin-bottom:1rem;">
+                <label asp-for="CategoryId"></label>
+                <select asp-for="CategoryId" asp-items="Model.CategoryOptions" class="form-select">
+                    <option value="">Velg kategori</option>
+                </select>
+                <span asp-validation-for="CategoryId" style="color:var(--brick);"></span>
+            </div>
 
             <div style="margin-bottom:1rem;">
                 <label asp-for="Type"></label>
@@ -88,6 +97,25 @@
                 <label asp-for="OwnerName"></label>
                 <input asp-for="OwnerName" class="form-control"/>
             </div>
+            
+            @* Bilde av ressursen. Velg et nytt for å bytte, ellers beholdes dagens. *@
+            <div style="margin-bottom:1.5rem;">
+                <label asp-for="Image"></label>
+
+                @* Viser bildet som allerede er lagret *@
+                @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+                {
+                    <img src="@Model.ImagePath" alt="Dagens bilde"
+                         style="display:block; margin-bottom:0.75rem; width:100%; max-width:320px; aspect-ratio:16/10; object-fit:cover;" />
+                }
+
+                <input asp-for="Image" type="file" accept=".jpg,.jpeg,.png,.webp" class="form-control" />
+                <small style="display:block; color:var(--muted);">La stå tomt for å beholde dagens bilde.</small>
+                <span asp-validation-for="Image" style="color:var(--brick);"></span>
+
+                <img id="image-preview" alt="" hidden
+                     style="display:block; margin-top:0.75rem; width:100%; max-width:320px; aspect-ratio:16/10; object-fit:cover;" />
+            </div>
 
             @* Inline style her fordi .btn i components.css foreløpig mangler
            padding/hvit tekst/avrunding, se melding til Sarah. *@
@@ -128,6 +156,17 @@
 
         // Klikk flytter markøren og oppdaterer feltene
         map.on('click', function (e) {
+
+            // Viser bildet brukeren har valgt før skjemaet sendes
+            document.getElementById('Image').addEventListener('change', function () {
+                const preview = document.getElementById('image-preview');
+                const file = this.files[0];
+
+                if (file) {
+                    preview.src = URL.createObjectURL(file);
+                    preview.hidden = false;
+                }
+            });
             latitudeInput.value = e.latlng.lat;
             longitudeInput.value = e.latlng.lng;
 

@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 using System;
 using System.Collections.Generic;
@@ -80,6 +81,14 @@ public class ResourceViewModel : IValidatableObject
     // Tillatte bildetyper og maks størrelse (5 MB)
     public static readonly string[] AllowedImageTypes = { ".jpg", ".jpeg", ".png", ".webp" };
     public const long MaxImageBytes = 5 * 1024 * 1024;
+    
+    // Valgt kategori. Påkrevd, så alle nye ressurser havner i en kategori.
+    [Required(ErrorMessage = "Velg kategori")]
+    [Display(Name = "Kategori")]
+    public int? CategoryId { get; set; }
+
+    // Valgene i nedtrekkslisten. Fylles av controlleren, sendes ikke tilbake fra skjemaet.
+    public List<SelectListItem> CategoryOptions { get; set; } = new();
 
     // Sjekker regler som gjelder flere felt samtidig.
     // Kjøres automatisk av ModelState.IsValid i Create og Edit.

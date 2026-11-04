@@ -18,4 +18,7 @@ public interface IResourceRepository
 
     // Slett en ressurs
     Task DeleteAsync(int id);
+    
+    //henter kategorier fra databasen
+    Task<List<Category>> GetCategoriesAsync();
 }
