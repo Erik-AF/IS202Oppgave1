@@ -47,6 +47,15 @@
             font-weight: 300;
             padding-block: 1.5rem 5rem;
         }
+        /* kategori: liten grå tekst over navnet */
+        .rl-cat {
+            margin: 0 0 0.2rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--rl-muted);
+        }
 
         /* ===== Topp ===== */
         .rl-head {
@@ -262,12 +271,12 @@
             <label for="q" class="rl-label">Søk</label>
             <input id="q" name="q" value="@Model.Q" class="rl-input" placeholder="Søk i ressurser" />
 
-            <label for="type" class="rl-label">Type</label>
-            <select id="type" name="type" class="rl-input">
-                <option value="">Alle typer</option>
-                @foreach (var t in Model.TypeOptions)
+            <label for="category" class="rl-label">Kategori</label>
+            <select id="category" name="category" class="rl-input">
+                <option value="">Alle kategorier</option>
+                @foreach (var c in Model.CategoryOptions)
                 {
-                    <option value="@t" selected="@(t == Model.Type)">@t</option>
+                    <option value="@c" selected="@(c == Model.Category)">@c</option>
                 }
             </select>
 
@@ -292,7 +301,7 @@
             <label for="sort" class="rl-label">Sorter</label>
             <select id="sort" name="sort" class="rl-input">
                 <option value="" selected="@(string.IsNullOrEmpty(Model.Sort))">Nyeste først</option>
-                <option value="type" selected="@(Model.Sort == "type")">Type A–Å</option>
+                <option value="category" selected="@(Model.Sort == "category")">Kategori A–Å</option>
                 <option value="area" selected="@(Model.Sort == "area")">Sted A–Å</option>
             </select>
 
@@ -323,13 +332,13 @@
                             <a class="rl-row" asp-action="Details" asp-route-id="@r.Id">
 
                                 @* eget bilde hvis det finnes, ellers standardbilde ut fra typen *@
-                                <img class="rl-img" src="@Url.Content(r.ImagePath ?? ImageFor(r.Type))" alt="" loading="lazy" />
+                                <img class="rl-img" src="@Url.Content(r.ImagePath ?? ImageFor($"{r.CategoryName} {r.Type}"))" alt="" loading="lazy" />
 
                                 <div>
                                     <h3>@r.Type</h3>
-                                    @if (!string.IsNullOrWhiteSpace(r.Description))
+                                    @if (!string.IsNullOrWhiteSpace(r.CategoryName))
                                     {
-                                        <p class="rl-desc">@r.Description</p>
+                                        <p class="rl-cat">@r.CategoryName</p>
                                     }
                                     <ul class="rl-meta">
                                         @if (!string.IsNullOrWhiteSpace(r.OwnerName))

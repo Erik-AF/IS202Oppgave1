@@ -22,6 +22,81 @@ namespace _202Oppgave.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("_202Oppgave.Models.Entities.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Bil"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Lastebil"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Traktor"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Anleggsmaskin"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Drone"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Helikopter"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Båt"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Aggregat"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Materialer"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Personell/ferdighet"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "Annet"
+                        });
+                });
+
             modelBuilder.Entity("_202Oppgave.Models.Entities.Resource", b =>
                 {
                     b.Property<int>("Id")
@@ -35,6 +110,9 @@ namespace _202Oppgave.Migrations
 
                     b.Property<DateTime?>("AvailableTo")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ContactEmail")
                         .HasColumnType("longtext");
@@ -80,7 +158,24 @@ namespace _202Oppgave.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Resources");
+                });
+
+            modelBuilder.Entity("_202Oppgave.Models.Entities.Resource", b =>
+                {
+                    b.HasOne("_202Oppgave.Models.Entities.Category", "Category")
+                        .WithMany("Resources")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("_202Oppgave.Models.Entities.Category", b =>
+                {
+                    b.Navigation("Resources");
                 });
 #pragma warning restore 612, 618
         }

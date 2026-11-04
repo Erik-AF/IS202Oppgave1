@@ -48,4 +48,9 @@ public class Resource
     
     // Sti til opplastet bilde. Null betyr at listen viser et standardbilde.
     public string? ImagePath { get; set; }
+    
+    // Kategorien ressursen hører til
+    public int? CategoryId { get; set; }
+    public string? CategoryName { get; set; }
+    
 }

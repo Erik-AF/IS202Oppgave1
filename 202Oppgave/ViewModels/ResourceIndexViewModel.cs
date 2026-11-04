@@ -13,14 +13,15 @@ public class ResourceIndexViewModel
     public List<Resource> Resources { get; set; } = new();
 
     // Det brukeren har valgt (kommer fra adressen, f.eks. ?type=Traktor)
-    public string? Q { get; set; }        // søketekst
-    public string? Type { get; set; }
+    public string? Q { get; set; } // søketekst
+    public string? Category { get; set; }
     public string? Status { get; set; }
     public string? Area { get; set; }
     public string? Sort { get; set; }
 
     // Valgene i nedtrekkslistene, hentet fra alle ressursene
-    public List<string> TypeOptions { get; set; } = new();
+    
+    public List<string> CategoryOptions { get; set; } = new();
     public List<string> StatusOptions { get; set; } = new();
     public List<string> AreaOptions { get; set; } = new();
 }

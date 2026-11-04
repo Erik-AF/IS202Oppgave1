@@ -25,16 +25,19 @@ public class ResourceRepository : IResourceRepository
         await _context.SaveChangesAsync();
     }
 
-    // Hent alle ressurser
+    // Hent alle ressurser, med kategorien
     public async Task<List<Resource>> GetAllAsync()
     {
-        return await _context.Resources.ToListAsync();
+        return await _context.Resources
+            .Include(r => r.Category)
+            .ToListAsync();
     }
 
-    // Hent ressurs med ID
+    // Hent ressurs med ID, med kategorien
     public async Task<Resource?> GetByIdAsync(int id)
     {
         return await _context.Resources
+            .Include(r => r.Category)
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
@@ -48,5 +51,13 @@ public class ResourceRepository : IResourceRepository
             _context.Resources.Remove(resource);
             await _context.SaveChangesAsync();
         }
+    }
+    
+    // Hent alle kategorier, sortert etter navn. Brukes i nedtrekkslisten i skjemaet.
+    public async Task<List<Category>> GetCategoriesAsync()
+    {
+        return await _context.Categories
+            .OrderBy(c => c.Name)
+            .ToListAsync();
     }
 }

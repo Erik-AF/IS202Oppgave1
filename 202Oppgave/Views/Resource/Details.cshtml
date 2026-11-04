@@ -27,7 +27,7 @@
         }
         
         <h1>@Model.Type</h1>
-        <p><strong>Område:</strong> @Model.Area</p>
+        <p><strong>Kategori:</strong> @(Model.CategoryName ?? "Ikke satt")</p>
         @if (!string.IsNullOrWhiteSpace(Model.Description))
         {
             <p><strong>Beskrivelse:</strong> @Model.Description</p>

@@ -4,6 +4,7 @@ using _202Oppgave.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 // Skiller mellom den gamle modellen og database-entity
 using ResourceModel = _202Oppgave.Models.Resource;
@@ -35,7 +36,7 @@ public class ResourceController : Controller
     
     // GET: /Resource?q=drone&type=Traktor&status=Tilgjengelig&area=Kristiansand&sort=type
     // Henter alle ressurser fra MariaDB, filtrerer og sorterer etter det brukeren har valgt.
-    public async Task<IActionResult> Index(string? q, string? type, string? status, string? area, string? sort)
+    public async Task<IActionResult> Index(string? q, string? category, string? status, string? area, string? sort)
     {
         var entities = await _repo.GetAllAsync();
         var all = entities.Select(ToModel).ToList();
@@ -44,11 +45,16 @@ public class ResourceController : Controller
         var model = new ResourceIndexViewModel
         {
             Q = q,
-            Type = type,
+            Category = category,
             Status = status,
             Area = area,
             Sort = sort,
-            TypeOptions = all.Select(r => r.Type).Distinct().OrderBy(t => t).ToList(),
+            CategoryOptions = all
+                .Where(r => r.CategoryName != null)
+                .Select(r => r.CategoryName!)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList(),
             StatusOptions = all.Select(r => r.Status).Distinct().OrderBy(s => s).ToList(),
             AreaOptions = all.Select(r => r.Area).Distinct().OrderBy(a => a).ToList()
         };
@@ -67,9 +73,9 @@ public class ResourceController : Controller
                 (r.OwnerName ?? "").ToLower().Contains(search));
         }
 
-        if (!string.IsNullOrWhiteSpace(type))
+        if (!string.IsNullOrWhiteSpace(category))
         {
-            result = result.Where(r => r.Type == type);
+            result = result.Where(r => r.CategoryName == category);
         }
 
         if (!string.IsNullOrWhiteSpace(status))
@@ -85,7 +91,7 @@ public class ResourceController : Controller
         // Sortering. Standard er nyeste først (høyest Id).
         result = sort switch
         {
-            "type" => result.OrderBy(r => r.Type),
+            "category" => result.OrderBy(r => r.CategoryName),
             "area" => result.OrderBy(r => r.Area),
             _ => result.OrderByDescending(r => r.Id)
         };
@@ -96,9 +102,11 @@ public class ResourceController : Controller
 
     // GET: /Resource/Create
     // Viser et tomt registreringsskjema.
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        return View(new ResourceViewModel());
+        var model = new ResourceViewModel();
+        await FillCategoryOptionsAsync(model);   
+        return View(model);
     }
 
     // POST: /Resource/Create
@@ -109,6 +117,7 @@ public class ResourceController : Controller
     {
         if (!ModelState.IsValid)
         {
+            await FillCategoryOptionsAsync(model);   
             return View(model);
         }
 
@@ -126,7 +135,9 @@ public class ResourceController : Controller
             ContactPhone = model.ContactPhone,
             ContactEmail = model.ContactEmail,
             Status = model.Status,
-            OwnerName = model.OwnerName
+            OwnerName = model.OwnerName,
+            CategoryId = model.CategoryId
+
         };
 
         // Lagrer bildet på disk hvis brukeren har valgt et
@@ -135,7 +146,7 @@ public class ResourceController : Controller
             resource.ImagePath = await SaveImageAsync(model.Image);
         }
         
-        //Lagrer bildet i MariaDB
+        //Lagrer ressursen i MariaDB
         await _repo.AddAsync(resource);
 
         // Sender brukeren til detaljsiden
@@ -185,9 +196,13 @@ public class ResourceController : Controller
             ContactEmail = entity.ContactEmail,
             Status = entity.Status,
             OwnerName = entity.OwnerName,
-            ImagePath = entity.ImagePath
+            ImagePath = entity.ImagePath,
+            CategoryId = entity.CategoryId
+
+            
         };
         ViewBag.ResourceID = id;
+        await FillCategoryOptionsAsync(model);       
         return View(model);
     }
     
@@ -254,7 +269,8 @@ public class ResourceController : Controller
             ContactEmail = entity.ContactEmail,
             Status = entity.Status,
             OwnerName = entity.OwnerName,
-            ImagePath = entity.ImagePath
+            ImagePath = entity.ImagePath,
+            CategoryName = entity.Category?.Name
         };
     }
     // POST: /Resource/Edit/5
@@ -269,6 +285,7 @@ public class ResourceController : Controller
             ViewBag.ResourceId = id;
             // Viser dagens bilde igjen, siden det ikke sendes med skjemaet
             model.ImagePath = (await _repo.GetByIdAsync(id))?.ImagePath;
+            await FillCategoryOptionsAsync(model);   //
             return View(model);
         }
 
@@ -300,6 +317,7 @@ public class ResourceController : Controller
         entity.ContactEmail = model.ContactEmail;
         entity.Status = model.Status;
         entity.OwnerName = model.OwnerName;
+        entity.CategoryId = model.CategoryId;
 
         // Lagre i MariaDB
         await _repo.UpdateAsync(entity);
@@ -340,5 +358,20 @@ public class ResourceController : Controller
         {
             System.IO.File.Delete(fullPath);
         }
+    }
+    
+    // Fyller nedtrekkslisten med kategorier fra databasen.
+    // Brukes både når skjemaet vises første gang og når det vises på nytt med feil.
+    private async Task FillCategoryOptionsAsync(ResourceViewModel model)
+    {
+        var categories = await _repo.GetCategoriesAsync();
+
+        model.CategoryOptions = categories
+            .Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            })
+            .ToList();
     }
 }
