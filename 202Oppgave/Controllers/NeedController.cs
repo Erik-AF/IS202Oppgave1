@@ -41,7 +41,8 @@ public class NeedController : Controller
             Description = model.Description,
             Deadline = model.Deadline!.Value,
             Latitude = model.Latitude!.Value,
-            Longitude = model.Longitude!.Value
+            Longitude = model.Longitude!.Value,
+            GeometryJson =  model.GeometryJson
         };
 
         _needs.Add(need);
@@ -73,6 +74,7 @@ public class NeedController : Controller
             need.Type,
             need.Latitude,
             need.Longitude,
+            need.GeometryJson,
             Prioritet = need.Priority == NeedPriority.Akutt ? "Akutt" : "Planlagt",
             Status = "Registrert",
             Beskrivelse = need.Description
