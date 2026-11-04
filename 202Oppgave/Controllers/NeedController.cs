@@ -125,6 +125,23 @@ public class NeedController : Controller
         return RedirectToAction(nameof(Confirmation), new { id });
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var need = await _needRepository.GetByIdAsync(id);
+
+        if (need is null)
+        {
+            return NotFound();
+        }
+
+        // Sletter behovet og sender brukeren tilbake til oversikten.
+        await _needRepository.DeleteAsync(id);
+
+        return RedirectToAction(nameof(Index));
+    }
+
     [HttpGet]
     public async Task<IActionResult> Geo()
     {

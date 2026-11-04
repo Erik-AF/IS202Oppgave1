@@ -19,6 +19,22 @@
         <div id="details-map" style="height:350px; width:100%; margin-bottom:1rem;"></div>
         <p><a asp-action="Index" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Se alle behov</a></p>
         <a asp-action="Create">Registrer et nytt behov</a>
+        <p>
+    <a asp-action="Edit" asp-route-id="@Model.Id"
+       class="btn btn-primary"
+       style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">
+        Rediger
+    </a>
+</p>
+@* Ber om bekreftelse for å unngå at et behov slettes ved et uhell. *@
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+      onsubmit="return confirm('Er du sikker på at du vil slette dette behovet?');"
+      style="display:inline;">
+    <button type="submit" class="btn"
+            style="background:var(--brick); color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
+        Slett
+    </button>
+</form>
     </div>
 </div>
 
