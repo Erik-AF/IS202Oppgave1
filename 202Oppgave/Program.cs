@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using _202Oppgave.DataAccess;
 using _202Oppgave.DataAccess.Repositories;
+using Microsoft.AspNetCore.Identity;
+using _202Oppgave.Models.Authorization;
+using _202Oppgave.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,11 +21,31 @@ var connectionString = builder.Configuration
     ?? throw new InvalidOperationException(
         "DefaultConnection mangler.");
 
+
 builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseMySql(
         connectionString,
         ServerVersion.AutoDetect(connectionString)));
 
+
+///Registrere Identity
+builder.Services
+    .AddIdentity<IdentityUser, IdentityRole>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+        options.User.RequireUniqueEmail = true;
+
+        options.Password.RequiredLength = 8;
+
+        options.Lockout.DefaultLockoutTimeSpan =
+            TimeSpan.FromMinutes(5);
+
+        options.Lockout.MaxFailedAccessAttempts = 5;
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IEmailSender, ConsoleEmailSender>();
 
 var app = builder.Build();
 
@@ -30,6 +54,10 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+
+
+    // Apply EF Core migrations at startup so the database schema is created/updated.
+    // This runs once during application startup and will throw if migrations cannot be applied.
     try
     {
         var db = services.GetRequiredService<ApplicationDbContext>();
@@ -48,6 +76,22 @@ using (var scope = app.Services.CreateScope())
         }
         throw;
     }
+
+    ///Oppretter Resource Provider, Public Actor og Admin rollene 
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    await IdentitySeeder.SeedRolesAsync(roleManager);
+
+
+    
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+    var adminPassword = "!blueSideGromp1";
+    var resourcePassword = "!RiverScuttle1";
+    var publicPassword = "!RedSideraptors1";
+
+    await IdentitySeeder.SeedDevelopmentAdminAsync(userManager, adminPassword);
+    await IdentitySeeder.SeedDevelopmentResourceProviderAsync(userManager, resourcePassword);
+    await IdentitySeeder.SeedDevelopmentPublicActorAsync(userManager, publicPassword);
 }
 
 app.MapDefaultEndpoints();
@@ -62,13 +106,12 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Serverer filer som lastes opp mens appen kjører (wwwroot/uploads).
-// MapStaticAssets kjenner bare filene som fantes da appen ble bygget.
-app.UseStaticFiles();
-
 app.UseRouting();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
+
 
 app.MapStaticAssets();
 
