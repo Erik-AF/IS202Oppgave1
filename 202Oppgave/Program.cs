@@ -4,6 +4,7 @@ using _202Oppgave.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using _202Oppgave.Models.Authorization;
 using _202Oppgave.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +45,7 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-
+builder.Services.AddScoped<IEmailSender, ConsoleEmailSender>();
 
 var app = builder.Build();
 
@@ -84,9 +85,9 @@ using (var scope = app.Services.CreateScope())
     
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-    var adminPassword = "gromp";
-    var resourcePassword = "scuttle";
-    var publicPassword = "raptors";
+    var adminPassword = "!blueSideGromp1";
+    var resourcePassword = "!RiverScuttle1";
+    var publicPassword = "!RedSideraptors1";
 
     await IdentitySeeder.SeedDevelopmentAdminAsync(userManager, adminPassword);
     await IdentitySeeder.SeedDevelopmentResourceProviderAsync(userManager, resourcePassword);
@@ -107,9 +108,10 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
 
-app.UseAuthentication();
 
 app.MapStaticAssets();
 

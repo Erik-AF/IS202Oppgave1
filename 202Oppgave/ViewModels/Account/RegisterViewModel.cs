@@ -17,4 +17,7 @@ public sealed class RegisterViewModel
     [Compare(nameof(Password), ErrorMessage = "The passwords do not match.")]
     [Display(Name = "Confirm password")]
     public string ConfirmPassword { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Du må velge en brukertype.")]
+    public string Role { get; set; } = string.Empty;
 }
