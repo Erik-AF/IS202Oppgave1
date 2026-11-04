@@ -55,19 +55,58 @@
             })
             .then(resources => {
                 resources.forEach(function (r) {
-                    const marker = L.circleMarker(
-                        [r.latitude, r.longitude],
-                        {
-                            radius: 9,
-                            fillColor: getMarkerColor({
-                                kategori: 'ressurs',
-                                status: r.status
-                            }),
-                            color: '#000',
-                            weight: 1,
-                            fillOpacity: 0.9
-                        }
-                    ).addTo(map);
+                    const color = getMarkerColor({
+                        kategori: 'ressurs',
+                        status: r.status,
+                    })
+                    
+                    let marker;
+                    
+                    // Vis den lagrede formen npr ressursen har formdata
+                    if (r.geometryJson) {
+                        const geometry = JSON.parse(r.geometryJson);
+
+                        marker = L.geoJSON(geometry, {
+                            style: {
+                                color: color,
+                                weight: 3,
+                                fillColor: color,
+                                fillOpacity: 0.25,
+                            },
+                            pointToLayer: function (feature, latlng){
+                                const radius = feature.properties?.radius;
+                                
+                                if (typeof radius === 'number' && radius > 0) {
+                                    return L.circle(latlng,{
+                                        radius: radius,
+                                        color: color,
+                                        fillOpacity: 0.25,
+                                    });
+                                }
+                                return L.circleMarker(latlng, {
+                                    radius: 9,
+                                    fillColor: color,
+                                    color: '#000',
+                                    fillOpacity: 0.9,
+                                });
+                            }
+                        }).addTo(map);
+                    } else {
+
+                        marker = L.circleMarker(
+                            [r.latitude, r.longitude],
+                            {
+                                radius: 9,
+                                fillColor: getMarkerColor({
+                                    kategori: 'ressurs',
+                                    status: r.status
+                                }),
+                                color: '#000',
+                                weight: 1,
+                                fillOpacity: 0.9
+                            }
+                        ).addTo(map);
+                    }
 
                     const popup = document.createElement('div');
 
