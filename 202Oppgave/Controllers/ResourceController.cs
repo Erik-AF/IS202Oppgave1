@@ -51,6 +51,7 @@ public class ResourceController : Controller
             Area = model.Area,
             Latitude = model.Latitude,
             Longitude = model.Longitude,
+            GeometryJson = model.GeometryJson,
             AvailableFrom = model.AvailableFrom,
             AvailableTo = model.AvailableTo,
             ContactName = model.ContactName,
@@ -94,7 +95,8 @@ public class ResourceController : Controller
                 r.Area,
                 r.Status,
                 r.Latitude,
-                r.Longitude
+                r.Longitude,
+                r.GeometryJson,
             });
 
         return Json(data);

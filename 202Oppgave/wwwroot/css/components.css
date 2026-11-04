@@ -1,5 +1,6 @@
 
-/* Felles styling for Om-, Kontakt- og Hjelp-sidene, samt andre komponenter i systemet */
+/* Felles styling for Om-, Kontakt- og Hjelp-sidene,
+   samt andre komponenter i systemet */
 
 /* Kortene: litt skygge og myke hjørner */
 .card,
@@ -39,35 +40,35 @@
             border-color 0.2s ease;
 }
 
-/* Hovedknappene: mørkeblå farge som passer resten av systemet */
+/* Hovedknappene: mørkeblå farge */
 .btn-primary {
     background-color: var(--navy);
     border: 1px solid var(--navy);
     color: #fff;
 }
 
-/* Hovedknappene: mørkere blåfarge når man holder musen over */
+/* Hovedknappene: mørkere ved hover */
 .btn-primary:hover {
     background-color: var(--navy-dark);
     border-color: var(--navy-dark);
     color: #fff;
 }
 
-/* Sekundære knapper: hvit bakgrunn med mørkeblå ramme */
+/* Sekundære knapper */
 .btn-secondary {
     background-color: #fff;
     border: 1px solid var(--navy);
     color: var(--navy);
 }
 
-/* Sekundære knapper: lys bakgrunn når man holder musen over */
+/* Sekundære knapper ved hover */
 .btn-secondary:hover {
     background-color: var(--surface-soft);
     border-color: var(--navy);
     color: var(--navy);
 }
 
-/* Skjemafeltene: tydelige rammer og myke hjørner */
+/* Skjemafeltene */
 .form-control,
 .form-select {
     display: block;
@@ -80,7 +81,7 @@
     font: inherit;
 }
 
-/* Skjemafeltene: tydeligere ramme når man klikker i dem */
+/* Fokus på skjemafeltene */
 .form-control:focus,
 .form-select:focus {
     border-color: var(--accent-blue);
@@ -88,24 +89,24 @@
     outline: none;
 }
 
-/* Plassholdertekst i skjemafeltene: dempet gråfarge */
+/* Plassholdertekst */
 .form-control::placeholder {
     color: var(--muted);
 }
 
-/* Skrivebeskyttede felt: hvit bakgrunn som passer resten av skjemaet */
+/* Skrivebeskyttede felt */
 .form-control[readonly] {
     background-color: #fff;
     color: var(--ink);
 }
 
-/* Tekstfeltene: større skriveområde som kan justeres i høyden */
+/* Tekstområder */
 textarea.form-control {
     min-height: 120px;
     resize: vertical;
 }
 
-/* Etikettene i skjemaene: tydelig mørkeblå tekst */
+/* Etiketter i skjemaene */
 .form-label,
 .card label {
     display: block;
@@ -114,7 +115,7 @@ textarea.form-control {
     font-weight: 600;
 }
 
-/* Avstand mellom feltene i skjemaet */
+/* Avstand mellom skjemafeltene */
 .mb-3 {
     margin-bottom: 1rem;
 }
@@ -123,7 +124,7 @@ textarea.form-control {
     margin-bottom: 1.5rem;
 }
 
-/* Luft over og under innholdet */
+/* Luft over og under innhold */
 .py-5 {
     padding-top: 3rem;
     padding-bottom: 3rem;
@@ -135,31 +136,31 @@ textarea.form-control {
     font-size: 0.9rem;
 }
 
-/* Spørsmålene på Hjelp-siden: fetere tekst */
+/* Spørsmålene på Hjelp-siden */
 .accordion-button {
     font-weight: 600;
     color: var(--navy);
 }
 
-/* Åpne spørsmål på Hjelp-siden: lys bakgrunn */
+/* Åpne spørsmål på Hjelp-siden */
 .accordion-button:not(.collapsed) {
     background-color: var(--surface-soft);
     color: var(--navy);
 }
 
-/* Spørsmålene på Hjelp-siden: tydelig ramme når de velges */
+/* Fokus på spørsmål */
 .accordion-button:focus {
     border-color: var(--accent-blue);
     box-shadow: 0 0 0 3px rgba(59, 110, 165, 0.2);
 }
 
-/* Tabellene: tydelig oppsett med mørk tekst */
+/* Tabellene */
 .table {
     width: 100%;
     color: var(--ink);
 }
 
-/* Tabelloverskriftene: lys bakgrunn og fetere tekst */
+/* Tabelloverskrifter */
 .table thead {
     background-color: var(--surface-soft);
 }
@@ -168,14 +169,14 @@ textarea.form-control {
     font-weight: 700;
 }
 
-/* Tabellradene: luft mellom innholdet og tydelige skillelinjer */
+/* Tabellceller */
 .table th,
 .table td {
     padding: 0.9rem 1rem;
     border-bottom: 1px solid var(--line);
 }
 
-/* Statusmerkene: avrundede hjørner og tydelig tekst */
+/* Statusmerker */
 .badge {
     display: inline-flex;
     align-items: center;
@@ -185,25 +186,118 @@ textarea.form-control {
     font-weight: 600;
 }
 
-/* Grønne statusmerker: viser tilgjengelige ressurser */
+/* Tilgjengelige ressurser */
 .badge-success {
     background-color: #e5f5ec;
     color: #17663a;
 }
 
-/* Gule statusmerker: viser planlagte behov eller advarsler */
+/* Planlagte behov eller advarsler */
 .badge-warning {
     background-color: #fff2d9;
     color: #805500;
 }
 
-/* Røde statusmerker: viser kritiske behov eller feil */
+/* Kritiske behov eller feil */
 .badge-danger {
     background-color: #fde8e8;
     color: var(--red);
 }
 
-/* Tilpasninger for mobil (skjermer smalere enn 768px) */
+/* =========================================
+   FORSIDEN – HANDLINGSKORT OG OVERSIKT
+   ========================================= */
+
+/* Alle fem kortene på forsiden */
+.home-content .home-action-card,
+.home-content .home-overview-cards > .card-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1rem;
+
+    padding: 1.75rem;
+    min-width: 0;
+
+    background-color: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+
+    color: var(--navy);
+    text-decoration: none;
+    cursor: pointer;
+
+    transition:
+            box-shadow 0.2s ease,
+            transform 0.2s ease;
+}
+
+/* Mer skygge når musen holdes over kortet */
+.home-content .home-action-card:hover,
+.home-content .home-overview-cards > .card-link:hover {
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
+    transform: translateY(-3px);
+}
+
+/* Synlig fokus ved tastaturnavigasjon */
+.home-content .home-action-card:focus-visible,
+.home-content .home-overview-cards > .card-link:focus-visible {
+    outline: 3px solid var(--accent-blue);
+    outline-offset: 3px;
+}
+
+/* Midtstiller innholdet i de to øverste kortene */
+.home-content .home-action-card .card-text {
+    width: 100%;
+    text-align: center;
+}
+
+/* Overskriftene i handlingskortene */
+.home-content .home-action-card h2 {
+    color: var(--navy);
+    text-align: center;
+}
+
+/* Beskrivelsene i handlingskortene */
+.home-content .home-action-card p {
+    text-align: center;
+}
+
+/* Pilene i handlingskortene */
+.home-content .home-action-card .btn-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+/* Midtstiller tekst i de tre nederste kortene */
+.home-content .home-overview-cards > .card-link strong,
+.home-content .home-overview-cards > .card-link span {
+    display: block;
+    text-align: center;
+}
+
+/* Oversiktstitlene */
+.home-content .home-overview-cards > .card-link strong {
+    color: var(--navy);
+    font-weight: 700;
+}
+
+/* Beskrivelsene i oversiktskortene */
+.home-content .home-overview-cards > .card-link span {
+    color: var(--muted);
+}
+
+/* =========================================
+   MOBILTILPASNING
+   ========================================= */
+
 @media (max-width: 768px) {
     .content-card {
         padding: 1rem;
@@ -212,5 +306,11 @@ textarea.form-control {
     .btn {
         max-width: 100%;
     }
+
+    .home-content .home-action-card,
+    .home-content .home-overview-cards > .card-link {
+        padding: 1.25rem;
+    }
 }
+
 

@@ -29,6 +29,8 @@ public class ResourceViewModel
 
     [Display(Name = "Lengdegrad")]
     public double? Longitude { get; set; }
+    
+    public string? GeometryJson { get; set; }
 
     [Display(Name = "Tilgjengelig fra")]
     public DateTime? AvailableFrom { get; set; }

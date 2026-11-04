@@ -28,6 +28,8 @@ public class Resource
     // punkt ennå (kartintegrasjonen er ikke ferdig hos Marius).
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
+    
+    public string? GeometryJson { get; set; }
 
     // Tidsrom ressursen er tilgjengelig i, begge valgfrie.
     public DateTime? AvailableFrom { get; set; }
