@@ -103,16 +103,54 @@ fetch('@Url.Action("Geo", "Need")')
     })
     .then(needs => {
         needs.forEach(function (need) {
-            const marker = L.circleMarker(
+        const color = getMarkerColor(need);
+        let marker;
+
+// Vis den lagrede formen hvis behovet har formdata.
+        if (need.geometryJson) {
+            const geometry = JSON.parse(need.geometryJson);
+
+            marker = L.geoJSON(geometry, {
+                style: {
+                    color: color,
+                    weight: 3,
+                    fillColor: color,
+                    fillOpacity: 0.25
+                },
+                pointToLayer: function (feature, latlng) {
+                    const radius = feature.properties?.radius;
+
+                    // Gjenopprett sirkler med den lagrede radiusen.
+                    if (typeof radius === 'number' && radius > 0) {
+                        return L.circle(latlng, {
+                            radius: radius,
+                            color: color,
+                            fillOpacity: 0.25
+                        });
+                    }
+
+                    return L.circleMarker(latlng, {
+                        radius: 9,
+                        fillColor: color,
+                        color: '#000',
+                        weight: 1,
+                        fillOpacity: 0.9
+                    });
+                }
+            }).addTo(map);
+        } else {
+            // Eldre behov uten formdata vises som et punkt.
+            marker = L.circleMarker(
                 [need.latitude, need.longitude],
                 {
                     radius: 9,
-                    fillColor: getMarkerColor(need),
+                    fillColor: color,
                     color: '#000',
                     weight: 1,
                     fillOpacity: 0.9
                 }
             ).addTo(map);
+        }
 
             // Tekstinnhold slik at brukerens tekst ikke tolkes som HTML.
             const popup = document.createElement('div');
