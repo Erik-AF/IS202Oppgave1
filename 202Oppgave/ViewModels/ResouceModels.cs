@@ -40,6 +40,8 @@ public class ResourceViewModel : IValidatableObject
     [Range(-180, 180, ErrorMessage = "Lengdegrad må være mellom -180 og 180")]
     [Display(Name = "Lengdegrad")]
     public double? Longitude { get; set; }
+    
+    public string? GeometryJson { get; set; }
 
     [Display(Name = "Tilgjengelig fra")]
     public DateTime? AvailableFrom { get; set; }

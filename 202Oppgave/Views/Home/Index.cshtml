@@ -1,91 +1,144 @@
 ﻿
-@*     
-Forsiden – hero, handlingskort og oversikt.
-Eier: Sarah (Frontend/UI).
-Lenker til:
-- Resource/Create og Resource/Index – Vetle
-- Need/Create og Need/Index – Sindre
-- Map/Index – Marius
+@*
+    Forsiden – hero, handlingskort og oversikt.
+    Eier: Sarah (Frontend/UI).
+
+    Lenker til:
+    - Resource/Create og Resource/Index – Vetle
+    - Need/Create og Need/Index – Sindre
+    - Map/Index – Marius
 *@
 
 @{
-    
     ViewData["Title"] = "Hjem";
 }
 
-@* ========== 1. BANNER (hero-banner) ==========
-   Hovedbanneret på forsiden. *@
+@* ===== 1. Banner (hero) =====
+   Stort banner med bakgrunnsbilde, tittel og undertittel.
+   Tre lag: bilde, hvit overlay og tekst.
+   Bildet flyttes litt ved scrolling via site.js.
+*@
 
 <section class="hero">
-    <h1>Sammen i krise</h1>
-    <p>Koble behov med ressurser – raskt og effektivt.</p>
+
+    @* Bildet er dekorativt *@
+    <img src="~/images/forsidelandskap.jpg"
+         alt=""
+         aria-hidden="true"
+         class="hero-bg"
+         data-parallax />
+
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <div class="hero-content">
+
+        <p class="hero-kicker">Sammen for Norge</p>
+
+        <ul class="hero-stripes" aria-hidden="true">
+            <li class="stripe-1"></li>
+            <li class="stripe-2"></li>
+            <li class="stripe-3"></li>
+        </ul>
+
+        <h1>
+            Ressurser. Mennesker.
+            <span class="accent">Trygghet.</span>
+        </h1>
+
+        <p>Koble behov med ressurser - raskt og effektivt.</p>
+
+    </div>
 </section>
 
-@* ========== 2. HOVEDINNHOLD ==========
-   Beholder som holder alt under banneret. Sentrerer innholdet og gir maksbredde.
-   Styling: .container og .home-content i site.css *@
+@* ===== 2. Hovedinnhold under banneret ===== *@
 
 <div class="container home-content">
-    
-    @* ---------- 2a. HANDLINGSKORT ----------
-        Snarveier for å registrere behov eller ressurser.
-        Kortene bruker .grid-2 fra site.css og går over til én kolonne på mobil. *@
-    
-    <div class="grid-2">
-        
-        @* Registrering av behov – Need/Create (Sindre). *@
-        
-        <article class="card">
-            <div class="icon-tile icon-need" aria-hidden="true">👥</div>
-            <h2>Registrer behov</h2>
-            <p>Offentlige aktører kan registrere behov for ressurser.</p>
-            <a class="btn" asp-controller="Need" asp-action="Create">
-                Registrer behov <span aria-hidden="true">→</span>
-            </a>
-        </article>
-        
-        @* Registrering av ressurser – Resource/Create (Vetle). *@
-        
-        <article class="card">
-            <div class="icon-tile icon-resource" aria-hidden="true">🚚</div>
-            <h2>Registrer ressurser</h2>
-            <p>Ressursleverandører kan registrere tilgjengelige ressurser.</p>
-            <a class="btn" asp-controller="Resource" asp-action="Create">
-                Registrer ressurser <span aria-hidden="true">→</span>
-            </a>
-        </article>
+
+    @* Handlingskort: hele kortet er klikkbart *@
+
+    <div class="grid-2 action-cards">
+
+        @* Registrer behov *@
+        <a class="card card--accent-red home-action-card"
+           asp-controller="Need"
+           asp-action="Create">
+
+            <div class="card-text">
+                <h2>Registrer behov</h2>
+
+                <p>
+                    Offentlige aktører kan registrere behov
+                    for ressurser under en krisesituasjon.
+                </p>
+            </div>
+
+            <span class="btn-circle" aria-hidden="true">
+                →
+            </span>
+
+        </a>
+
+        @* Registrer ressurser *@
+        <a class="card card--accent-indigo home-action-card"
+           asp-controller="Resource"
+           asp-action="Create">
+
+            <div class="card-text">
+                <h2>Registrer ressurser</h2>
+
+                <p>
+                    Ressursleverandører kan registrere
+                    tilgjengelige ressurser under en krisesituasjon.
+                </p>
+            </div>
+
+            <span class="btn-circle btn-circle--indigo"
+                  aria-hidden="true">
+                →
+            </span>
+
+        </a>
+
     </div>
 
-    @* ---------- 2b. OVERSKRIFT FOR OVERSIKT ----------
-       Lenker til ressurser, behov og kart. *@
-    
-    <h2 class="section-title">Se oversikt</h2>
-    
-    @* ---------- 2c. OVERSIKTSKORT ----------
-       Tre klikkbare kort i tre kolonner. Hele kortet er en lenke (.card-link).
-       På mobil legger de seg under hverandre (.grid-3 i site.css). *@
+    @* ===== 3. Oversiktskort ===== *@
 
-    <div class="grid-3">
-        
-        @* Alle registrerte ressurser. *@
-        
-        <a class="card card-link" asp-controller="Resource" asp-action="Index">
+    <h2 class="section-title">Se oversikt</h2>
+
+    <div class="grid-3 home-overview-cards">
+
+        @* Ressursoversikt *@
+        <a class="card card-link"
+           asp-controller="Resource"
+           asp-action="Index">
+
             <strong>Se alle ressurser</strong>
             <span>Utforsk tilgjengelige ressurser.</span>
+
         </a>
-        
-        @* Alle registrerte behov. *@
-        
-        <a class="card card-link" asp-controller="Need" asp-action="Index">
+
+        @* Behovsoversikt *@
+        <a class="card card-link"
+           asp-controller="Need"
+           asp-action="Index">
+
             <strong>Se alle behov</strong>
             <span>Utforsk registrerte behov.</span>
+
         </a>
-        
-        @* Kartvisning – Map/Index (Marius). *@
-        
-        <a class="card card-link" asp-controller="Kart" asp-action="Oversikt">
+
+        @* Kartoversikt *@
+        <a class="card card-link"
+           asp-controller="Kart"
+           asp-action="Oversikt">
+
             <strong>Åpne kart</strong>
             <span>Se ressurser og behov på kartet.</span>
+
         </a>
+
     </div>
+
 </div>
+
+ 

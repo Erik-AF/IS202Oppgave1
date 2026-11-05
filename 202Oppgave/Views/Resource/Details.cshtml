@@ -52,7 +52,7 @@
               style="display:inline;">
             <button type="submit"
                     class="btn"
-                    style="background:var(--brick); color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
+                    style="background:#b42318; color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
                 Slett
             </button>
         </form>
@@ -74,8 +74,35 @@
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
-            L.marker(position).addTo(map);
-        </script>
+            // Henter den lagrede kartformen fra modellen.
+            const geometryJson = @Json.Serialize(Model.GeometryJson);
+
+            if (geometryJson) {
+                const geometry = JSON.parse(geometryJson);
+
+                const shape = L.geoJSON(geometry, {
+                    pointToLayer: function (feature, latlng) {
+                        const radius = feature.properties?.radius;
+
+                        if (typeof radius === 'number' && radius > 0) {
+                            return L.circle(latlng, {
+                                radius: radius
+                            });
+                        }
+
+                        return L.marker(latlng);
+                    }
+                }).addTo(map);
+
+                // Tilpasser kartet slik at hele formen vises.
+                map.fitBounds(shape.getBounds(), {
+                    padding: [20, 20],
+                    maxZoom: 15
+                });
+            } else {
+                // Eldre ressurser uten formdata vises som markører.
+                L.marker(position).addTo(map);
+            }        </script>
     }
 }
 

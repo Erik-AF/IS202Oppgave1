@@ -12,6 +12,7 @@ public class InformationController : Controller
     }
 
     // Metode for Kontakt-siden
+    [HttpGet]
     public IActionResult Kontakt()
     {
         return View();
@@ -22,13 +23,9 @@ public class InformationController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Kontakt(KontaktFormModel model)
     {
-        // Sjekker at alle feltene er fylt ut
-        if (string.IsNullOrWhiteSpace(model.Navn) ||
-            string.IsNullOrWhiteSpace(model.Epost) ||
-            string.IsNullOrWhiteSpace(model.Emne) ||
-            string.IsNullOrWhiteSpace(model.Melding))
+        // Sjekker om feltene oppfyller valideringskravene
+        if (!ModelState.IsValid)
         {
-            ViewBag.Feil = "Du må fylle ut alle feltene.";
             return View(model);
         }
 
