@@ -88,14 +88,27 @@ Enkeltsider kan legge til egne styles/scripts gjennom
             <a asp-controller="Information" asp-action="Om"
                aria-current="@(IsActive("Information") ? "page" : null)">Om oss</a>
 
-            @* Peker på Account/Login når innlogging er på plass *@
-            
-            <a class="nav-login" asp-controller="Account" asp-action="Login">
-
-                <span aria-hidden="true">👤</span> Logg inn
-            
-            </a>
-            
+            @* TODO: Peker på Account/Login når innlogging er på plass *@
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <form asp-controller="Account"
+                          asp-action="Logout"
+                          method="post">
+                        <button type="submit" class="nav-login">
+                            <span aria-hidden="true">👤</span>
+                            @User.Identity.Name
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <a class="nav-login"
+                       asp-controller="Account"
+                       asp-action="Login">
+                        <span aria-hidden="true">👤</span>
+                        Logg inn
+                    </a>
+                }
         </nav>
     </div>
 </header>
@@ -104,6 +117,7 @@ Enkeltsider kan legge til egne styles/scripts gjennom
        Området som skifter fra side til side. Styling: .site-main i site.css (bakgrunn med fargeflekker). *@
 
 <main class="site-main">
+
     
     @* Viser en bekreftelsesmelding når controlleren har satt    TempData["Success"]. *@
     

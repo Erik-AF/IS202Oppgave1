@@ -47,4 +47,12 @@ public class Resource
     // Navn på ressursleverandøren. Erstattes med bruker-id når innlogging
     // er på plass i løsningen.
     public string? OwnerName { get; set; }
+    
+    // Sti til opplastet bilde. Null betyr at listen viser et standardbilde.
+    public string? ImagePath { get; set; }
+    
+    // Kategorien ressursen hører til
+    public int? CategoryId { get; set; }
+    public string? CategoryName { get; set; }
+    
 }
