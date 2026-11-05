@@ -11,5 +11,7 @@ namespace _202Oppgave.Models.Entities
         public DateTime Deadline { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public string? GeometryJson { get; set; }
+
     }
 }
