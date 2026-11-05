@@ -34,5 +34,7 @@
         
         //Selve kategorien. Fyller når vi henter med Include() i reposetory∑
         public Category Category { get; set; }
+
+        public string? GeometryJson { get; set; }
     }
 }
