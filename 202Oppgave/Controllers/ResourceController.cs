@@ -196,6 +196,8 @@ public class ResourceController : Controller
             Area = entity.Name,
             Latitude = entity.Latitude,
             Longitude = entity.Longitude,
+            // Lagret kartform, så kartet viser den samme markeringen som ble registrert
+            GeometryJson = entity.GeometryJson,
             AvailableFrom = entity.AvailableFrom,
             AvailableTo = entity.AvailableTo,
             ContactName = entity.ContactName,
@@ -280,6 +282,7 @@ public class ResourceController : Controller
             Status = entity.Status,
             OwnerName = entity.OwnerName,
             ImagePath = entity.ImagePath,
+            GeometryJson = entity.GeometryJson,
             CategoryName = entity.Category?.Name
         };
     }
@@ -321,6 +324,7 @@ public class ResourceController : Controller
         entity.Name = model.Area;
         entity.Latitude = model.Latitude;
         entity.Longitude = model.Longitude;
+        entity.GeometryJson = model.GeometryJson;
         entity.AvailableFrom = model.AvailableFrom;
         entity.AvailableTo = model.AvailableTo;
         entity.ContactName = model.ContactName;

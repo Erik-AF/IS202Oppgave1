@@ -27,6 +27,34 @@
             border-radius: 12px;
         }
 
+        /* Små koordinatfelt ved siden av hverandre under kartet */
+        .resource-coords {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        /* Mindre tekst, så feltene ikke tar fokus fra skjemaet */
+        .resource-coords label,
+        .resource-coords input {
+            font-size: 0.85rem;
+        }
+
+        /* Grå bakgrunn viser at feltene ikke kan redigeres.
+           Må være mer spesifikk enn .form-control[readonly] i components.css */
+        .resource-coords .form-control[readonly] {
+            background-color: #edeeec;
+            color: var(--muted);
+            cursor: default;
+        }
+
+        /* Ingen blå fokusramme når man klikker i feltene */
+        .resource-coords .form-control[readonly]:focus {
+            border-color: var(--line-strong);
+            box-shadow: none;
+        }
+
         /* På mobil legges kartet under skjemaet */
         @@media (max-width: 800px) {
             #need-layout {
@@ -39,13 +67,15 @@
 <div class="container home-content">
     <h1>Registrer behov</h1>
 
-    <div id="need-layout" class="resource-layout">
+    @* Skjemaet omslutter både feltene og kartet, slik at koordinatene under kartet sendes med *@
+    <form id="need-layout"
+          class="resource-layout"
+          asp-controller="Need"
+          asp-action="Create"
+          method="post">
 
-        <form asp-controller="Need"
-              asp-action="Create"
-              method="post"
-              class="card"
-              style="padding:2rem; min-width:0;">
+        @* Venstre kolonne: skjemafeltene *@
+        <div class="card" style="padding:2rem; min-width:0;">
 
             <div asp-validation-summary="ModelOnly"
                  class="text-danger"
@@ -73,22 +103,6 @@
                 <label asp-for="Location">Lokasjon</label>
                 <input asp-for="Location" class="form-control" />
                 <span asp-validation-for="Location" class="text-danger"></span>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="Latitude">Breddegrad</label>
-                <input asp-for="Latitude"
-                       class="form-control"
-                       readonly />
-                <span asp-validation-for="Latitude" class="text-danger"></span>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="Longitude">Lengdegrad</label>
-                <input asp-for="Longitude"
-                       class="form-control"
-                       readonly />
-                <span asp-validation-for="Longitude" class="text-danger"></span>
             </div>
 
             <div style="margin-bottom:1rem;">
@@ -125,7 +139,7 @@
                 Registrer
             </button>
 
-        </form>
+        </div>
 
         <div class="resource-map-panel">
             <p>
@@ -134,9 +148,24 @@
             </p>
 
             <div id="need-map"></div>
+
+            @* Koordinatene fylles automatisk når man markerer i kartet.
+               Feltene er readonly, men sendes likevel med skjemaet. *@
+            <div class="resource-coords">
+                <div>
+                    <label asp-for="Latitude">Breddegrad</label>
+                    <input asp-for="Latitude" class="form-control" readonly />
+                    <span asp-validation-for="Latitude" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="Longitude">Lengdegrad</label>
+                    <input asp-for="Longitude" class="form-control" readonly />
+                    <span asp-validation-for="Longitude" class="text-danger"></span>
+                </div>
+            </div>
         </div>
 
-    </div>
+    </form>
 </div>
 
 @section Scripts {

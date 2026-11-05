@@ -8,7 +8,7 @@
 @section Head {
     <style>
         #resource-layout {
-            --brick: #b42318;
+            --brick: #b41818;
         }
         /* Skjema til venstre og kart til høyre */
         #resource-layout {
@@ -30,6 +30,36 @@
             border-radius: 12px;
         }
 
+        /* Små koordinatfelt ved siden av hverandre under kartet */
+        .resource-coords {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        /* Mindre tekst, så feltene ikke tar fokus fra skjemaet */
+        .resource-coords label,
+        .resource-coords input {
+            font-size: 0.85rem;
+        }
+
+        /* Grå bakgrunn viser at feltene ikke kan redigeres.
+   Må være mer spesifikk enn .form-control[readonly] i components.css */
+        .resource-coords .form-control[readonly] {
+            background-color: #edeeec;
+            color: var(--muted);
+            cursor: default;
+        }
+
+        /* Ingen blå fokusramme når man klikker i feltene */
+        .resource-coords .form-control[readonly]:focus {
+            border-color: var(--line-strong);
+            box-shadow: none;
+        }
+
+
+
         /* På mobil legges kartet under skjemaet */
         @@media (max-width: 800px) {
             #resource-layout {
@@ -42,150 +72,152 @@
 <div class="container home-content">
     <h1>Registrer ressurs</h1>
 
-    <div id="resource-layout" class="resource-layout">
+    @* Skjemaet omslutter både feltene og kartet, slik at koordinatene under kartet sendes med *@
+    <form id="resource-layout"
+          class="resource-layout"
+          asp-controller="Resource"
+          asp-action="Create"
+          method="post"
+          enctype="multipart/form-data">
 
-        <form asp-controller="Resource"
-              asp-action="Create"
-              method="post"
-              enctype="multipart/form-data"
-              class="card"
-              style="padding:2rem; min-width:0;">
-            
-            @* Sender kartformen sammen med ressursern. *@
-            <input asp-for="GeometryJson" type="hidden" />
+    @* Venstre kolonne: skjemafeltene *@
+    <div class="card" style="padding:2rem; min-width:0;">
 
-            <div asp-validation-summary="ModelOnly"
-                 style="color:#b42318; margin-bottom:1rem;">
-            </div>
+    @* Sender kartformen sammen med ressursern. *@
+    <input asp-for="GeometryJson" type="hidden" />
 
-            @* Kategorier fra databasen *@
-            <div style="margin-bottom:1rem;">
-                <label asp-for="CategoryId"></label>
-                <select asp-for="CategoryId" asp-items="Model.CategoryOptions" class="form-select">
-                    <option value="">Velg kategori</option>
-                </select>
-                <span asp-validation-for="CategoryId" style="color:#b42318;"></span>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="Type"></label>
-                <input asp-for="Type" class="form-control"/>
-                <span asp-validation-for="Type"
-                      style="color:#b42318;"></span>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="Description"></label>
-                <textarea asp-for="Description"
-                          class="form-control"></textarea>
-                <span asp-validation-for="Description"
-                      style="color:#b42318;"></span>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="Area"></label>
-                <input asp-for="Area" class="form-control"/>
-                <span asp-validation-for="Area"
-                      style="color:#b42318;"></span>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="Latitude"></label>
-                <input asp-for="Latitude"
-                       class="form-control"
-                       readonly/>
-                <span asp-validation-for="Latitude"
-                      style="color:#b42318;"></span>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="Longitude"></label>
-                <input asp-for="Longitude"
-                       class="form-control"
-                       readonly/>
-                <span asp-validation-for="Longitude"
-                      style="color:#b42318;"></span>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="AvailableFrom"></label>
-                <input asp-for="AvailableFrom"
-                       class="form-control"
-                       type="date"/>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="AvailableTo"></label>
-                <input asp-for="AvailableTo"
-                       class="form-control"
-                       type="date"/>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="ContactName"></label>
-                <input asp-for="ContactName"
-                       class="form-control"/>
-                <span asp-validation-for="ContactName"
-                      style="color:#b42318;"></span>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="ContactPhone"></label>
-                <input asp-for="ContactPhone"
-                       class="form-control"/>
-                <span asp-validation-for="ContactPhone"
-                      style="color:#b42318;"></span>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="ContactEmail"></label>
-                <input asp-for="ContactEmail"
-                       class="form-control"/>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="Status"></label>
-                <select asp-for="Status" class="form-select">
-                    <option value="Tilgjengelig">Tilgjengelig</option>
-                    <option value="Reservert">Reservert</option>
-                    <option value="Utilgjengelig">Utilgjengelig</option>
-                </select>
-            </div>
-
-            <div style="margin-bottom:1.5rem;">
-                <label asp-for="OwnerName"></label>
-                <input asp-for="OwnerName"
-                       class="form-control"/>
-            </div>
-
-            @* Valgfritt ressursbilde *@
-            <div style="margin-bottom:1.5rem;">
-                <label asp-for="Image"></label>
-                <input asp-for="Image" type="file" accept=".jpg,.jpeg,.png,.webp" class="form-control" />
-                <small style="display:block; color:var(--muted);">JPG, PNG eller WEBP.</small>
-                <span asp-validation-for="Image" style="color:#b42318;"></span>
-                <img id="image-preview" alt="Forhåndsvisning av valgt bilde" hidden
-                     style="margin-top:0.75rem; width:100%; max-width:320px; aspect-ratio:16/10; object-fit:cover;" />
-            </div>
-
-            <button type="submit"
-                    class="btn btn-primary"
-                    style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
-                Registrer
-            </button>
-
-        </form>
-
-        <div class="resource-map-panel">
-            <p>
-                Velg en posisjon eller tegn et område på kartet.
-                Kun én markering kan registreres om gangen.
-            </p>
-
-            <div id="resource-map"></div>
-        </div>
-
+    <div asp-validation-summary="ModelOnly"
+         style="color:#b42318; margin-bottom:1rem;">
     </div>
+
+    @* Kategorier fra databasen *@
+    <div style="margin-bottom:1rem;">
+        <label asp-for="CategoryId"></label>
+        <select asp-for="CategoryId" asp-items="Model.CategoryOptions" class="form-select">
+            <option value="">Velg kategori</option>
+        </select>
+        <span asp-validation-for="CategoryId" style="color:#b42318;"></span>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+        <label asp-for="Type"></label>
+        <input asp-for="Type" class="form-control"/>
+        <span asp-validation-for="Type"
+              style="color:#b42318;"></span>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description"
+                          class="form-control"></textarea>
+        <span asp-validation-for="Description"
+              style="color:#b42318;"></span>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+        <label asp-for="Area"></label>
+        <input asp-for="Area" class="form-control"/>
+        <span asp-validation-for="Area"
+              style="color:#b42318;"></span>
+    </div>
+    
+
+    <div style="margin-bottom:1rem;">
+        <label asp-for="AvailableFrom"></label>
+        <input asp-for="AvailableFrom"
+               class="form-control"
+               type="date"/>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+        <label asp-for="AvailableTo"></label>
+        <input asp-for="AvailableTo"
+               class="form-control"
+               type="date"/>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+        <label asp-for="ContactName"></label>
+        <input asp-for="ContactName"
+               class="form-control"/>
+        <span asp-validation-for="ContactName"
+              style="color:#b42318;"></span>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+        <label asp-for="ContactPhone"></label>
+        <input asp-for="ContactPhone"
+               class="form-control"/>
+        <span asp-validation-for="ContactPhone"
+              style="color:#b42318;"></span>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+        <label asp-for="ContactEmail"></label>
+        <input asp-for="ContactEmail"
+               class="form-control"/>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+        <label asp-for="Status"></label>
+        <select asp-for="Status" class="form-select">
+            <option value="Tilgjengelig">Tilgjengelig</option>
+            <option value="Reservert">Reservert</option>
+            <option value="Utilgjengelig">Utilgjengelig</option>
+        </select>
+    </div>
+
+    <div style="margin-bottom:1.5rem;">
+        <label asp-for="OwnerName"></label>
+        <input asp-for="OwnerName"
+               class="form-control"/>
+    </div>
+
+    @* Valgfritt ressursbilde *@
+    <div style="margin-bottom:1.5rem;">
+        <label asp-for="Image"></label>
+        <input asp-for="Image" type="file" accept=".jpg,.jpeg,.png,.webp" class="form-control" />
+        <small style="display:block; color:var(--muted);">JPG, PNG eller WEBP.</small>
+        <span asp-validation-for="Image" style="color:#b42318;"></span>
+        <img id="image-preview" alt="Forhåndsvisning av valgt bilde" hidden
+             style="margin-top:0.75rem; width:100%; max-width:320px; aspect-ratio:16/10; object-fit:cover;" />
+    </div>
+
+    <button type="submit"
+            class="btn btn-primary"
+            style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
+        Registrer
+    </button>
+
+</div>
+
+<div class="resource-map-panel">
+    <p>
+        Velg en posisjon eller tegn et område på kartet.
+        Kun én markering kan registreres om gangen.
+    </p>
+
+    <div id="resource-map"></div>
+    
+    @* Koordinatene fylles automatisk når man markerer i kartet.
+   Feltene er readonly, men sendes likevel med skjemaet. *@
+    <div class="resource-coords">
+        <div>
+            <label asp-for="Latitude"></label>
+            <input asp-for="Latitude" class="form-control" readonly />
+            <span asp-validation-for="Latitude" style="color:#b42318;"></span>
+        </div>
+        <div>
+            <label asp-for="Longitude"></label>
+            <input asp-for="Longitude" class="form-control" readonly />
+            <span asp-validation-for="Longitude" style="color:#b42318;"></span>
+        </div>
+    </div>
+
+    
+</div>
+
+    </form>
 </div>
 
 @section Scripts {
