@@ -304,6 +304,21 @@ a { color: inherit; }
     object-position: center center;
 
     z-index: 0;
+    
+    -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        black 12%,
+        black 100%
+);
+
+    mask-image: linear-gradient(
+            to right,
+            transparent 0%,
+            black 12%,
+            black 100%
+    );
+
 }
 
 /* hvit fade fra venstre, så den mørke teksten er lesbar. Bildet vises til høyre. */
@@ -316,11 +331,11 @@ a { color: inherit; }
         background: linear-gradient(
                 90deg,
                 rgba(255, 255, 255, 1) 0%,
-                rgba(255, 255, 255, 1) 20%,
-                rgba(255, 255, 255, 0.95) 35%,
-                rgba(255, 255, 255, 0.75) 48%,
-                rgba(255, 255, 255, 0.35) 65%,
-                rgba(255, 255, 255, 0) 85%
+                rgba(255, 255, 255, 1) 15%,
+                rgba(255, 255, 255, 0.95) 25%,
+                rgba(255, 255, 255, 0.65) 35%,
+                rgba(255, 255, 255, 0.20) 45%,
+                rgba(255, 255, 255, 0) 60%
         );
     
 }
