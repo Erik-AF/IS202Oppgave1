@@ -1,42 +1,369 @@
-@model List<_202Oppgave.Models.Resource>
+@model _202Oppgave.ViewModels.ResourceIndexViewModel
 
 @*
     Index.cshtml – oversikt over alle registrerte ressurser.
-    
+    Filtreringen skjer i ResourceController.Index (GET).
+    Skjemaet sender valgene i adressen, f.eks. /Resource?type=Traktor
 *@
 
 @{
-    ViewData["Title"] = "Registrerte ressurser";
+    ViewData["Title"] = "Ressurser";
+
+    // Standardbilde ut fra typen, når ressursen ikke har eget bilde
+    string ImageFor(string? type)
+    {
+        var t = (type ?? "").ToLowerInvariant();
+        if (t.Contains("helikopter")) return "~/images/ressurser/helikopter.jpg";
+        if (t.Contains("ambulanse")) return "~/images/ressurser/ambulanse.jpg";
+        if (t.Contains("aggregat") || t.Contains("strøm")) return "~/images/ressurser/aggregat.jpg";
+        if (t.Contains("båt")) return "~/images/ressurser/bat.jpg";
+        return "~/images/ressurser/standard.jpg";
+    }
+
+    // Klasse for fargeprikken. Samme farger som kartet til Marius.
+    string DotClass(string? status) => status switch
+    {
+        "Tilgjengelig" => "rl-dot--green",
+        "Reservert" => "rl-dot--yellow",
+        _ => "rl-dot--grey"
+    };
 }
 
-<div class="container home-content">
-    <h1>Registrerte ressurser</h1>
-    <p><a asp-action="Create" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Registrer ny ressurs</a></p>
 
-    @if (!Model.Any())
-    {
-        <p>Ingen ressurser registrert ennå.</p>
-    }
-    else
-    {
-        <div class="grid-3">
-            @foreach (var resource in Model)
-            {
-                // Samme fargelogikk som Marius bruker i kartet:
-                // grønn = tilgjengelig, gul = reservert, grå = resten.
-                var statusColor = resource.Status switch
+@section Head {
+    <style>
+        /* --- Farger og skrift for ressurssiden (prefiks rl- = resource list) --- */
+        :root {
+            --rl-ink: #111214; /* overskrifter */
+            --rl-text: #1f2124; /* brødtekst */
+            --rl-muted: #5b5f66; /* svakere tekst */
+            --rl-soft: #edeeec; /* lysegrå boks */
+            --rl-line: #d6d7d3; /* tynne linjer */
+        }
+        .rl {
+
+            -webkit-font-smoothing: antialiased;   /* skarpere tekst på Mac */
+            color: var(--rl-text);
+            font-weight: 300;
+            padding-block: 1.5rem 5rem;
+        }
+        /* kategori: liten grå tekst over navnet */
+        .rl-cat {
+            margin: 0 0 0.2rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--rl-muted);
+        }
+
+        /* ===== Topp ===== */
+        .rl-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .rl-head h1 {
+            margin: 0 0 0.5rem;
+            font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            color: var(--rl-ink);
+        }
+
+        .rl-head p { margin: 0; font-size: 1.1rem; }
+
+        /* knapp med mørk kant, fylles ved hover */
+        .rl-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            min-height: 48px;
+            padding: 0 1.4rem;
+            border: 1.5px solid var(--rl-ink);
+            background: transparent;
+            color: var(--rl-ink);
+            font: inherit;
+            font-weight: 400;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .rl-btn:hover { background: var(--rl-ink); color: #fff; }
+        .rl-btn--full { width: 100%; margin-top: 1.5rem; }
+
+        /* ===== Oppsett: filter til venstre, liste til høyre ===== */
+        .rl-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* ===== Filter ===== */
+        .rl-filter {
+            position: sticky;
+            top: 1.5rem;
+            padding: 1.75rem;
+            background: var(--rl-soft);
+        }
+
+        .rl-filter h2 {
+            margin: 0 0 1.25rem;
+            font-size: 1.3rem;
+            font-weight: 300;
+            color: var(--rl-ink);
+        }
+
+        .rl-label {
+            display: block;
+            margin: 1.1rem 0 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--rl-ink);
+        }
+
+        .rl-input {
+            width: 100%;
+            min-height: 44px;
+            padding: 0 0.8rem;
+            border: 1px solid #a9aba6;
+            border-radius: 0;
+            background: #fff;
+            color: var(--rl-ink);
+            font: inherit;
+        }
+
+        .rl-input:focus { outline: 2px solid var(--rl-ink); outline-offset: 0; }
+
+        .rl-reset {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--rl-ink);
+            text-underline-offset: 4px;
+        }
+
+        /* ===== Liste ===== */
+        .rl-found { margin: 0 0 0.75rem; color: var(--rl-muted); }
+
+        .rl-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            border-top: 1px solid var(--rl-ink);
+        }
+
+        .rl-list > li { border-bottom: 1px solid var(--rl-line); }
+
+        /* én rad: bilde | tekst | status */
+        .rl-row {
+            display: grid;
+            grid-template-columns: 220px 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+            padding: 1.5rem 1rem;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .rl-row:hover { background: #f5f5f3; }
+
+        .rl-img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            object-fit: cover;
+            background: var(--rl-soft);
+        }
+
+        .rl-row h3 {
+            margin: 0 0 0.35rem;
+            font-size: 1.35rem;
+            font-weight: 400;
+            color: var(--rl-ink);
+        }
+
+        .rl-desc { margin: 0 0 0.6rem; line-height: 1.5; }
+
+        .rl-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 1.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 0.92rem;
+            color: var(--rl-muted);
+        }
+
+        .rl-side {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.9rem;
+        }
+
+        .rl-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 400;
+            color: var(--rl-ink);
+            white-space: nowrap;
+        }
+
+        /* fargeprikken, eneste fargen på siden */
+        .rl-dot { width: 9px; height: 9px; border-radius: 50%; }
+        .rl-dot--green { background: var(--map-available); }
+        .rl-dot--yellow { background: var(--map-planned); }
+        .rl-dot--grey { background: #9a9c98; }
+
+        .rl-more { font-weight: 400; color: var(--rl-ink); white-space: nowrap; }
+
+        .rl-empty { padding: 2.5rem 2rem; background: var(--rl-soft); }
+        .rl-empty h3 { margin: 0 0 0.5rem; font-weight: 300; }
+        .rl-empty p { margin: 0; }
+
+        /* ===== Nettbrett: filteret over listen ===== */
+        @@media (max-width: 900px) {
+        .rl-layout { grid-template-columns: 1fr; }
+        .rl-filter { position: static; }
+        .rl-row { grid-template-columns: 160px 1fr; }
+        .rl-side { grid-column: 2; flex-direction: row; justify-content: space-between; }
+}
+
+        /* ===== Mobil: mindre bilde ===== */
+        @@media (max-width: 560px) {
+        .rl-row { grid-template-columns: 110px 1fr; align-items: start; padding-inline: 0.25rem; }
+        .rl-desc { display: none; }
+        .rl-side { grid-column: 1 / -1; }
+}
+        
+    </style>
+}
+ 
+<div class="container rl">
+
+    @* ===== Topp: tittel og knapp ===== *@
+    <div class="rl-head">
+        <div>
+            <h1>Tilgjengelige ressurser</h1>
+            <p>Kjøretøy, maskiner, utstyr og mannskap som kan brukes i en krise.</p>
+        </div>
+        <a class="rl-btn" asp-action="Create">Registrer ressurs <span aria-hidden="true">→</span></a>
+    </div>
+
+    <div class="rl-layout">
+
+        @* ===== Filter =====
+           method="get": valgene sendes i adressen til Index i controlleren.
+           Ingen antiforgery-token trengs, fordi GET ikke endrer noe. *@
+        <form class="rl-filter" asp-action="Index" method="get">
+            <h2>Filtrer</h2>
+
+            <label for="q" class="rl-label">Søk</label>
+            <input id="q" name="q" value="@Model.Q" class="rl-input" placeholder="Søk i ressurser" />
+
+            <label for="category" class="rl-label">Kategori</label>
+            <select id="category" name="category" class="rl-input">
+                <option value="">Alle kategorier</option>
+                @foreach (var c in Model.CategoryOptions)
                 {
-                    "Tilgjengelig" => "var(--map-available)",
-                    "Reservert" => "var(--map-planned)",
-                    _ => "var(--muted)"
-                };
-                <div class="card" style="padding:1.5rem;">
-                    <h3>@resource.Type</h3>
-                    <p>@resource.Area</p>
-                    <p style="color:@statusColor; font-weight:600;">@resource.Status</p>
-                    <p><a asp-action="Details" asp-route-id="@resource.Id">Se detaljer</a></p>
+                    <option value="@c" selected="@(c == Model.Category)">@c</option>
+                }
+            </select>
+
+            <label for="status" class="rl-label">Status</label>
+            <select id="status" name="status" class="rl-input">
+                <option value="">Alle statuser</option>
+                @foreach (var s in Model.StatusOptions)
+                {
+                    <option value="@s" selected="@(s == Model.Status)">@s</option>
+                }
+            </select>
+
+            <label for="area" class="rl-label">Sted</label>
+            <select id="area" name="area" class="rl-input">
+                <option value="">Alle steder</option>
+                @foreach (var a in Model.AreaOptions)
+                {
+                    <option value="@a" selected="@(a == Model.Area)">@a</option>
+                }
+            </select>
+
+            <label for="sort" class="rl-label">Sorter</label>
+            <select id="sort" name="sort" class="rl-input">
+                <option value="" selected="@(string.IsNullOrEmpty(Model.Sort))">Nyeste først</option>
+                <option value="category" selected="@(Model.Sort == "category")">Kategori A–Å</option>
+                <option value="area" selected="@(Model.Sort == "area")">Sted A–Å</option>
+            </select>
+
+            <button type="submit" class="rl-btn rl-btn--full">Filtrer</button>
+            <a asp-action="Index" class="rl-reset">Nullstill filter</a>
+        </form>
+
+                @* ===== Listen =====
+           Én rad per ressurs: bilde, tekst, status og lenke til Details. *@
+        <section>
+            <p class="rl-found">@Model.Resources.Count ressurser funnet</p>
+
+            @if (!Model.Resources.Any())
+            {
+                @* Ingen treff, eller ingen ressurser i det hele tatt *@
+                <div class="rl-empty">
+                    <h3>Ingen ressurser funnet</h3>
+                    <p>Prøv et annet filter, eller registrer en ny ressurs.</p>
                 </div>
             }
-        </div>
-    }
+            else
+            {
+                <ul class="rl-list">
+                    @foreach (var r in Model.Resources)
+                    {
+                        <li>
+                            @* hele raden er en lenke til detaljsiden *@
+                            <a class="rl-row" asp-action="Details" asp-route-id="@r.Id">
+
+                                @* eget bilde hvis det finnes, ellers standardbilde ut fra typen *@
+                                <img class="rl-img" src="@Url.Content(r.ImagePath ?? ImageFor($"{r.CategoryName} {r.Type}"))" alt="" loading="lazy" />
+
+                                <div>
+                                    <h3>@r.Type</h3>
+                                    @if (!string.IsNullOrWhiteSpace(r.CategoryName))
+                                    {
+                                        <p class="rl-cat">@r.CategoryName</p>
+                                    }
+                                    <ul class="rl-meta">
+                                        @if (!string.IsNullOrWhiteSpace(r.OwnerName))
+                                        {
+                                            <li>@r.OwnerName</li>
+                                        }
+                                        <li>@r.Area</li>
+                                        @if (r.AvailableFrom != null || r.AvailableTo != null)
+                                        {
+                                            <li>@(r.AvailableFrom?.ToString("dd.MM.yyyy") ?? "nå") – @(r.AvailableTo?.ToString("dd.MM.yyyy") ?? "ubestemt")</li>
+                                        }
+                                    </ul>
+                                </div>
+
+                                <div class="rl-side">
+                                    <span class="rl-status">
+                                        <span class="rl-dot @DotClass(r.Status)" aria-hidden="true"></span>@r.Status
+                                    </span>
+                                    <span class="rl-more">Se detaljer <span aria-hidden="true">→</span></span>
+                                </div>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    </div>
 </div>
