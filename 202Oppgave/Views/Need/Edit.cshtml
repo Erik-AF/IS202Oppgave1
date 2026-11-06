@@ -1,4 +1,4 @@
-﻿@model _202Oppgave.ViewModels.NeedViewModel
+@model _202Oppgave.ViewModels.NeedViewModel
 
 @* Bruker samme oppsett som ressursskjemaet for å gi sidene et felles utseende. *@
 @{
@@ -62,6 +62,8 @@
 }
 
 <div class="container home-content">
+    <a class="back-link" asp-action="Index">← Til behovsoversikten</a>
+    <p class="eyebrow">Meld inn behov</p>
     <h1>Rediger behov</h1>
     @* Skjemaet omslutter både feltene og kartet, slik at koordinatene under kartet sendes med *@
     <form id="need-layout" class="resource-layout"

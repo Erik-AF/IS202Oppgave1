@@ -1,92 +1,17 @@
 @{
-    // Tittel i nettleserfanen
-    ViewData["Title"] = "Hjelp";
+    ViewData["Title"] = "Spørsmål og svar";
 }
-
-<!-- Innledning til hjelpesiden -->
-<section class="py-5 text-center">
-    <div class="container">
-        <h1 class="display-6 fw-bold">Hjelp</h1>
-        <p class="lead mx-auto" style="max-width: 700px;">
-            Her finner du ofte stilte spørsmål og svar om hvordan tjenesten brukes.
-        </p>
+<section class="information-hero"><div class="container"><p class="eyebrow">Hjelp og veiledning</p><h1>God oversikt.<br />Enklere å bidra.</h1><p class="lead">Her finner du svar på hvordan du kommer i gang, bruker kartet og holder opplysningene oppdatert.</p></div></section>
+<section class="container editorial-section">
+    @* Native details fungerer med tastatur og uten JavaScript. *@
+    <div class="faq-list">
+        <details open><summary>Hvordan kommer jeg i gang?</summary><p><a asp-controller="Account" asp-action="Register">Opprett en bruker</a> og velg om du er ressursleverandør eller offentlig aktør. Deretter kan du logge inn og bruke funksjonene rollen din gir tilgang til.</p></details>
+        <details><summary>Hvordan registrerer jeg en ressurs?</summary><p>Velg «Registrer ressurs», fyll inn kategori, type, beskrivelse og kontaktopplysninger. Velg plasseringen på kartet, og registrer ressursen. Du kan også legge til et bilde.</p></details>
+        <details><summary>Hvordan melder jeg inn et behov?</summary><p>Åpne «Behov» og velg «Registrer nytt behov». Beskriv hva som trengs, hvor hjelpen skal frem, prioritet og frist. Marker stedet eller området i kartet før du sender skjemaet.</p></details>
+        <details><summary>Kan jeg tegne et område i kartet?</summary><p>Ja. Registreringskartet har verktøy for punkter og former. Bruk tegneverktøyene langs kanten av kartet. Skjemaet lagrer markeringen sammen med opplysningene.</p></details>
+        <details><summary>Hva betyr fargene?</summary><p>Rødt viser akutte behov, gult viser behov som ikke er akutte, grønt viser tilgjengelige ressurser og blått viser offentlige aktører. Klikk på markeringen for å lese mer.</p></details>
+        <details><summary>Hvordan endrer eller sletter jeg en registrering?</summary><p>Åpne registreringen gjennom «Se detaljer». Velg «Rediger» for å oppdatere opplysninger. «Slett» ber om bekreftelse før registreringen fjernes.</p></details>
+        <details><summary>Hvor finner jeg kontaktinformasjon?</summary><p>Åpne detaljsiden til ressursen. Her vises kontaktopplysningene leverandøren har registrert, slik at dere kan avtale bruk og tilgjengelighet direkte.</p></details>
     </div>
 </section>
-
-<!-- Vanlige spørsmål -->
-<section class="py-5 bg-light">
-    <div class="container" style="max-width: 800px;">
-        <div class="accordion" id="faq">
-
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#svar1">
-                        Hvordan oppretter jeg en bruker?
-                    </button>
-                </h2>
-                <div id="svar1" class="accordion-collapse collapse" data-bs-parent="#faq">
-                    <div class="accordion-body">
-                        Trykk på "Registrer" og velg om du er offentlig aktør eller ressursleverandør.
-                        Du må bekrefte innloggingen med tofaktorautentisering.
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#svar2">
-                        Hvordan legger jeg inn en ressurs?
-                    </button>
-                </h2>
-                <div id="svar2" class="accordion-collapse collapse" data-bs-parent="#faq">
-                    <div class="accordion-body">
-                        Logg inn som ressursleverandør, velg type ressurs, og marker i kartet hvor den befinner seg.
-                        Du kan når som helst se og slette ressursene du har lagt inn.
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#svar3">
-                        Hva betyr fargene i kartet?
-                    </button>
-                </h2>
-                <div id="svar3" class="accordion-collapse collapse" data-bs-parent="#faq">
-                    <div class="accordion-body">
-                        <ul class="mb-0">
-                            <li><strong>Rød:</strong> akutt behov</li>
-                            <li><strong>Gul:</strong> planlagt behov</li>
-                            <li><strong>Grønn:</strong> tilgjengelig ressurs</li>
-                            <li><strong>Blå:</strong> offentlig aktør</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#svar4">
-                        Hva betyr statusen på et behov?
-                    </button>
-                </h2>
-                <div id="svar4" class="accordion-collapse collapse" data-bs-parent="#faq">
-                    <div class="accordion-body">
-                        Et behov går gjennom fire steg: <strong>ny</strong>, <strong>vurderes</strong>,
-                        <strong>tildelt</strong> og <strong>løst</strong>.
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- Henvisning til kontaktsiden -->
-<section class="py-5 text-center">
-    <div class="container">
-        <h2 class="h4">Fant du ikke svaret?</h2>
-        <p>Send oss en melding, så hjelper vi deg.</p>
-        <a class="btn btn-primary" asp-controller="Information" asp-action="Kontakt">Kontakt oss</a>
-    </div>
-</section>
+<section class="join-section"><div class="container"><div><p class="eyebrow">Lurer du fortsatt på noe?</p><h2>Vi hjelper deg videre.</h2></div><a class="btn btn-signal" asp-action="Kontakt">Kontakt oss ↗</a></div></section>

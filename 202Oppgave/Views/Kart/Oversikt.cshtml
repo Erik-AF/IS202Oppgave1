@@ -2,15 +2,20 @@
     ViewData["Title"] = "Kartoversikt";
 }
 
-<h2>Kartoversikt – behov og ressurser</h2>
-<p>
-    <span style="color:red">&#9679;</span> Akutt behov &nbsp;
-    <span style="color:#d4b800">&#9679;</span> Planlagt behov &nbsp;
-    <span style="color:green">&#9679;</span> Tilgjengelig ressurs &nbsp;
-    <span style="color:blue">&#9679;</span> Offentlig aktør
-</p>
-
-<div id="map" style="height: 550px"></div>
+<section class="container map-page">
+    <div class="section-heading">
+        <div><p class="eyebrow">Et felles situasjonsbilde</p><h1>Ressurser og behov.<br />Samlet på kartet.</h1></div>
+        <a class="btn btn-secondary" asp-controller="Resource" asp-action="Index">Se ressurslisten →</a>
+    </div>
+    <div class="map-toolbar" aria-label="Kartforklaring">
+        <span><i class="rl-dot rl-dot--red" aria-hidden="true"></i> Akutt behov</span>
+        <span><i class="rl-dot rl-dot--yellow" aria-hidden="true"></i> Ikke akutt behov</span>
+        <span><i class="rl-dot rl-dot--green" aria-hidden="true"></i> Tilgjengelig ressurs</span>
+        <span><i class="rl-dot" style="background:var(--map-public)" aria-hidden="true"></i> Offentlig aktør</span>
+    </div>
+    <div id="map" aria-label="Kart med ressurser og behov"></div>
+    <p class="map-status">Trykk på en markering for å se opplysninger. Bruk + og − for å zoome.</p>
+</section>
 
 @section Scripts {
     <script src="~/js/map-utils.js"></script>
