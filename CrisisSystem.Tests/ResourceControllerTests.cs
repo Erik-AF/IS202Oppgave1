@@ -102,4 +102,100 @@ public class ResourceControllerTests
         Assert.Equal("Details", redirect.ActionName);
         Assert.Equal(repository.Resources[0].Id, redirect.RouteValues!["id"]);
     }
+    
+[Fact]
+public async Task Index_Search_ShouldReturnMatchingResources()
+{
+    var repository = new FakeResourceRepository();
+
+    repository.Resources.Add(new Resource
+    {
+        Id = 1,
+        Type = "Generator",
+        Name = "Kristiansand"
+    });
+
+    repository.Resources.Add(new Resource
+    {
+        Id = 2,
+        Type = "Drikkevann",
+        Name = "Grimstad"
+    });
+
+    var controller = new ResourceController(repository, null!);
+
+    var result = await controller.Index(
+        "generator", null, null, null, null);
+
+    var view = Assert.IsType<ViewResult>(result);
+    var model = Assert.IsType<ResourceIndexViewModel>(view.Model);
+
+    var resource = Assert.Single(model.Resources);
+    Assert.Equal("Generator", resource.Type);
+}
+
+[Fact]
+public async Task Index_FilterByArea_ShouldReturnCorrectResources()
+{
+    var repository = new FakeResourceRepository();
+
+    repository.Resources.Add(new Resource
+    {
+        Id = 1,
+        Type = "Generator",
+        Name = "Kristiansand"
+    });
+
+    repository.Resources.Add(new Resource
+    {
+        Id = 2,
+        Type = "Drikkevann",
+        Name = "Grimstad"
+    });
+
+    var controller = new ResourceController(repository, null!);
+
+    var result = await controller.Index(
+        null, null, null, "Grimstad", null);
+
+    var view = Assert.IsType<ViewResult>(result);
+    var model = Assert.IsType<ResourceIndexViewModel>(view.Model);
+
+    var resource = Assert.Single(model.Resources);
+    Assert.Equal("Grimstad", resource.Area);
+}
+
+[Fact]
+public async Task Index_FilterByStatus_ShouldReturnCorrectResources()
+{
+    var repository = new FakeResourceRepository();
+
+    repository.Resources.Add(new Resource
+    {
+        Id = 1,
+        Type = "Generator",
+        Name = "Kristiansand",
+        Status = "Tilgjengelig"
+    });
+
+    repository.Resources.Add(new Resource
+    {
+        Id = 2,
+        Type = "Drikkevann",
+        Name = "Grimstad",
+        Status = "Utilgjengelig"
+    });
+
+    var controller = new ResourceController(repository, null!);
+
+    var result = await controller.Index(
+        null, null, "Tilgjengelig", null, null);
+
+    var view = Assert.IsType<ViewResult>(result);
+    var model = Assert.IsType<ResourceIndexViewModel>(view.Model);
+
+    var resource = Assert.Single(model.Resources);
+    Assert.Equal("Tilgjengelig", resource.Status);
+}
+
 }
