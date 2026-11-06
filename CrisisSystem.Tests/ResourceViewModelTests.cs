@@ -154,4 +154,53 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.Longitude)));
     }
 
+    
+    [Fact]
+    public void InvalidEmail_ShouldFailValidation()
+    {
+        var model = CreateValidResource();
+        model.ContactEmail = "ugyldig-epost";
+
+        var results = Validate(model);
+
+        Assert.Contains(results, result =>
+            result.MemberNames.Contains(nameof(ResourceViewModel.ContactEmail)));
+    }
+
+    [Fact]
+    public void ValidEmail_ShouldPassValidation()
+    {
+        var model = CreateValidResource();
+        model.ContactEmail = "kontakt@example.com";
+
+        var results = Validate(model);
+
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public void AvailableToBeforeAvailableFrom_ShouldFailValidation()
+    {
+        var model = CreateValidResource();
+        model.AvailableFrom = new DateTime(2026, 11, 10);
+        model.AvailableTo = new DateTime(2026, 11, 9);
+
+        var results = Validate(model);
+
+        Assert.Contains(results, result =>
+            result.MemberNames.Contains(nameof(ResourceViewModel.AvailableTo)));
+    }
+
+    [Fact]
+    public void ValidAvailabilityPeriod_ShouldPassValidation()
+    {
+        var model = CreateValidResource();
+        model.AvailableFrom = new DateTime(2026, 11, 9);
+        model.AvailableTo = new DateTime(2026, 11, 10);
+
+        var results = Validate(model);
+
+        Assert.Empty(results);
+    }
+
 }
