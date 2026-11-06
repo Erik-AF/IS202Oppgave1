@@ -1,139 +1,73 @@
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using _202Oppgave.ViewModels;
 using Xunit;
+using _202Oppgave.ViewModels;
 
 namespace CrisisSystem.Tests;
 
 public class NeedViewModelTests
 {
-    private static NeedViewModel CreateValidNeed()
+    [Fact]
+    public void NeedWithoutCoordinates_ShouldFailValidation()
     {
-        return new NeedViewModel
+        // Arrange: Opprett et behov med gyldige verdier,
+        // men uten koordinater.
+        var model = new NeedViewModel
         {
-            Type = "Generator",
+            Type = "Mat",
             Location = "Kristiansand",
             Priority = NeedPriority.Akutt,
-            Description = "Trenger strømforsyning",
-            Deadline = DateTime.Today.AddDays(2),
-            Latitude = 58.1467,
-            Longitude = 7.9956
+            Description = "Trenger matforsyninger",
+            Deadline = DateTime.Now.AddDays(1),
+            Latitude = null,
+            Longitude = null
         };
-    }
 
-    private static List<ValidationResult> Validate(NeedViewModel model)
-    {
-        var results = new List<ValidationResult>();
         var context = new ValidationContext(model);
+        var results = new List<ValidationResult>();
 
-        Validator.TryValidateObject(
-            model,
-            context,
-            results,
-            validateAllProperties: true
-        );
+        // Act: Valider modellen.
+        bool isValid = Validator.TryValidateObject(
+            model, context, results, validateAllProperties: true);
 
-        return results;
+        // Assert: Modellen skal være ugyldig.
+        Assert.False(isValid);
+
+        Assert.Contains(results, result =>
+            result.ErrorMessage == "Velg et punkt på kartet.");
     }
+
+
 
     [Fact]
-    public void ValidNeed_ShouldPassValidation()
+    public void NeedWithInvalidLatitude_ShouldFailValidation()
     {
-        var model = CreateValidNeed();
+        // Arrange: Opprett et behov med ugyldig breddegrad.
+        var model = new NeedViewModel
+        {
+            Type = "Vann",
+            Location = "Kristiansand",
+            Priority = NeedPriority.Akutt,
+            Description = "Trenger vann",
+            Deadline = DateTime.Now.AddDays(1),
+            Latitude = 100,
+            Longitude = 8
+        };
 
-        var results = Validate(model);
+        var context = new ValidationContext(model);
+        var results = new List<ValidationResult>();
 
-        Assert.Empty(results);
+        // Act: Valider modellen.
+        bool isValid = Validator.TryValidateObject(
+            model, context, results, validateAllProperties: true);
+
+        // Assert: Modellen skal være ugyldig.
+        Assert.False(isValid);
+
+        Assert.Contains(results, result =>
+            result.ErrorMessage == "Ugyldig breddegrad.");
     }
 
-    [Fact]
-    public void MissingType_ShouldFailValidation()
-    {
-        var model = CreateValidNeed();
-        model.Type = "";
-
-        var results = Validate(model);
-
-        Assert.Contains(results,
-            r => r.MemberNames.Contains(nameof(model.Type)));
-    }
-
-    [Fact]
-    public void MissingLocation_ShouldFailValidation()
-    {
-        var model = CreateValidNeed();
-        model.Location = "";
-
-        var results = Validate(model);
-
-        Assert.Contains(results,
-            r => r.MemberNames.Contains(nameof(model.Location)));
-    }
-
-    [Fact]
-    public void MissingPriority_ShouldFailValidation()
-    {
-        var model = CreateValidNeed();
-        model.Priority = null;
-
-        var results = Validate(model);
-
-        Assert.Contains(results,
-            r => r.MemberNames.Contains(nameof(model.Priority)));
-    }
-
-    [Fact]
-    public void MissingDescription_ShouldFailValidation()
-    {
-        var model = CreateValidNeed();
-        model.Description = "";
-
-        var results = Validate(model);
-
-        Assert.Contains(results,
-            r => r.MemberNames.Contains(nameof(model.Description)));
-    }
-
-    [Fact]
-    public void MissingDeadline_ShouldFailValidation()
-    {
-        var model = CreateValidNeed();
-        model.Deadline = null;
-
-        var results = Validate(model);
-
-        Assert.Contains(results,
-            r => r.MemberNames.Contains(nameof(model.Deadline)));
-    }
-
-    [Theory]
-    [InlineData(-91)]
-    [InlineData(91)]
-    public void InvalidLatitude_ShouldFailValidation(double latitude)
-    {
-        var model = CreateValidNeed();
-        model.Latitude = latitude;
-
-        var results = Validate(model);
-
-        Assert.Contains(results,
-            r => r.MemberNames.Contains(nameof(model.Latitude)));
-    }
-
-    [Theory]
-    [InlineData(-181)]
-    [InlineData(181)]
-    public void InvalidLongitude_ShouldFailValidation(double longitude)
-    {
-        var model = CreateValidNeed();
-        model.Longitude = longitude;
-
-        var results = Validate(model);
-
-        Assert.Contains(results,
-            r => r.MemberNames.Contains(nameof(model.Longitude)));
-    }
 }

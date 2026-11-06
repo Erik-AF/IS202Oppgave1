@@ -5,16 +5,71 @@
     ViewData["Title"] = "Rediger behov";
 }
 
+@section Head {
+    <style>
+        /* Skjema til venstre og kart til høyre, samme som Registrer behov */
+        #need-layout {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 2rem;
+            align-items: start;
+        }
 
+        #need-map {
+            height: 550px;
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        #need-layout .resource-map-panel {
+            min-width: 0;
+        }
+
+        /* Små koordinatfelt ved siden av hverandre under kartet */
+        .resource-coords {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        /* Mindre tekst, så feltene ikke tar fokus fra skjemaet */
+        .resource-coords label,
+        .resource-coords input {
+            font-size: 0.85rem;
+        }
+
+        /* Grå bakgrunn viser at feltene ikke kan redigeres.
+           Må være mer spesifikk enn .form-control[readonly] i components.css */
+        .resource-coords .form-control[readonly] {
+            background-color: #edeeec;
+            color: var(--muted);
+            cursor: default;
+        }
+
+        /* Ingen blå fokusramme når man klikker i feltene */
+        .resource-coords .form-control[readonly]:focus {
+            border-color: var(--line-strong);
+            box-shadow: none;
+        }
+
+        @@media (max-width: 800px) {
+            #need-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}
 
 <div class="container home-content">
     <a class="back-link" asp-action="Index">← Til behovsoversikten</a>
     <p class="eyebrow">Meld inn behov</p>
     <h1>Rediger behov</h1>
-    <p class="page-intro">Beskriv hva som trengs, velg prioritet og marker hvor hjelpen skal frem.</p>
-    <div id="need-layout" class="resource-layout">
-        <form asp-controller="Need" asp-action="Edit" asp-route-id="@ViewBag.NeedId" method="post"
-              class="card" style="padding:2rem; min-width:0;">
+    @* Skjemaet omslutter både feltene og kartet, slik at koordinatene under kartet sendes med *@
+    <form id="need-layout" class="resource-layout"
+          asp-controller="Need" asp-action="Edit" asp-route-id="@ViewBag.NeedId" method="post">
+        @* Venstre kolonne: skjemafeltene *@
+        <div class="card" style="padding:2rem; min-width:0;">
             <div asp-validation-summary="ModelOnly" style="color:var(--brick); margin-bottom:1rem;"></div>
 
             <div style="margin-bottom:1rem;">
@@ -36,17 +91,6 @@
             </div>
 
             <div style="margin-bottom:1rem;">
-                <label asp-for="Latitude">Breddegrad</label>
-                <input asp-for="Latitude" class="form-control" readonly />
-                <span asp-validation-for="Latitude" style="color:var(--brick);"></span>
-            </div>
-
-            <div style="margin-bottom:1rem;">
-                <label asp-for="Longitude">Lengdegrad</label>
-                <input asp-for="Longitude" class="form-control" readonly />
-            </div>
-
-            <div style="margin-bottom:1rem;">
                 <label asp-for="Deadline">Frist for hjelp</label>
                 <input asp-for="Deadline" class="form-control" type="datetime-local" />
                 <span asp-validation-for="Deadline" style="color:var(--brick);"></span>
@@ -61,12 +105,28 @@
             </div>
 
             <button type="submit" class="btn btn-primary"
-                    >Lagre endringer</button>
-        </form>
-        <div class="resource-map-panel"><h2 class="map-panel-title">Velg plassering</h2><p>Klikk i kartet for å velge hvor hjelpen trengs.</p>
-            <div id="need-map"></div>
+                    style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">Lagre endringer</button>
         </div>
-    </div>
+        <div class="resource-map-panel">
+            <p>Klikk i kartet for å velge hvor hjelpen trengs.</p>
+            <div id="need-map"></div>
+
+            @* Koordinatene fylles automatisk når man klikker i kartet.
+               Feltene er readonly, men sendes likevel med skjemaet. *@
+            <div class="resource-coords">
+                <div>
+                    <label asp-for="Latitude">Breddegrad</label>
+                    <input asp-for="Latitude" class="form-control" readonly />
+                    <span asp-validation-for="Latitude" style="color:var(--brick);"></span>
+                </div>
+                <div>
+                    <label asp-for="Longitude">Lengdegrad</label>
+                    <input asp-for="Longitude" class="form-control" readonly />
+                    <span asp-validation-for="Longitude" style="color:var(--brick);"></span>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
