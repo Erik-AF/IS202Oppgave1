@@ -77,4 +77,47 @@ public class KartControllerTests
         Assert.True(controller.ModelState.IsValid);
     }
 
+    
+    [Fact]
+    public void Data_ShouldReturnJsonWithMapPoints()
+    {
+        var controller = new KartController();
+
+        var result = controller.Data();
+
+        var json = Assert.IsType<JsonResult>(result);
+        var points = Assert.IsAssignableFrom<
+            IEnumerable<KartPunktViewModel>>(json.Value);
+
+        Assert.NotEmpty(points);
+    }
+
+    [Fact]
+    public void RegisteredMapPoint_ShouldAppearInMapData()
+    {
+        var controller = new KartController();
+        var model = new RegistrerPunktViewModel
+        {
+            Latitude = 59.1234,
+            Longitude = 10.5678,
+            Kategori = "ressurs",
+            Type = "Testgenerator",
+            Beskrivelse = "Generator tilgjengelig for testing"
+        };
+
+        controller.Index(model);
+
+        var result = controller.Data();
+        var json = Assert.IsType<JsonResult>(result);
+        var points = Assert.IsAssignableFrom<
+            IEnumerable<KartPunktViewModel>>(json.Value);
+
+        Assert.Contains(points, point =>
+            point.Latitude == model.Latitude &&
+            point.Longitude == model.Longitude &&
+            point.Kategori == model.Kategori &&
+            point.Type == model.Type &&
+            point.Beskrivelse == model.Beskrivelse);
+    }
+
 }
