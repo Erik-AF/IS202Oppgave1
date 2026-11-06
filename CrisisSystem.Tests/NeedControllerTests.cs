@@ -127,4 +127,79 @@ public class NeedControllerTests
         Assert.Equal(repository.Needs[0].Id, redirect.RouteValues!["id"]);
     }
 
+[Fact]
+public async Task Edit_ExistingNeed_ShouldUpdateNeed()
+{
+    var repository = new FakeNeedRepository();
+    var need = new Need
+    {
+        Id = 1,
+        Type = "Mat",
+        Location = "Kristiansand",
+        Priority = NeedPriority.IkkeAkutt,
+        Description = "Behov for mat",
+        Deadline = DateTime.Today.AddDays(2),
+        Latitude = 58.1467,
+        Longitude = 7.9956
+    };
+    repository.Needs.Add(need);
+
+    var controller = new NeedController(repository);
+    var model = new NeedViewModel
+    {
+        Type = "Drikkevann",
+        Location = "Grimstad",
+        Priority = NeedPriority.Akutt,
+        Description = "Akutt behov for vann",
+        Deadline = DateTime.Today.AddDays(1),
+        Latitude = 58.3405,
+        Longitude = 8.5934
+    };
+
+    var result = await controller.Edit(1, model);
+
+    Assert.Equal("Drikkevann", repository.Needs[0].Type);
+    Assert.Equal("Grimstad", repository.Needs[0].Location);
+    Assert.Equal(NeedPriority.Akutt, repository.Needs[0].Priority);
+
+    var redirect = Assert.IsType<RedirectToActionResult>(result);
+    Assert.Equal("Confirmation", redirect.ActionName);
+}
+
+[Fact]
+public async Task Edit_NonExistingNeed_ShouldReturnNotFound()
+{
+    var controller = new NeedController(new FakeNeedRepository());
+
+    var result = await controller.Edit(999);
+
+    Assert.IsType<NotFoundResult>(result);
+}
+
+[Fact]
+public async Task Delete_ExistingNeed_ShouldRemoveNeed()
+{
+    var repository = new FakeNeedRepository();
+    repository.Needs.Add(new Need { Id = 1 });
+
+    var controller = new NeedController(repository);
+
+    var result = await controller.Delete(1);
+
+    Assert.Empty(repository.Needs);
+
+    var redirect = Assert.IsType<RedirectToActionResult>(result);
+    Assert.Equal("Index", redirect.ActionName);
+}
+
+[Fact]
+public async Task Delete_NonExistingNeed_ShouldReturnNotFound()
+{
+    var controller = new NeedController(new FakeNeedRepository());
+
+    var result = await controller.Delete(999);
+
+    Assert.IsType<NotFoundResult>(result);
+}
+
 }
