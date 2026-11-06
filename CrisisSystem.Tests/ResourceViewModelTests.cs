@@ -100,4 +100,58 @@ public class ResourceViewModelTests
         Assert.Contains(results, result =>
             result.MemberNames.Contains(nameof(ResourceViewModel.CategoryId)));
     }
+    
+    
+    [Theory]
+    [InlineData(-91)]
+    [InlineData(91)]
+    public void InvalidLatitude_ShouldFailValidation(double latitude)
+    {
+        var model = CreateValidResource();
+        model.Latitude = latitude;
+
+        var results = Validate(model);
+
+        Assert.Contains(results, result =>
+            result.MemberNames.Contains(nameof(ResourceViewModel.Latitude)));
+    }
+
+    [Theory]
+    [InlineData(-181)]
+    [InlineData(181)]
+    public void InvalidLongitude_ShouldFailValidation(double longitude)
+    {
+        var model = CreateValidResource();
+        model.Longitude = longitude;
+
+        var results = Validate(model);
+
+        Assert.Contains(results, result =>
+            result.MemberNames.Contains(nameof(ResourceViewModel.Longitude)));
+    }
+
+    [Fact]
+    public void MissingLatitude_ShouldFailValidation()
+    {
+        var model = CreateValidResource();
+        model.Latitude = null;
+
+        var results = Validate(model);
+
+        Assert.Contains(results, result =>
+            result.MemberNames.Contains(nameof(ResourceViewModel.Latitude)));
+    }
+
+    [Fact]
+    public void MissingLongitude_ShouldFailValidation()
+    {
+        var model = CreateValidResource();
+        model.Longitude = null;
+
+        var results = Validate(model);
+
+        Assert.Contains(results, result =>
+            result.MemberNames.Contains(nameof(ResourceViewModel.Longitude)));
+    }
+
 }
