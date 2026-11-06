@@ -198,4 +198,91 @@ public async Task Index_FilterByStatus_ShouldReturnCorrectResources()
     Assert.Equal("Tilgjengelig", resource.Status);
 }
 
+[Fact]
+public async Task Edit_ExistingResource_ShouldUpdateResource()
+{
+    var repository = new FakeResourceRepository();
+    repository.Resources.Add(new Resource
+    {
+        Id = 1,
+        Type = "Generator",
+        Name = "Kristiansand"
+    });
+
+    var controller = new ResourceController(repository, null!);
+    var model = new ResourceViewModel
+    {
+        Type = "Drikkevann",
+        Area = "Grimstad",
+        Latitude = 58.3405,
+        Longitude = 8.5934,
+        ContactName = "Testperson",
+        ContactPhone = "12345678",
+        CategoryId = 1
+    };
+
+    var result = await controller.Edit(1, model);
+
+    var updated = Assert.Single(repository.Resources);
+    Assert.Equal("Drikkevann", updated.Type);
+    Assert.Equal("Grimstad", updated.Name);
+
+    var redirect = Assert.IsType<RedirectToActionResult>(result);
+    Assert.Equal("Details", redirect.ActionName);
+}
+
+[Fact]
+public async Task Edit_NonExistingResource_ShouldReturnNotFound()
+{
+    var controller = new ResourceController(
+        new FakeResourceRepository(), null!);
+
+    var model = new ResourceViewModel
+    {
+        Type = "Generator",
+        Area = "Kristiansand",
+        Latitude = 58.1467,
+        Longitude = 7.9956,
+        ContactName = "Testperson",
+        ContactPhone = "12345678",
+        CategoryId = 1
+    };
+
+    var result = await controller.Edit(999, model);
+
+    Assert.IsType<NotFoundResult>(result);
+}
+
+[Fact]
+public async Task Delete_ExistingResource_ShouldRemoveResource()
+{
+    var repository = new FakeResourceRepository();
+    repository.Resources.Add(new Resource
+    {
+        Id = 1,
+        Type = "Generator",
+        Name = "Kristiansand"
+    });
+
+    var controller = new ResourceController(repository, null!);
+
+    var result = await controller.Delete(1);
+
+    Assert.Empty(repository.Resources);
+
+    var redirect = Assert.IsType<RedirectToActionResult>(result);
+    Assert.Equal("Index", redirect.ActionName);
+}
+
+[Fact]
+public async Task Delete_NonExistingResource_ShouldReturnNotFound()
+{
+    var controller = new ResourceController(
+        new FakeResourceRepository(), null!);
+
+    var result = await controller.Delete(999);
+
+    Assert.IsType<NotFoundResult>(result);
+}
+
 }
