@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 using _202Oppgave.ViewModels;
 using Xunit;
 
@@ -203,4 +205,65 @@ public class ResourceViewModelTests
         Assert.Empty(results);
     }
 
+    [Theory]
+    [InlineData("bilde.pdf")]
+    [InlineData("bilde.gif")]
+    [InlineData("bilde.txt")]
+    public void InvalidImageType_ShouldFailValidation(string fileName)
+    {
+        var model = CreateValidResource();
+        model.Image = CreateImage(fileName, 1024);
+
+        var results = Validate(model);
+
+        Assert.Contains(results, result =>
+            result.MemberNames.Contains(nameof(ResourceViewModel.Image)));
+    }
+
+    [Theory]
+    [InlineData("bilde.jpg")]
+    [InlineData("bilde.jpeg")]
+    [InlineData("bilde.png")]
+    [InlineData("bilde.webp")]
+    public void ValidImageType_ShouldPassValidation(string fileName)
+    {
+        var model = CreateValidResource();
+        model.Image = CreateImage(fileName, 1024);
+
+        var results = Validate(model);
+
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public void ImageLargerThan5MB_ShouldFailValidation()
+    {
+        var model = CreateValidResource();
+        model.Image = CreateImage("bilde.jpg", ResourceViewModel.MaxImageBytes + 1);
+
+        var results = Validate(model);
+
+        Assert.Contains(results, result =>
+            result.MemberNames.Contains(nameof(ResourceViewModel.Image)));
+    }
+
+    [Fact]
+    public void ImageExactly5MB_ShouldPassValidation()
+    {
+        var model = CreateValidResource();
+        model.Image = CreateImage("bilde.jpg", ResourceViewModel.MaxImageBytes);
+
+        var results = Validate(model);
+
+        Assert.Empty(results);
+    }
+
+    private static IFormFile CreateImage(string fileName, long size)
+    {
+        var stream = new MemoryStream();
+        stream.SetLength(size);
+
+        return new FormFile(stream, 0, size, "Image", fileName);
+    }
 }
+      
