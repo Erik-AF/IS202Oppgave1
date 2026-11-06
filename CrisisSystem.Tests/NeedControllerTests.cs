@@ -71,4 +71,60 @@ public class NeedControllerTests
         Assert.Same(model, view.Model);
         Assert.Empty(repository.Needs);
     }
+    
+    [Fact]
+    public async Task Create_ValidModel_ShouldSaveNeed()
+    {
+        var repository = new FakeNeedRepository();
+        var controller = new NeedController(repository);
+
+        var model = new NeedViewModel
+        {
+            Type = "Drikkevann",
+            Location = "Kristiansand",
+            Priority = NeedPriority.Akutt,
+            Description = "Behov for drikkevann",
+            Deadline = DateTime.Today.AddDays(2),
+            Latitude = 58.1467,
+            Longitude = 7.9956
+        };
+
+        await controller.Create(model);
+
+        var savedNeed = Assert.Single(repository.Needs);
+
+        Assert.Equal(model.Type, savedNeed.Type);
+        Assert.Equal(model.Location, savedNeed.Location);
+        Assert.Equal(model.Priority, savedNeed.Priority);
+        Assert.Equal(model.Description, savedNeed.Description);
+        Assert.Equal(model.Deadline, savedNeed.Deadline);
+        Assert.Equal(model.Latitude, savedNeed.Latitude);
+        Assert.Equal(model.Longitude, savedNeed.Longitude);
+    }
+
+    [Fact]
+    public async Task Create_ValidModel_ShouldRedirectToConfirmation()
+    {
+        var repository = new FakeNeedRepository();
+        var controller = new NeedController(repository);
+
+        var model = new NeedViewModel
+        {
+            Type = "Mat",
+            Location = "Kristiansand",
+            Priority = NeedPriority.IkkeAkutt,
+            Description = "Behov for mat",
+            Deadline = DateTime.Today.AddDays(3),
+            Latitude = 58.1467,
+            Longitude = 7.9956
+        };
+
+        var result = await controller.Create(model);
+
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+
+        Assert.Equal("Confirmation", redirect.ActionName);
+        Assert.Equal(repository.Needs[0].Id, redirect.RouteValues!["id"]);
+    }
+
 }
