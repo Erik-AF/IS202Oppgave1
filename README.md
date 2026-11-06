@@ -1,60 +1,23 @@
+# CrisisSystem — Group 7
 
-# CrisisSystem
+CrisisSystem is an ASP.NET Core MVC web application developed by **Group 7** at the University of Agder. It supports coordination between public actors and resource providers during crises by showing needs, available resources and geographical locations.
 
-CrisisSystem is an ASP.NET Core MVC web application developed as part of the IS-20X courses at the University of Agder.
+## Group 7 — Team Members
 
-The application is intended to support coordination between public actors and resource providers during crises by providing an overview of needs, available resources, and their geographical locations.
-
----
-
-## AI Usage
-
-In this project we have used the language models Claude and ChatGPT as support during development. We used them to get explanations of concepts in ASP.NET Core MVC, HTML and CSS. The usage of AI also contributed with navigating Rider and VS Code, for troubleshooting, and to get suggestions for code and text. All suggestions were reviewed, adapted and tested by the group before being used. 
-
-### Example Prompts
-
-The prompts were originally written in Norwegian and are translated to English here.
-
-**Emma**
-- "Explain the code line by line so I can write it myself and understand it"
-- "Can I write this code using the C# syntax I learned in IS-110?"
-- "What is usually on an about page on a website?"
-- "Why is InformationController.cs showing red?"
-- "When I press send on the contact form I get no confirmation, what is wrong with KontaktBekreftelse.cshtml?"
-
-**Sarah**
-- We are working on a project for Kartverket and Heimevernet as part of the IT and Information Systems programme this year. Help me and explain each step, including possible solution approaches where relevant. I will paste the assignment description, the project case description, and the division of responsibilities. Wait until I write “ready” before responding.
-- Provide a specific breakdown of the proposed code solution.
-- Chat has refactored the plan. How should areas 4 and 5 be divided between Sarah and Emma without using partial/shared ownership?
+| Name | GitHub 
+|---|---|---|
+| Erik Forberg | Erik-AF
+| Emma Opoku | emma-opoku
+| Sarah Brooks | BrooksSarah
+| Sindre Solberg | sindrejsolberg 
+| Marius Solberg | Marius-solberg
+| Vetle Hvål-Jenssen | VetleUIA 
 
 
-**Erik**
-- "How does the AppHost.cs builder work and give insight to how i would use a docker container as a builder?"
 
+## Project Goal
 
-**Sindre**
-- "Explain Vetle's code step by step so I understand how it works in depth."
-- "Check my code for mistakes and duplicate sections."
-- "Help me troubleshoot why the application will not start."
-- "Explain how i can adapt the NEED code to the group's existing solution better."
-- "Explain what changes i can make to the need registration page so its consistent with the resource page."
-
-**Marius**
-- "Help me identify why the map is not appearing by reviewing my code and screenshots"
-- "Help me move the 'back' button below the map on the resource details page"
-- "Explain how to commit, push, and merge my changes into main using Rider and Github"
-- "Help me add my existing Leaflet map to the resource registration form"
-
-**Vetle**
-- "help me understand my part of the assignment by seperating everything into spesific tasks"
-- "Which classes should I create for the Resource module"
-- "Which methods should I use to register a resource"
-- "What's the difference between a controller and a view model, and which one should my form data go through"
-- "Why am I getting 'Cannot resolve symbol' for ResourceViewModel in ResourceController.cs"
-- "How do I resolve a merge conflict in _Layout.cshtml between my branch and main"
-
-
----
+The goal is to make crisis coordination easier by allowing public actors to register needs, resource providers to register available resources, and users to view relevant locations on a map. The project uses ASP.NET Core MVC and is run using .NET Aspire and Docker.
 
 ## Project Requirements
 
@@ -72,9 +35,7 @@ The application is developed according to the requirements of the assignment.
 - GitHub documentation
 - Code documentation
 
----
-
-## Getting Started
+## Prerequisites & Getting Started
 
 ### Prerequisites
 
@@ -103,101 +64,22 @@ cd IS202Oppgave1
    Alternatively, open the solution in Rider and run `IS202Oppgave11.AppHost`.
 3. Open the web application at `http://localhost:5027`, or click the endpoint for `Oppgave202` in the Aspire dashboard.
 
----
+## Default / Example Users
+
+No default user accounts or login credentials are documented in the current project README. Add confirmed demo accounts here if authentication is implemented. Do **not** commit real passwords or secrets.
+
+| User type | Example use | User Name | Password |
+|---|---|---|
+| Public actor | Register a crisis-related need | publicactor@example.com |!RedSideraptors1|
+| Resource provider | Register an available resource | provider@example.com | !RiverScuttle1 |
+| Admin | Can do All | admin@example.com |!blueSideGromp1 |
+## Test Data — Available Resources
+
+A proposed sample dataset is provided in [Testdata — Available Resources](Testscenarioer.md) for development and manual testing. These are **example records**, not confirmed preloaded resources in the running application. The current README describes temporary in-memory map-point storage; database persistence is planned.
 
 ## System Architecture
 
-The application follows the ASP.NET Core MVC pattern and is orchestrated with .NET Aspire. The web application runs in a Docker container that is started by the Aspire AppHost.
-
-The AppHost builds the web application from `202Oppgave/Dockerfile` and runs it as a container named `Oppgave202`. The application is available at `http://localhost:5027`, which is mapped to port 8080 inside the container.
-
-### Overview
-
-```text
-Browser
-   |
-   |  HTTP (GET / POST)  and  fetch (JSON)
-   v
-+--------------------------------------------+
-|  Oppgave202 (Docker container)             |
-|                                            |
-|  Controllers  -->  Models / ViewModels     |
-|      |                    |                |
-|      v                    v                |
-|  Views (Razor)      In-memory data         |
-|  + Bootstrap        (temporary, until      |
-|  + Leaflet map       MariaDB is added)     |
-+--------------------------------------------+
-   ^
-   |  built from 202Oppgave/Dockerfile,
-   |  started and monitored by
-   |
-IS202Oppgave11.AppHost (.NET Aspire)
-```
-
-### Components
-
-**Controllers** receive requests from the browser and decide what to return.
-
-| Controller | Responsibility |
-|---|---|
-| `HomeController` | Front page, privacy page and error page |
-| `KartController` | Registering points on the map, the map overview, and a JSON endpoint with all points |
-| `NeedController` | Registering needs from public actors, with validation and a confirmation page |
-| `InformationController` | About, help and contact pages, including the contact form |
-
-**Models and ViewModels** hold the data sent between controllers and views.
-
-| Class | Used for |
-|---|---|
-| `RegistrerPunktViewModel` | Input from the map registration form (coordinates, category, type, description) |
-| `KartPunktViewModel` | A registered point shown on the map. Also the agreed data format for when the database is added |
-| `NeedViewModel` | Input when a public actor registers a need, with validation and priority |
-| `KontaktFormModel` | Input from the contact form |
-| `ErrorViewModel` | Request ID shown on the error page |
-
-**Views** are Razor pages (`.cshtml`) styled with Bootstrap and `components.css`, so they adapt to both mobile and desktop.
-
-**Leaflet** displays the maps and lets the user select a location.
-
-**Data storage:** registered map points are currently stored in a static list in `KartController`. Registered needs are validated and shown on a confirmation page, but not stored yet. Both will be stored in MariaDB.
-
-### Request Flow: Map Registration
-
-```text
-1. GET  /Kart           -> KartController.Index()        -> form with map
-2. User clicks the map  -> coordinates are filled into the form
-3. POST /Kart           -> KartController.Index(model)   -> validates that a point is selected
-4a. No point selected   -> same view with error message
-4b. Point selected      -> point is saved, redirect to /Kart/Oversikt
-5. GET  /Kart/Oversikt  -> page loads, JavaScript fetches /Kart/Data
-6. GET  /Kart/Data      -> KartController.Data()         -> returns all points as JSON
-7. Leaflet draws the points on the map
-```
-
-The redirect after POST (Post-Redirect-Get) prevents the form from being submitted twice if the user reloads the page.
-
-### Request Flow: Register Need
-
-```text
-1. GET  /Need/Create -> NeedController.Create()      -> empty form
-2. POST /Need/Create -> NeedController.Create(model) -> validates input
-3a. Invalid input    -> same view with validation messages
-3b. Valid input      -> Confirmation view shows the submitted need
-```
-
-### Request Flow: Contact Form
-
-```text
-1. GET  /Information/Kontakt -> InformationController.Kontakt()      -> empty form
-2. POST /Information/Kontakt -> InformationController.Kontakt(model) -> validates input
-3a. Missing fields           -> same view with error message
-3b. All fields filled in     -> KontaktBekreftelse view shows the submitted data
-```
-
-<!-- TODO: Add MariaDB to the overview and components when the database is connected -->
-
----
+See [System Architecture](SystemArchitecture.md) for the architecture overview, components and request flows.
 
 ## Project Structure
 
@@ -216,9 +98,26 @@ IS202Oppgave1/
 └── Testscenarioer.md
 ```
 
----
+## Code Documentation
 
-## Git Workflow
+Code should be documented where necessary to explain functionality that is not immediately clear from the code itself.
+
+Comments should explain **why** something is done rather than unnecessarily describing obvious code.
+
+Example:
+
+```csharp
+// Validate the selected coordinates before creating the resource.
+if (model.Latitude == null || model.Longitude == null)
+{
+    // ...
+}
+```
+
+## GitHub Rules
+
+<details>
+<summary>Show Git workflow, branch naming and commit/PR conventions</summary>
 
 Development should be performed on separate branches rather than directly on `main`.
 
@@ -306,62 +205,55 @@ docs: updated docker instructions
 build: added docker configuration
 ```
 
----
+</details>
 
-## Testing
+## AI Usage
 
-All test scenarios and results are documented in [Testscenarioer.md](Testscenarioer.md).
+<details>
+<summary>Show AI tools, usage and example prompts</summary>
 
-Each group member writes and runs the scenarios for their own functionality using the shared template. Emma collects the results, verifies fixed issues and fills in the summary before submission.
+In this project we have used the language models Claude and ChatGPT as support during development. We used them to get explanations of concepts in ASP.NET Core MVC, HTML and CSS. The usage of AI also contributed with navigating Rider and VS Code, for troubleshooting, and to get suggestions for code and text. All suggestions were reviewed, adapted and tested by the group before being used. 
 
-Failed tests are registered as GitHub Issues and linked in the test document.
+### Example Prompts
+
+The prompts were originally written in Norwegian and are translated to English here.
+
+**Emma**
+- "Explain the code line by line so I can write it myself and understand it"
+- "Can I write this code using the C# syntax I learned in IS-110?"
+- "What is usually on an about page on a website?"
+- "Why is InformationController.cs showing red?"
+- "When I press send on the contact form I get no confirmation, what is wrong with KontaktBekreftelse.cshtml?"
+
+**Sarah**
+- We are working on a project for Kartverket and Heimevernet as part of the IT and Information Systems programme this year. Help me and explain each step, including possible solution approaches where relevant. I will paste the assignment description, the project case description, and the division of responsibilities. Wait until I write “ready” before responding.
+- Provide a specific breakdown of the proposed code solution.
+- Chat has refactored the plan. How should areas 4 and 5 be divided between Sarah and Emma without using partial/shared ownership?
 
 
-### Test Results
+**Erik**
+- "How does the AppHost.cs builder work and give insight to how i would use a docker container as a builder?"
 
-<!-- HUSK: LEGG TIL HER NÅR ALLE ER FERDIG. -->
 
----
+**Sindre**
+- "Explain Vetle's code step by step so I understand how it works in depth."
+- "Check my code for mistakes and duplicate sections."
+- "Help me troubleshoot why the application will not start."
+- "Explain how i can adapt the NEED code to the group's existing solution better."
+- "Explain what changes i can make to the need registration page so its consistent with the resource page."
 
-## Code Documentation
+**Marius**
+- "Help me identify why the map is not appearing by reviewing my code and screenshots"
+- "Help me move the 'back' button below the map on the resource details page"
+- "Explain how to commit, push, and merge my changes into main using Rider and Github"
+- "Help me add my existing Leaflet map to the resource registration form"
 
-Code should be documented where necessary to explain functionality that is not immediately clear from the code itself.
+**Vetle**
+- "help me understand my part of the assignment by seperating everything into spesific tasks"
+- "Which classes should I create for the Resource module"
+- "Which methods should I use to register a resource"
+- "What's the difference between a controller and a view model, and which one should my form data go through"
+- "Why am I getting 'Cannot resolve symbol' for ResourceViewModel in ResourceController.cs"
+- "How do I resolve a merge conflict in _Layout.cshtml between my branch and main"
 
-Comments should explain **why** something is done rather than unnecessarily describing obvious code.
-
-Example:
-
-```csharp
-// Validate the selected coordinates before creating the resource.
-if (model.Latitude == null || model.Longitude == null)
-{
-    // ...
-}
-```
-
----
-
-## Contributors
-
-This project is developed by Group 7 as part of IS-20X.
-
-| Name | GitHub |
-|---|---|
-| Erik Forberg | |
-| Emma Opoku | |
-| Sarah Brooks | |
-| Sindre Solberg | |
-| Marius Solberg | |
-| Vetle Hvål-Jenssen | |
-
----
-
-## Course Information
-
-**Courses:**
-- IS-200 – Systemanalyse og systemutvikling
-- IS-201 – Datamodellering og databasesystemer
-- IS-202 – Programmeringsprosjekt
-
-**Institution:** University of Agder  
-**Project:** CrisisSystem
+</details>
