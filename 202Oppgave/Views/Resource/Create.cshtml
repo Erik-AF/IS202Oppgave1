@@ -5,42 +5,13 @@
     ViewData["Title"] = "Registrer ressurs";
 }
 
-@section Head {
-    <style>
-        #resource-layout {
-            --brick: #b42318;
-        }
-        /* Skjema til venstre og kart til høyre */
-        #resource-layout {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 2rem;
-            align-items: start;
-        }
 
-        /* Sørger for at kartet passer i kolonnen */
-        #resource-layout .resource-map-panel {
-            min-width: 0;
-        }
-
-        /* Kartets størrelse */
-        #resource-map {
-            height: 550px;
-            width: 100%;
-            border-radius: 12px;
-        }
-
-        /* På mobil legges kartet under skjemaet */
-        @@media (max-width: 800px) {
-            #resource-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-}
 
 <div class="container home-content">
+    <a class="back-link" asp-action="Index">← Til ressursoversikten</a>
+    <p class="eyebrow">Bidra til beredskapen</p>
     <h1>Registrer ressurs</h1>
+    <p class="page-intro">Gjør utstyr og kapasitet synlig. Legg inn opplysninger og velg plasseringen på kartet.</p>
 
     <div id="resource-layout" class="resource-layout">
 
@@ -170,14 +141,13 @@
 
             <button type="submit"
                     class="btn btn-primary"
-                    style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
+                    >
                 Registrer
             </button>
 
         </form>
 
-        <div class="resource-map-panel">
-            <p>
+        <div class="resource-map-panel"><h2 class="map-panel-title">Velg plassering</h2><p>
                 Velg en posisjon eller tegn et område på kartet.
                 Kun én markering kan registreres om gangen.
             </p>
@@ -411,4 +381,3 @@
         }, 100);
     </script>
 }
-

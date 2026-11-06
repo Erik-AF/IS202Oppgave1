@@ -1,6 +1,16 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "Personvern";
 }
-<h1>@ViewData["Title"]</h1>
-
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container information-page">
+    <p class="eyebrow">Om denne prototypen</p>
+    <h1>Personvern</h1>
+    <p class="page-intro">CrisisSystem er et studentprosjekt. Bruk eksempeldata når du prøver tjenesten.</p>
+    <section class="card">
+        <h2>Opplysninger du legger inn</h2>
+        <p>Brukerkontoer, registrerte ressurser og behov lagres i prosjektets database. Informasjon som beskrivelse, kontaktopplysninger og kartposisjon kan vises på tjenestens oversiktssider.</p>
+        <p>Unngå sensitive personopplysninger og informasjon om virkelige krisehendelser i denne prototypen.</p>
+        <h2>Karttjenesten</h2>
+        <p>Kartene henter kartbilder fra eksterne kartleverandører. Nettleseren kobler seg til disse når kartet vises.</p>
+        <a asp-controller="Information" asp-action="Om">Les mer om prosjektet →</a>
+    </section>
+</div>

@@ -12,7 +12,10 @@
 }
 
 <div class="container home-content">
+    <a class="back-link" asp-action="Index">← Til ressursoversikten</a>
+    <p class="eyebrow">Bidra til beredskapen</p>
     <h1>Rediger ressurs</h1>
+    <p class="page-intro">Gjør utstyr og kapasitet synlig. Legg inn opplysninger og velg plasseringen på kartet.</p>
     <div class="resource-layout">
         <form asp-action="Edit" asp-route-id="@ViewBag.ResourceId" method="post" enctype="multipart/form-data" class="card" style="padding:2rem; min-width:0;">
             <div asp-validation-summary="ModelOnly" style="color:var(--brick); margin-bottom:1rem;"></div>
@@ -119,10 +122,9 @@
 
             @* Inline style her fordi .btn i components.css foreløpig mangler
            padding/hvit tekst/avrunding, se melding til Sarah. *@
-        <button type="submit" class="btn btn-primary" style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">Lagre endringer</button>
+        <button type="submit" class="btn btn-primary" >Lagre endringer</button>
         </form>
-        <div class="resource-map-panel">
-            <p>Klikk i kartet for å velge hvor ressursen befinner seg.</p>
+        <div class="resource-map-panel"><h2 class="map-panel-title">Velg plassering</h2><p>Klikk i kartet for å velge hvor ressursen befinner seg.</p>
             <div id="resource-map"></div>
         </div>
     </div>

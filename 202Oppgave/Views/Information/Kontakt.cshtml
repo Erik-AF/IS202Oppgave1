@@ -7,11 +7,11 @@
 
 <!-- Kontaktskjema -->
 <section class="py-5">
-    <div class="container" style="max-width: 700px;">
-        <h1 class="mb-3">Kontakt oss</h1>
-        <p class="mb-4">Har du spørsmål eller tilbakemeldinger? Fyll ut skjemaet, så tar vi kontakt snarest.</p>
+    <div class="container" >
+        <p class="eyebrow">Vi vil høre fra deg</p><h1 class="mb-3">Kontakt oss</h1>
+        <p class="mb-4">Har du spørsmål eller tilbakemeldinger? Bruk skjemaet til å formulere meldingen din. I denne demonstrasjonen vises innholdet på en bekreftelsesside.</p>
 
-        <form asp-controller="Information" asp-action="Kontakt" method="post">
+        <div class="contact-layout"><form asp-controller="Information" asp-action="Kontakt" method="post">
 
             <div class="mb-3">
                 <label asp-for="Navn" class="form-label">Navn</label>
@@ -44,6 +44,6 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Send</button>
-        </form>
+        </form><aside class="contact-aside"><h2>Trenger du veiledning?</h2><p>På hjelpesiden finner du svar om registrering, kartet og hvordan du oppdaterer opplysningene dine.</p><a asp-action="Hjelp">Se spørsmål og svar →</a></aside></div>
     </div>
 </section>

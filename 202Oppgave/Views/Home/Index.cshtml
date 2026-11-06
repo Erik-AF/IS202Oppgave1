@@ -1,144 +1,54 @@
-﻿
-@*
-    Forsiden – hero, handlingskort og oversikt.
-    Eier: Sarah (Frontend/UI).
-
-    Lenker til:
-    - Resource/Create og Resource/Index – Vetle
-    - Need/Create og Need/Index – Sindre
-    - Map/Index – Marius
-*@
-
 @{
-    ViewData["Title"] = "Hjem";
+    ViewData["Title"] = "Sammen står vi sterkere";
 }
-
-@* ===== 1. Banner (hero) =====
-   Stort banner med bakgrunnsbilde, tittel og undertittel.
-   Tre lag: bilde, hvit overlay og tekst.
-   Bildet flyttes litt ved scrolling via site.js.
-*@
-
-<section class="hero">
-
-    @* Bildet er dekorativt *@
-    <img src="~/images/forsidelandskap.jpg"
-         alt=""
-         aria-hidden="true"
-         class="hero-bg"
-         data-parallax />
-
-    <div class="hero-overlay" aria-hidden="true"></div>
-
-    <div class="hero-content">
-
-        <p class="hero-kicker">Sammen for Norge</p>
-
-        <ul class="hero-stripes" aria-hidden="true">
-            <li class="stripe-1"></li>
-            <li class="stripe-2"></li>
-            <li class="stripe-3"></li>
-        </ul>
-
-        <h1>
-            Ressurser. Mennesker.
-            <span class="accent">Trygghet.</span>
-        </h1>
-
-        <p>Koble behov med ressurser - raskt og effektivt.</p>
-
+<section class="front-hero">
+    <img class="front-hero-image" src="~/images/forsidelandskap.jpg" alt="Et norsk kystsamfunn mellom fjellene og havet" fetchpriority="high" />
+    <div class="container front-hero-content">
+        <p class="eyebrow"><span class="small-line" aria-hidden="true"></span>Sammen for Norge</p>
+        <h1>Beredskap er<br />et <em>felles ansvar.</em></h1>
+        <p class="hero-lead">Noen har det som trengs. Andre trenger hjelp.<br />Vi gjør det enklere å finne hverandre.</p>
+        <div class="hero-actions">
+            <a class="btn btn-signal" asp-controller="Resource" asp-action="Index">Finn en ressurs <span aria-hidden="true">↗</span></a>
+            <a class="hero-text-link" asp-controller="Kart" asp-action="Oversikt">Se oversikten på kart <span aria-hidden="true">→</span></a>
+        </div>
+    </div>
+    <div class="hero-caption">Lokale ressurser. Felles trygghet.</div>
+</section>
+<section class="action-band" aria-label="Registrer ditt bidrag eller behov">
+    <div class="container action-band-grid">
+        <a asp-controller="Need" asp-action="Create"><span class="action-symbol" aria-hidden="true">＋</span><span><strong>Jeg trenger hjelp</strong><small>Meld inn et behov i ditt område</small></span><span class="action-arrow" aria-hidden="true">↗</span></a>
+        <a asp-controller="Resource" asp-action="Create"><span class="action-symbol" aria-hidden="true">↗</span><span><strong>Jeg kan bidra</strong><small>Gjør en ressurs tilgjengelig</small></span><span class="action-arrow" aria-hidden="true">↗</span></a>
     </div>
 </section>
-
-@* ===== 2. Hovedinnhold under banneret ===== *@
-
-<div class="container home-content">
-
-    @* Handlingskort: hele kortet er klikkbart *@
-
-    <div class="grid-2 action-cards">
-
-        @* Registrer behov *@
-        <a class="card card--accent-red home-action-card"
-           asp-controller="Need"
-           asp-action="Create">
-
-            <div class="card-text">
-                <h2>Registrer behov</h2>
-
-                <p>
-                    Offentlige aktører kan registrere behov
-                    for ressurser under en krisesituasjon.
-                </p>
-            </div>
-
-            <span class="btn-circle" aria-hidden="true">
-                →
-            </span>
-
+<section class="container editorial-section">
+    <div class="section-heading"><div><p class="eyebrow">Fra oversikt til handling</p><h2>Riktig hjelp.<br />På riktig sted.</h2></div><p>Kjøretøy, utstyr og lokalkunnskap finnes rundt oss. Med en felles oversikt blir det lettere å se hva som er tilgjengelig, og hvor behovene er størst.</p></div>
+    <div class="feature-grid">
+        <a class="feature-card" asp-controller="Resource" asp-action="Index">
+            <div class="feature-image"><img src="~/images/ressurser/helikopter.jpg" alt="Helikopter som eksempel på en beredskapsressurs" loading="lazy" /><span class="image-tag">Ressurser</span></div>
+            <div class="feature-body"><h3>Se hva vi kan stille med <span aria-hidden="true">↗</span></h3><p>Utforsk tilgjengelig utstyr og kjøretøy. Filtrer etter kategori, status og sted.</p></div>
         </a>
-
-        @* Registrer ressurser *@
-        <a class="card card--accent-indigo home-action-card"
-           asp-controller="Resource"
-           asp-action="Create">
-
-            <div class="card-text">
-                <h2>Registrer ressurser</h2>
-
-                <p>
-                    Ressursleverandører kan registrere
-                    tilgjengelige ressurser under en krisesituasjon.
-                </p>
-            </div>
-
-            <span class="btn-circle btn-circle--indigo"
-                  aria-hidden="true">
-                →
-            </span>
-
+        <a class="feature-card" asp-controller="Need" asp-action="Index">
+            <div class="feature-image"><img src="~/images/ressurser/aggregat.jpg" alt="Utstyr for lokal strømberedskap" loading="lazy" /><span class="image-tag">Behov</span></div>
+            <div class="feature-body"><h3>Finn ut hvor du trengs <span aria-hidden="true">↗</span></h3><p>Se innmeldte behov, hvor hjelpen trengs og hvor mye det haster.</p></div>
         </a>
-
+        <a class="feature-card" asp-controller="Kart" asp-action="Oversikt">
+            <div class="feature-image"><img src="~/images/forsidelandskap.jpg" alt="Kystlandskap og bebyggelse i Norge" loading="lazy" /><span class="image-tag">Kartoversikt</span></div>
+            <div class="feature-body"><h3>Se det store bildet <span aria-hidden="true">↗</span></h3><p>Utforsk ressurser og behov på samme kart, med punkter og registrerte områder.</p></div>
+        </a>
     </div>
-
-    @* ===== 3. Oversiktskort ===== *@
-
-    <h2 class="section-title">Se oversikt</h2>
-
-    <div class="grid-3 home-overview-cards">
-
-        @* Ressursoversikt *@
-        <a class="card card-link"
-           asp-controller="Resource"
-           asp-action="Index">
-
-            <strong>Se alle ressurser</strong>
-            <span>Utforsk tilgjengelige ressurser.</span>
-
-        </a>
-
-        @* Behovsoversikt *@
-        <a class="card card-link"
-           asp-controller="Need"
-           asp-action="Index">
-
-            <strong>Se alle behov</strong>
-            <span>Utforsk registrerte behov.</span>
-
-        </a>
-
-        @* Kartoversikt *@
-        <a class="card card-link"
-           asp-controller="Kart"
-           asp-action="Oversikt">
-
-            <strong>Åpne kart</strong>
-            <span>Se ressurser og behov på kartet.</span>
-
-        </a>
-
+</section>
+<section class="community-section">
+    <div class="container community-grid">
+        <div class="community-photo"><img src="~/images/ressurser/bat.jpg" alt="Båt som kan bidra med transport på sjøen" loading="lazy" /></div>
+        <div class="community-copy"><p class="eyebrow">Beredskap starter lokalt</p><h2>Det viktigste vi har,<br />er hverandre.</h2><p>En båt. Et aggregat. Et par ekstra hender. Når vi deler det vi har, står lokalsamfunnet sterkere.</p><p>CrisisSystem knytter ressursleverandører og offentlige aktører sammen gjennom en felles oversikt.</p><a class="btn btn-secondary" asp-controller="Information" asp-action="Om">Bli kjent med tjenesten →</a></div>
     </div>
-
-</div>
-
- 
+</section>
+<section class="container editorial-section">
+    <div class="section-heading"><div><p class="eyebrow">Slik kommer du i gang</p><h2>Fra ditt bidrag<br />til vår beredskap.</h2></div><a class="text-link" asp-controller="Information" asp-action="Hjelp">Se spørsmål og svar ↗</a></div>
+    <div class="how-grid">
+        <article><h3>Opprett en bruker</h3><p>Velg om du representerer en offentlig aktør eller bidrar som ressursleverandør.</p><a asp-controller="Account" asp-action="Register">Registrer deg →</a></article>
+        <article><h3>Gjør det synlig</h3><p>Beskriv hva du kan tilby eller trenger. Velg plasseringen direkte i kartet.</p><a asp-controller="Resource" asp-action="Create">Registrer en ressurs →</a></article>
+        <article><h3>Finn hverandre</h3><p>Bruk oversikten og kontaktopplysningene på ressursene til å koordinere videre.</p><a asp-controller="Kart" asp-action="Oversikt">Utforsk kartet →</a></article>
+    </div>
+</section>
+<section class="join-section"><div class="container"><div><p class="eyebrow">Ditt bidrag teller</p><h2>Hva kan du bidra med?</h2></div><a class="btn btn-signal" asp-controller="Resource" asp-action="Create">Registrer en ressurs ↗</a></div></section>
