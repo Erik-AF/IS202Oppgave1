@@ -38,4 +38,43 @@ public class KartControllerTests
         Assert.IsType<ViewResult>(result);
         Assert.False(controller.ModelState.IsValid);
     }
+    
+    
+    [Fact]
+    public void ValidMapPoint_ShouldRedirectToOverview()
+    {
+        var controller = new KartController();
+        var model = new RegistrerPunktViewModel
+        {
+            Latitude = 58.1467,
+            Longitude = 7.9956,
+            Kategori = "behov",
+            Type = "Drikkevann",
+            Beskrivelse = "Behov for drikkevann"
+        };
+
+        var result = controller.Index(model);
+
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Oversikt", redirect.ActionName);
+    }
+
+    [Fact]
+    public void ValidMapPoint_ShouldNotProduceValidationError()
+    {
+        var controller = new KartController();
+        var model = new RegistrerPunktViewModel
+        {
+            Latitude = 58.1467,
+            Longitude = 7.9956,
+            Kategori = "ressurs",
+            Type = "Generator",
+            Beskrivelse = "Tilgjengelig generator"
+        };
+
+        controller.Index(model);
+
+        Assert.True(controller.ModelState.IsValid);
+    }
+
 }
