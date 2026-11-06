@@ -4,14 +4,14 @@ CrisisSystem is an ASP.NET Core MVC web application developed by **Group 7** at 
 
 ## Group 7 — Team Members
 
-| Name | GitHub 
-|---|---|---|
-| Erik Forberg | Erik-AF
-| Emma Opoku | emma-opoku
-| Sarah Brooks | BrooksSarah
-| Sindre Solberg | sindrejsolberg 
-| Marius Solberg | Marius-solberg
-| Vetle Hvål-Jenssen | VetleUIA 
+| Name | GitHub |
+|---|---|
+| Erik Forberg | Erik-AF|
+| Emma Opoku | emma-opoku|
+| Sarah Brooks | BrooksSarah|
+| Sindre Solberg | sindrejsolberg |
+| Marius Solberg | Marius-solberg|
+| Vetle Hvål-Jenssen | VetleUIA |
 
 
 
@@ -69,7 +69,7 @@ cd IS202Oppgave1
 No default user accounts or login credentials are documented in the current project README. Add confirmed demo accounts here if authentication is implemented. Do **not** commit real passwords or secrets.
 
 | User type | Example use | User Name | Password |
-|---|---|---|
+|---|---|---|---|
 | Public actor | Register a crisis-related need | publicactor@example.com |!RedSideraptors1|
 | Resource provider | Register an available resource | provider@example.com | !RiverScuttle1 |
 | Admin | Can do All | admin@example.com |!blueSideGromp1 |
