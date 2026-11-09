@@ -236,6 +236,7 @@ public class ResourceController : Controller
                 r.Latitude,
                 r.Longitude,
                 r.GeometryJson,
+                CategoryName = r.Category != null ? r.Category.Name : null,
             });
 
         return Json(data);
