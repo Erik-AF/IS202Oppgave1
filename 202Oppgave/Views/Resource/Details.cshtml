@@ -17,7 +17,7 @@
 }
 
 <div class="container home-content">
-    <div class="card" style="padding:2rem; max-width:600px;">
+    <a class="back-link" asp-action="Index">← Til oversikten</a><div class="card detail-card">
         
         @* Opplastet bilde. Vises bare hvis ressursen har et. *@
         @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
@@ -26,7 +26,7 @@
                  style="display:block; width:100%; aspect-ratio:16/10; object-fit:cover; margin-bottom:1.25rem;" />
         }
         
-        <h1>@Model.Type</h1>
+        <p class="eyebrow">Ressursdetaljer</p><h1>@Model.Type</h1>
         <p><strong>Kategori:</strong> @(Model.CategoryName ?? "Ikke satt")</p>
         @if (!string.IsNullOrWhiteSpace(Model.Description))
         {
@@ -43,7 +43,7 @@
         {
             <p>Ingen kartposisjon er lagret for denne ressursen.</p>
         }
-        <p><a asp-action="Index" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Tilbake</a></p>
+        <div class="detail-actions"><p><a asp-action="Index" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Tilbake</a></p>
         <p><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary" style="color:#fff; 
         text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Rediger</a></p>
         <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
@@ -56,6 +56,7 @@
                 Slett
             </button>
         </form>
+    </div>
     </div>
 </div>
 @section Scripts {
@@ -105,23 +106,3 @@
             }        </script>
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
