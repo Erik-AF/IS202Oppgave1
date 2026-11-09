@@ -17,11 +17,17 @@ namespace _202Oppgave.DataAccess.Repositories
         }
         public async Task<List<Need>> GetAllAsync()
         {
-            return await _context.Needs.ToListAsync();
+            // Tar med ressursene som er allokert til hvert behov
+            return await _context.Needs
+                .Include(n => n.Resources)
+                    .ThenInclude(r => r.Category)
+                .ToListAsync();
         }
         public async Task<Need?> GetByIdAsync(int id)
         {
             return await _context.Needs
+                .Include(n => n.Resources)
+                    .ThenInclude(r => r.Category)
                 .FirstOrDefaultAsync(n => n.Id == id);
         }
         public async Task UpdateAsync(Need need)
@@ -35,6 +41,13 @@ namespace _202Oppgave.DataAccess.Repositories
 
             if (need != null)
             {
+                // Frigjør ressursene som var allokert, så de kan brukes igjen.
+                // NeedId settes til null automatisk (DeleteBehavior.SetNull).
+                foreach (var resource in need.Resources)
+                {
+                    resource.Status = "Tilgjengelig";
+                }
+
                 _context.Needs.Remove(need);
                 await _context.SaveChangesAsync();
             }

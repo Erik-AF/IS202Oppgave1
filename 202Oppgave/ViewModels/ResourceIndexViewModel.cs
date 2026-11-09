@@ -1,4 +1,5 @@
 using _202Oppgave.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace _202Oppgave.ViewModels;
 
@@ -24,4 +25,7 @@ public class ResourceIndexViewModel
     public List<string> CategoryOptions { get; set; } = new();
     public List<string> StatusOptions { get; set; } = new();
     public List<string> AreaOptions { get; set; } = new();
+
+    // Behovene admin kan velge mellom når ressurser skal allokeres
+    public List<SelectListItem> NeedOptions { get; set; } = new();
 }

@@ -30,6 +30,7 @@ public class ResourceRepository : IResourceRepository
     {
         return await _context.Resources
             .Include(r => r.Category)
+            .Include(r => r.Need)
             .ToListAsync();
     }
 
@@ -38,6 +39,7 @@ public class ResourceRepository : IResourceRepository
     {
         return await _context.Resources
             .Include(r => r.Category)
+            .Include(r => r.Need)
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 

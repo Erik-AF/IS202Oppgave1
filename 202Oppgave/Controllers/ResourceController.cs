@@ -21,6 +21,9 @@ public class ResourceController : Controller
 {
     private readonly IResourceRepository _repo;
 
+// Trengs for å hente behovene admin kan allokere ressurser til
+    private readonly INeedRepository _needRepo;
+
 // Gir tilgang til wwwroot-mappen, der opplastede bilder lagres
     private readonly IWebHostEnvironment _env;
 
@@ -28,9 +31,10 @@ public class ResourceController : Controller
     private const string UploadFolder = "uploads/ressurser";
 
 // Dependency Injection
-    public ResourceController(IResourceRepository repo, IWebHostEnvironment env)
+    public ResourceController(IResourceRepository repo, INeedRepository needRepo, IWebHostEnvironment env)
     {
         _repo = repo;
+        _needRepo = needRepo;
         _env = env;
     }
     // GET: /Resource
@@ -98,6 +102,20 @@ public class ResourceController : Controller
         };
 
         model.Resources = result.ToList();
+
+        // Behovene som vises i allokeringsdialogen (bare admin ser den).
+        // Akutte behov først, deretter etter frist.
+        var needs = await _needRepo.GetAllAsync();
+        model.NeedOptions = needs
+            .OrderByDescending(n => n.Priority)
+            .ThenBy(n => n.Deadline)
+            .Select(n => new SelectListItem
+            {
+                Value = n.Id.ToString(),
+                Text = $"{n.Type} – {n.Location} ({(n.Priority == NeedPriority.Akutt ? "Akutt" : "Ikke akutt")}, frist {n.Deadline:dd.MM.yyyy})"
+            })
+            .ToList();
+
         return View(model);
     }
 
@@ -262,6 +280,74 @@ public class ResourceController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+    // POST: /Resource/Allocate
+    // Admin allokerer én eller flere ressurser til ett behov.
+    // Ressurser som allerede er allokert, flyttes til det nye behovet.
+    [Authorize(Roles = RoleNames.Admin)]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Allocate(int needId, List<int> resourceIds)
+    {
+        if (resourceIds == null || resourceIds.Count == 0)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        var need = await _needRepo.GetByIdAsync(needId);
+        if (need == null)
+        {
+            return NotFound();
+        }
+
+        var count = 0;
+        foreach (var id in resourceIds.Distinct())
+        {
+            var resource = await _repo.GetByIdAsync(id);
+            if (resource == null)
+            {
+                continue;
+            }
+
+            // Setter både navigasjonen og fremmednøkkelen, så EF ikke blir forvirret
+            // av det gamle behovet som ble hentet med Include()
+            resource.Need = need;
+            resource.NeedId = need.Id;
+            resource.Status = "Reservert";
+            await _repo.UpdateAsync(resource);
+            count++;
+        }
+
+        TempData["Success"] = count == 1
+            ? $"1 ressurs ble allokert til «{need.Type} – {need.Location}»."
+            : $"{count} ressurser ble allokert til «{need.Type} – {need.Location}».";
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    // POST: /Resource/Release/5
+    // Admin tar en ressurs vekk fra behovet den er allokert til.
+    // Ressursen blir tilgjengelig igjen.
+    [Authorize(Roles = RoleNames.Admin)]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Release(int id)
+    {
+        var resource = await _repo.GetByIdAsync(id);
+        if (resource == null)
+        {
+            return NotFound();
+        }
+
+        resource.Need = null;
+        resource.NeedId = null;
+        resource.Status = "Tilgjengelig";
+        await _repo.UpdateAsync(resource);
+
+        TempData["Success"] = $"«{resource.Type}» ble fjernet fra behovet og er tilgjengelig igjen.";
+
+        return RedirectToAction("Index", "Need");
+    }
+
     // Konverterer database-entity til modellen
     // som MVC Views allerede bruker
     private static ResourceModel ToModel(ResourceEntity entity)
@@ -283,7 +369,9 @@ public class ResourceController : Controller
             OwnerName = entity.OwnerName,
             ImagePath = entity.ImagePath,
             GeometryJson = entity.GeometryJson,
-            CategoryName = entity.Category?.Name
+            CategoryName = entity.Category?.Name,
+            NeedId = entity.NeedId,
+            NeedName = entity.Need == null ? null : $"{entity.Need.Type} – {entity.Need.Location}"
         };
     }
     // POST: /Resource/Edit/5
