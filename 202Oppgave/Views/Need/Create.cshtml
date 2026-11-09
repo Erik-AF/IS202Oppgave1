@@ -2,7 +2,7 @@
 @model _202Oppgave.ViewModels.NeedViewModel
 
 @{
-    ViewData["Title"] = "Registrer behov";
+ViewData["Title"] = "Registrer behov";
 }
 
 @section Head {
@@ -71,10 +71,10 @@
                  class="text-danger"
                  style="margin-bottom:1rem;">
             </div>
-            
+
             @* Skjult felt som sender kartformen sammen med skjmaet. *@
             <input asp-for="GeometryJson" type="hidden" />
-            
+
 
             <div style="margin-bottom:1rem;">
                 <label asp-for="Type">Type behov</label>
@@ -90,7 +90,7 @@
             </div>
 
             <div style="margin-bottom:1rem;">
-                <label asp-for="Location">Lokasjon</label>
+                <label asp-for="Location">Adresse eller sted for behovet</label>
                 <input asp-for="Location" class="form-control" />
                 <span asp-validation-for="Location" class="text-danger"></span>
             </div>
@@ -112,10 +112,10 @@
 
                     @foreach (var priority in Html.GetEnumSelectList<_202Oppgave.ViewModels.NeedPriority>())
                     {
-                        <option value="@priority.Value"
-                                selected="@priority.Selected">
-                            @(priority.Text == "IkkeAkutt" ? "Ikke akutt" : priority.Text)
-                        </option>
+                    <option value="@priority.Value"
+                            selected="@priority.Selected">
+                        @(priority.Text == "IkkeAkutt" ? "Ikke akutt" : priority.Text)
+                    </option>
                     }
                 </select>
 
@@ -158,176 +158,245 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+<partial name="_ValidationScriptsPartial" />
 
-    <script>
-        // Opprett kartet
-        const map = L.map('need-map')
-            .setView([58.1467, 7.9956], 13);
+<script>
+    // Opprett kartet
+    const map = L.map('need-map')
+        .setView([58.1467, 7.9956], 13);
 
-        // OpenStreetMap
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+    // OpenStreetMap
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-        // Gruppe for tegninger
-        const drawnItems = new L.FeatureGroup();
-        map.addLayer(drawnItems);
+    // Gruppe for tegninger
+    const drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
 
-        // Tilpass linjeverktøyet
-        const originalAddVertex = L.Draw.Polyline.prototype.addVertex;
+    // Tilpass linjeverktøyet
+    const originalAddVertex = L.Draw.Polyline.prototype.addVertex;
 
-        L.Draw.Polyline.include({
-            addVertex: function (latlng) {
-                const result = originalAddVertex.call(this, latlng);
+    L.Draw.Polyline.include({
+        addVertex: function (latlng) {
+            const result = originalAddVertex.call(this, latlng);
 
-                if (this._markers.length === 1) {
-                    const firstMarker = this._markers[0];
+            if (this._markers.length === 1) {
+                const firstMarker = this._markers[0];
 
-                    firstMarker.off('click');
+                firstMarker.off('click');
 
-                    firstMarker.on('click', (event) => {
-                        if (this._markers.length < 3) {
-                            return;
-                        }
-
-                        if (event.originalEvent) {
-                            L.DomEvent.stop(event.originalEvent);
-                        }
-
-                        const firstPoint =
-                            this._markers[0].getLatLng();
-
-                        originalAddVertex.call(this, firstPoint);
-
-                        this.completeShape();
-                    });
-                }
-
-                return result;
-            }
-        });
-
-        // Leaflet.Draw-verktøy
-        const drawControl = new L.Control.Draw({
-            draw: {
-                polygon: true,
-                polyline: true,
-                circle: true,
-                rectangle: true,
-                marker: true,
-                circlemarker: false
-            },
-            edit: {
-                featureGroup: drawnItems,
-                remove: true
-            }
-        });
-
-        map.addControl(drawControl);
-
-        // Koordinatfeltene
-        const latitudeInput =
-            document.getElementById('Latitude');
-
-        const longitudeInput =
-            document.getElementById('Longitude');
-        
-        // Henter feltet som skal innehodlde kartformen
-        const geometryInput = document.getElementById('GeometryJson');
-
-        // Lagrer formen i det skjulte feltet.
-        function updateGeometry(layer) {
-            const geometry = layer.toGeoJSON();
-
-            // Tar også vare på radius hvis formen er en sirkel.
-            if (layer instanceof L.Circle) {
-                geometry.properties.radius = layer.getRadius();
-            }
-
-            geometryInput.value = JSON.stringify(geometry);
-        }
-        
-        // Oppdater koordinater for alle figurtyper
-        function updateCoordinates(layer) {
-            updateGeometry(layer);
-            let latlng;
-
-            if (layer instanceof L.Marker ||
-                layer instanceof L.Circle) {
-                latlng = layer.getLatLng();
-            } else if (typeof layer.getBounds === 'function') {
-                latlng = layer.getBounds().getCenter();
-            }
-
-            if (latlng) {
-                latitudeInput.value = latlng.lat.toFixed(6);
-                longitudeInput.value = latlng.lng.toFixed(6);
-            }
-        }
-
-        // Gjenopprett formen etter skjemafeil.
-        if (geometryInput.value) {
-            const geometry = JSON.parse(geometryInput.value);
-
-            const restored = L.geoJSON(geometry, {
-                pointToLayer: function (feature, latlng) {
-                    const radius = feature.properties?.radius;
-
-                    if (typeof radius === 'number' && radius > 0) {
-                        return L.circle(latlng, { radius: radius });
+                firstMarker.on('click', (event) => {
+                    if (this._markers.length < 3) {
+                        return;
                     }
 
-                    return L.marker(latlng);
-                }
-            });
+                    if (event.originalEvent) {
+                        L.DomEvent.stop(event.originalEvent);
+                    }
 
-            restored.eachLayer(function (layer) {
-                drawnItems.addLayer(layer);
-            });
+                    const firstPoint =
+                        this._markers[0].getLatLng();
 
-            map.fitBounds(drawnItems.getBounds(), {
-                padding: [20, 20],
-                maxZoom: 15
-            });
-        } else if (latitudeInput.value && longitudeInput.value) {
-            const lat = Number(latitudeInput.value.replace(',', '.'));
-            const lng = Number(longitudeInput.value.replace(',', '.'));
+                    originalAddVertex.call(this, firstPoint);
 
-            if (Number.isFinite(lat) && Number.isFinite(lng)) {
-                drawnItems.addLayer(L.marker([lat, lng]));
-                map.setView([lat, lng], 13);
+                    this.completeShape();
+                });
             }
+
+            return result;
+        }
+    });
+
+    // Leaflet.Draw-verktøy
+    const drawControl = new L.Control.Draw({
+        draw: {
+            polygon: false,
+            polyline: true,
+            circle: true,
+            rectangle: true,
+            marker: true,
+            circlemarker: false
+        },
+        edit: {
+            featureGroup: drawnItems,
+            remove: true
+        }
+    });
+
+    map.addControl(drawControl);
+
+    // Koordinatfeltene
+    const latitudeInput =
+        document.getElementById('Latitude');
+
+    const longitudeInput =
+        document.getElementById('Longitude');
+
+    // Henter feltet som skal innehodlde kartformen
+    const geometryInput = document.getElementById('GeometryJson');
+
+    // Adresseforslag etter at brukeren velger eller redigerer en kartform.
+    const addressInput = document.getElementById('Location');
+    const addressStatus = document.createElement('small');
+    addressStatus.setAttribute('role', 'status');
+    addressStatus.style.display = 'block';
+    addressStatus.textContent = 'Adresseforslag fra Kartverket. Du kan rette stedet manuelt.';
+    addressInput.insertAdjacentElement('afterend', addressStatus);
+
+    let addressVersion = 0;
+    let addressTimer;
+    let addressController;
+
+    function cancelAddressLookup() {
+        ++addressVersion;
+        clearTimeout(addressTimer);
+        addressController?.abort();
+    }
+
+    addressInput.addEventListener('input', function () {
+        cancelAddressLookup();
+        addressStatus.textContent = 'Manuelt angitt adresse eller sted.';
+    });
+
+    function scheduleAddressLookup(latlng) {
+        cancelAddressLookup();
+        const version = addressVersion;
+        addressInput.value = '';
+        addressStatus.textContent = 'Henter adresseforslag fra Kartverket …';
+
+        addressTimer = setTimeout(async function () {
+            const controller = new AbortController();
+            addressController = controller;
+            const query = new URLSearchParams({
+                lat: latlng.lat.toString(),
+                lon: latlng.lng.toString()
+            });
+
+            try {
+                const response = await fetch(
+                    '@Url.Action("ReverseGeocode", "Kart")' + '?' + query,
+                    { signal: controller.signal }
+                );
+                if (!response.ok) throw new Error('Adresseoppslag feilet');
+                const result = await response.json();
+                if (version !== addressVersion) return;
+
+                addressInput.value = result.address ?? '';
+                addressStatus.textContent = result.address
+                    ? 'Nærmeste adresse innen 100 meter, fra Kartverket. Kontroller og rett ved behov.'
+                    : 'Ingen adresse innen 100 meter. Skriv inn adresse eller sted manuelt.';
+            } catch (error) {
+                if (version !== addressVersion || error.name === 'AbortError') return;
+                addressStatus.textContent = 'Kunne ikke hente adresse. Skriv inn adresse eller sted manuelt.';
+            }
+        }, 350);
+    }
+
+    // Lagrer formen i det skjulte feltet.
+    function updateGeometry(layer) {
+        const geometry = layer.toGeoJSON();
+
+        // Tar også vare på radius hvis formen er en sirkel.
+        if (layer instanceof L.Circle) {
+            geometry.properties.radius = layer.getRadius();
+        }
+
+        geometryInput.value = JSON.stringify(geometry);
+    }
+
+    // Oppdater koordinater for alle figurtyper
+    function updateCoordinates(layer) {
+        updateGeometry(layer);
+        let latlng;
+
+        if (layer instanceof L.Marker ||
+            layer instanceof L.Circle) {
+            latlng = layer.getLatLng();
+        } else if (typeof layer.getBounds === 'function') {
+            latlng = layer.getBounds().getCenter();
+        }
+
+        if (latlng) {
+            latitudeInput.value = latlng.lat.toFixed(6);
+            longitudeInput.value = latlng.lng.toFixed(6);
+            scheduleAddressLookup(latlng);
+        }
+    }
+
+    // Gjenopprett formen etter skjemafeil.
+    if (geometryInput.value) {
+        const geometry = JSON.parse(geometryInput.value);
+
+        const restored = L.geoJSON(geometry, {
+            pointToLayer: function (feature, latlng) {
+                const radius = feature.properties?.radius;
+
+                if (typeof radius === 'number' && radius > 0) {
+                    return L.circle(latlng, { radius: radius });
+                }
+
+                return L.marker(latlng);
+            }
+        });
+
+        restored.eachLayer(function (layer) {
+            drawnItems.addLayer(layer);
+        });
+
+        map.fitBounds(drawnItems.getBounds(), {
+            padding: [20, 20],
+            maxZoom: 15
+        });
+    } else if (latitudeInput.value && longitudeInput.value) {
+        const lat = Number(latitudeInput.value.replace(',', '.'));
+        const lng = Number(longitudeInput.value.replace(',', '.'));
+
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+            drawnItems.addLayer(L.marker([lat, lng]));
+            map.setView([lat, lng], 13);
+        }
 }
 
-        // Når en ny markering opprettes
-        map.on('draw:created', function (e) {
-            drawnItems.clearLayers();
+    // Når en ny markering opprettes
+    map.on('draw:created', function (e) {
+        drawnItems.clearLayers();
 
-            const layer = e.layer;
-            drawnItems.addLayer(layer);
+        const layer = e.layer;
+        drawnItems.addLayer(layer);
 
+        updateCoordinates(layer);
+    });
+
+    // Når markeringen redigeres
+    map.on('draw:edited', function (e) {
+        e.layers.eachLayer(function (layer) {
             updateCoordinates(layer);
         });
+    });
 
-        // Når markeringen redigeres
-        map.on('draw:edited', function (e) {
-            e.layers.eachLayer(function (layer) {
-                updateCoordinates(layer);
-            });
-        });
+    // Tømmer koordinater og formdata når markeringen slettes.
+    map.on('draw:deleted', function () {
+        latitudeInput.value = '';
+        longitudeInput.value = '';
+        geometryInput.value = '';
+        cancelAddressLookup();
+        addressInput.value = '';
+        addressStatus.textContent = 'Velg en ny plassering på kartet.';
+    });
 
-        // Tømmer koordinater og formdata når markeringen slettes.
-        map.on('draw:deleted', function () {
-            latitudeInput.value = '';
-            longitudeInput.value = '';
-            geometryInput.value = '';
-        });
+    // Oppdater kartstørrelsen
+    setTimeout(function () {
+        map.invalidateSize();
+    }, 100);
 
-        // Oppdater kartstørrelsen
-        setTimeout(function () {
-            map.invalidateSize();
-        }, 100);
-    </script>
+    // Aktiver verktøylinjens markør ved åpning av et tomt skjema.
+    if (drawnItems.getLayers().length === 0) {
+        drawControl._toolbars.draw._modes.marker.handler.enable();
+    }
+</script>
 }
+
+
+
