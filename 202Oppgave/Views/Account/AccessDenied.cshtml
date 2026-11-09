@@ -1,6 +1,7 @@
-﻿@{
-    ViewData["Title"] = "Access denied";
+@{
+    ViewData["Title"] = "Du mangler tilgang";
 }
 
 <h1>@ViewData["Title"]</h1>
-<p>You do not have permission to access this resource.</p>
+<p>Brukeren din har ikke tilgang til denne siden. Du kan gå tilbake til oversikten eller logge inn med en annen bruker.</p>
+<a class="btn btn-secondary" asp-controller="Home" asp-action="Index">Til forsiden</a>

@@ -4,145 +4,27 @@
     ViewData["Title"] = "Registrerte behov";
 }
 
-@section Head {
-    <style>
-        /* --- Farger og skrift for behovsoversikten (prefiks rl- = resource list) --- */
-        :root {
-            --rl-ink: #111214; /* overskrifter */
-            --rl-text: #1f2124; /* brødtekst */
-            --rl-muted: #5b5f66; /* svakere tekst */
-            --rl-soft: #edeeec; /* lysegrå boks */
-            --rl-line: #d6d7d3; /* tynne linjer */
-        }
-        .rl {
 
-            -webkit-font-smoothing: antialiased;   /* skarpere tekst på Mac */
-            color: var(--rl-text);
-            font-weight: 300;
-            padding-block: 1.5rem 5rem;
-        }
-
-        /* ===== Topp ===== */
-        .rl-head {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .rl-head h1 {
-            margin: 0 0 0.5rem;
-            font-size: clamp(2.2rem, 4.5vw, 3.2rem);
-            font-weight: 300;
-            letter-spacing: -0.02em;
-            color: var(--rl-ink);
-        }
-
-        .rl-head p { margin: 0; font-size: 1.1rem; }
-
-        /* knapp med mørk kant, fylles ved hover */
-        .rl-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.6rem;
-            min-height: 48px;
-            padding: 0 1.4rem;
-            border: 1.5px solid var(--rl-ink);
-            background: transparent;
-            color: var(--rl-ink);
-            font: inherit;
-            font-weight: 400;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .rl-btn:hover { background: var(--rl-ink); color: #fff; }
-        .rl-list {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            border-top: 1px solid var(--rl-ink);
-        }
-
-        .rl-list > li { border-bottom: 1px solid var(--rl-line); }
-
-        /* Behov vises med tekst og prioritet i hver rad. */
-        .rl-row {
-            overflow-wrap: anywhere;
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto;
-            gap: 1.5rem;
-            align-items: center;
-            padding: 1.5rem 1rem;
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .rl-row:hover { background: #f5f5f3; }
-
-
-        .rl-row h2 {
-            margin: 0 0 0.35rem;
-            font-size: 1.35rem;
-            font-weight: 400;
-            color: var(--rl-ink);
-        }
-
-        .rl-desc { margin: 0 0 0.6rem; line-height: 1.5; }
-
-        .rl-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem 1.5rem;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            font-size: 0.92rem;
-            color: var(--rl-muted);
-        }
-
-        .rl-side {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.9rem;
-        }
-
-        .rl-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 400;
-            color: var(--rl-ink);
-            white-space: nowrap;
-        }
-
-        /* fargeprikken, eneste fargen på siden */
-        .rl-dot { width: 9px; height: 9px; border-radius: 50%; }
-        .rl-dot--red { background: var(--brick); }
-        .rl-dot--yellow { background: var(--map-planned); }
-
-        .rl-more { font-weight: 400; color: var(--rl-ink); white-space: nowrap; }
-
-        .rl-empty { padding: 2.5rem 2rem; background: var(--rl-soft); }
-        .rl-empty p { margin: 0; }
-
-        @@media (max-width: 560px) {
-            .rl-row { grid-template-columns: 1fr; gap: 0.75rem; }
-            .rl-side { flex-direction: row; justify-content: space-between; }
-        }
-    </style>
-}
 
 <div class="container rl">
     <header class="rl-head">
-        <h1>Registrerte behov</h1>
+        <div><p class="eyebrow">Der hjelpen trengs</p><h1>Registrerte behov</h1><p>Finn lokale behov og se hvordan du kan bidra.</p></div>
         <a class="rl-btn" asp-action="Create">Registrer nytt behov</a>
     </header>
 
+    <div class="rl-layout">
+        <form class="rl-filter" data-need-filter role="search">
+            <h2>Finn et behov</h2>
+            <label class="rl-label" for="need-search">Søk etter behov eller sted</label>
+            <input class="rl-input" id="need-search" type="search" placeholder="For eksempel strøm eller Kristiansand" />
+            <label class="rl-label" for="need-priority">Prioritet</label>
+            <select class="rl-input" id="need-priority"><option value="">Alle behov</option><option value="urgent">Akutt</option><option value="planned">Ikke akutt</option></select>
+            <button class="rl-btn rl-btn--full" type="submit">Vis behov</button>
+            <button class="rl-reset" type="reset">Nullstill filter</button>
+        </form>
+        <section aria-label="Behovslisten">
+        <p class="rl-found" id="need-count" role="status">@Model.Count behov funnet</p>
+        <div class="rl-empty" id="need-no-matches" hidden>Ingen behov passer med søket. Prøv et annet sted eller en annen prioritet.</div>
     @if (!Model.Any())
     {
         <div class="rl-empty"><p>Ingen behov er registrert ennå.</p></div>
@@ -153,7 +35,7 @@
             @foreach (var need in Model)
             {
                 var isUrgent = need.Priority == _202Oppgave.ViewModels.NeedPriority.Akutt;
-                <li>
+                <li data-need-item data-priority="@(isUrgent ? "urgent" : "planned")">
                     <a class="rl-row" asp-action="Confirmation" asp-route-id="@need.Id">
                         <div>
                             <h2>@need.Type</h2>
@@ -175,4 +57,6 @@
             }
         </ul>
     }
+        </section>
+    </div>
 </div>
