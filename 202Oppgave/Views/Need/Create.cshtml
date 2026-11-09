@@ -6,49 +6,49 @@ ViewData["Title"] = "Registrer behov";
 }
 
 @section Head {
-    <style>
-        /* Kartets størrelse */
-        #need-map {
-            height: 550px;
-            width: 100%;
-            border-radius: 12px;
-        }
+<style>
+    /* Kartets størrelse */
+    #need-map {
+        height: 550px;
+        width: 100%;
+        border-radius: 12px;
+    }
 
-        /* Små koordinatfelt ved siden av hverandre under kartet */
-        .resource-coords {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 0.75rem;
-        }
+    /* Små koordinatfelt ved siden av hverandre under kartet */
+    .resource-coords {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 0.75rem;
+    }
 
-        /* Mindre tekst, så feltene ikke tar fokus fra skjemaet */
-        .resource-coords label,
-        .resource-coords input {
-            font-size: 0.85rem;
-        }
+    /* Mindre tekst, så feltene ikke tar fokus fra skjemaet */
+    .resource-coords label,
+    .resource-coords input {
+        font-size: 0.85rem;
+    }
 
-        /* Grå bakgrunn viser at feltene ikke kan redigeres.
-           Må være mer spesifikk enn .form-control[readonly] i components.css */
-        .resource-coords .form-control[readonly] {
-            background-color: #edeeec;
-            color: var(--muted);
-            cursor: default;
-        }
+    /* Grå bakgrunn viser at feltene ikke kan redigeres.
+       Må være mer spesifikk enn .form-control[readonly] i components.css */
+    .resource-coords .form-control[readonly] {
+        background-color: #edeeec;
+        color: var(--muted);
+        cursor: default;
+    }
 
-        /* Ingen blå fokusramme når man klikker i feltene */
-        .resource-coords .form-control[readonly]:focus {
-            border-color: var(--line-strong);
-            box-shadow: none;
-        }
+    /* Ingen blå fokusramme når man klikker i feltene */
+    .resource-coords .form-control[readonly]:focus {
+        border-color: var(--line-strong);
+        box-shadow: none;
+    }
 
-        /* På mobil legges kartet under skjemaet */
-        @@media (max-width: 800px) {
-            #need-layout {
-                grid-template-columns: 1fr;
-            }
+    /* På mobil legges kartet under skjemaet */
+    @@media (max-width: 800px) {
+        #need-layout {
+            grid-template-columns: 1fr;
         }
-    </style>
+    }
+</style>
 }
 
 <div class="container home-content">
@@ -125,7 +125,7 @@ ViewData["Title"] = "Registrer behov";
 
             <button type="submit"
                     class="btn btn-primary"
-                    >
+            >
                 Registrer
             </button>
 
@@ -159,6 +159,7 @@ ViewData["Title"] = "Registrer behov";
 
 @section Scripts {
 <partial name="_ValidationScriptsPartial" />
+<script src="~/js/map-utils.js" asp-append-version="true"></script>
 
 <script>
     // Opprett kartet
@@ -209,13 +210,27 @@ ViewData["Title"] = "Registrer behov";
         }
     });
 
+
+    const priorityInput = document.getElementById('Priority');
+
+    function needAreaStyle() {
+        return getMapAreaStyle({
+            kategori: 'behov',
+            prioritet: priorityInput.value === '2' ? 'Akutt' : 'Planlagt'
+        });
+    }
+
+    function styleNeedLayer(layer) {
+        if (typeof layer.setStyle === 'function') layer.setStyle(needAreaStyle());
+    }
+
     // Leaflet.Draw-verktøy
     const drawControl = new L.Control.Draw({
         draw: {
             polygon: false,
-            polyline: true,
-            circle: true,
-            rectangle: true,
+            polyline: { shapeOptions: needAreaStyle() },
+            circle: { shapeOptions: needAreaStyle() },
+            rectangle: { shapeOptions: needAreaStyle() },
             marker: true,
             circlemarker: false
         },
@@ -329,12 +344,13 @@ ViewData["Title"] = "Registrer behov";
     if (geometryInput.value) {
         const geometry = JSON.parse(geometryInput.value);
 
-        const restored = L.geoJSON(geometry, {
+        const restored = L.geoJSON(prepareMapGeometry(geometry), {
+            style: needAreaStyle(),
             pointToLayer: function (feature, latlng) {
                 const radius = feature.properties?.radius;
 
                 if (typeof radius === 'number' && radius > 0) {
-                    return L.circle(latlng, { radius: radius });
+                    return L.circle(latlng, { ...needAreaStyle(), radius: radius });
                 }
 
                 return L.marker(latlng);
@@ -363,7 +379,15 @@ ViewData["Title"] = "Registrer behov";
     map.on('draw:created', function (e) {
         drawnItems.clearLayers();
 
-        const layer = e.layer;
+        let layer = e.layer;
+        // Et lukket omriss blir et fylt område.
+        if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+            const points = layer.getLatLngs();
+            if (points.length >= 4 && points[0].equals(points[points.length - 1])) {
+                layer = L.polygon(points.slice(0, -1), needAreaStyle());
+            }
+        }
+        styleNeedLayer(layer);
         drawnItems.addLayer(layer);
 
         updateCoordinates(layer);
@@ -386,6 +410,17 @@ ViewData["Title"] = "Registrer behov";
         addressStatus.textContent = 'Velg en ny plassering på kartet.';
     });
 
+
+    // Oppdater fargene når prioriteten endres.
+    priorityInput.addEventListener('change', function () {
+        drawnItems.eachLayer(styleNeedLayer);
+        drawControl.setDrawingOptions({
+            polyline: { shapeOptions: needAreaStyle() },
+            circle: { shapeOptions: needAreaStyle() },
+            rectangle: { shapeOptions: needAreaStyle() }
+        });
+    });
+
     // Oppdater kartstørrelsen
     setTimeout(function () {
         map.invalidateSize();
@@ -397,6 +432,7 @@ ViewData["Title"] = "Registrer behov";
     }
 </script>
 }
+
 
 
 
