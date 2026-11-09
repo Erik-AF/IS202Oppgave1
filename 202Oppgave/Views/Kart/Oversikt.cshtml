@@ -53,7 +53,8 @@
         padding: 24px;
         background: rgba(255, 255, 255, 0.96);
         border-radius: 24px;
-        box-shadow: 0 10px 28px rgba(20, 45, 60, 0.18);
+        box-shadow: 0 16px 40px rgba(20, 45, 60, 0.22);
+        border: 1px solid rgba(255,255, 255, 0.85);
         color: #142b3b;
     }
 
@@ -100,244 +101,146 @@
         color: #566570;
         font-size: 13px;
     }
+    #map .leaflet-top.leaflet-right {
+        top: 14px;
+        right: 14px;
+    }
+
+    #map .leaflet-control-zoom {
+        border: none;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(20, 45, 60, 0.15);
+    }
+
+    #map .leaflet-control-zoom a {
+        width: 44px;
+        height: 44px;
+        line-height: 44px;
+        background: white;
+        color: #142b3b;
+    }
+    #map .leaflet-tile-pane{
+        filter: saturate(0.8) brightness(1.02) contrast(1.08);    }
+
+    /* Ikonmarkører: hvitt symbol på farget, dråpeformet bakgrunn. */
+    #map .crisis-marker { background: transparent; border: 0; }
+    #map .crisis-pin {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        box-sizing: border-box;
+        border: 3px solid white;
+        border-radius: 50% 50% 50% 0;
+        transform: translateY(1px) rotate(-45deg);
+        box-shadow: 0 4px 12px #142b3b40;
+    }
+    #map .crisis-pin-symbol {
+        width: 25px;
+        height: 25px;
+        color: white;
+        transform: rotate(45deg);
+    }
+    #map .crisis-marker:focus-visible .crisis-pin {
+        outline: 3px solid #142b3b;
+        outline-offset: 3px;
+    }
 </style>
 
 @section Scripts {
-    <script src="~/js/map-utils.js"></script>
+    <script src="~/js/map-utils.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-relief@@latest/dist/leaflet-relief.umd.js"></script>
     <script>
-        var map = L.map('map', {
-            zoomControl: false
-        }).setView([58.1467, 7.9956], 11);
-        
-        // Samler ressurser og behov i hvert sitt kartlag
+        var map = L.map('map', { zoomControl: false })
+            .setView([58.1467, 7.9956], 13);
+
         var resourceLayer = L.layerGroup().addTo(map);
         var needLayer = L.layerGroup().addTo(map);
-        
-        // Viser eller skulder ressursene
-        document.getElementById('show-resources').addEventListner('change', function(){
-            if (this.checked) {
-                map.addLayer(resourceLayer);
-            } else {
-                map.removeLayer(resourceLayer);
-            }
-        });
-        
-        // Viser elle skjuler behovene
-        document.getElementById('show-needs').addEventListener('change', function(){
-            if (this.checked) {
-                map.addLayer(needLayer);
-            } else{
-                map.removeLayer(needLayer);
-            }
-        });
-        
-        
-        // Plasserrer zoomknappene øverst til høyre
-        L.control.zoom({
-            position: 'topright'
-        }).addTo(map);
-        
-        // Viser avstander i metert og kilometer
-        L.control.scale({
-            position: 'bottomright',
-            imperial: false
-        }).addTo(map);
+
+        function bindLayerToggle(id, layer) {
+            document.getElementById(id).addEventListener('change', function () {
+                if (this.checked) map.addLayer(layer);
+                else map.removeLayer(layer);
+            });
+        }
+        bindLayerToggle('show-resources', resourceLayer);
+        bindLayerToggle('show-needs', needLayer);
+
+        L.control.zoom({ position: 'topright' }).addTo(map);
+        L.control.scale({ position: 'bottomright', imperial: false }).addTo(map);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        fetch('/Kart/Data')
-            .then(response => response.json())
-            .then(punkter => {
-                punkter.forEach(function (p) {
-                    var marker = L.circleMarker([p.latitude, p.longitude], {
-                        radius: 9,
-                        fillColor: getMarkerColor(p),
-                        color: '#000',
-                        weight: 1,
-                        fillOpacity: 0.9
-                    }).addTo(map);
-
-                    marker.bindPopup(
-                        '<strong>' + p.type + '</strong><br>' +
-                        'Kategori: ' + p.kategori + '<br>' +
-                        'Status: ' + p.status + '<br>' +
-                        (p.prioritet ? 'Prioritet: ' + p.prioritet + '<br>' : '') +
-                        'Kontakt: ' + p.kontaktpunkt + '<br>' +
-                        p.beskrivelse
-                    );
-                });
-            })
-            .catch(error => {
-                console.error('Klarte ikke å hente kartdata:', error);
-            });
-        fetch('@Url.Action("Geo", "Resource")')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Kunne ikke hente ressurser');
-                }
-                return response.json();
-            })
-            .then(resources => {
-                resources.forEach(function (r) {
-                    const color = getMarkerColor({
-                        kategori: 'ressurs',
-                        status: r.status,
-                    })
-                    
-                    let marker;
-                    
-                    // Vis den lagrede formen npr ressursen har formdata
-                    if (r.geometryJson) {
-                        const geometry = JSON.parse(r.geometryJson);
-
-                        marker = L.geoJSON(geometry, {
-                            style: {
-                                color: color,
-                                weight: 3,
-                                fillColor: color,
-                                fillOpacity: 0.25,
-                            },
-                            pointToLayer: function (feature, latlng){
-                                const radius = feature.properties?.radius;
-                                
-                                if (typeof radius === 'number' && radius > 0) {
-                                    return L.circle(latlng,{
-                                        radius: radius,
-                                        color: color,
-                                        fillOpacity: 0.25,
-                                    });
-                                }
-                                return L.circleMarker(latlng, {
-                                    radius: 9,
-                                    fillColor: color,
-                                    color: '#000',
-                                    fillOpacity: 0.9,
-                                });
-                            }
-                        }).addTo(resourceLayer);
-                    } else {
-
-                        marker = L.circleMarker(
-                            [r.latitude, r.longitude],
-                            {
-                                radius: 9,
-                                fillColor: getMarkerColor({
-                                    kategori: 'ressurs',
-                                    status: r.status
-                                }),
-                                color: '#000',
-                                weight: 1,
-                                fillOpacity: 0.9
-                            }
-                        ).addTo(resourceLayer);
-                    }
-
-                    const popup = document.createElement('div');
-
-                    const title = document.createElement('strong');
-                    title.textContent = r.type;
-
-                    const info = document.createElement('p');
-                    info.textContent =
-                        'Område: ' + (r.area ?? '') +
-                        ' – Status: ' + (r.status ?? '');
-
-                    const link = document.createElement('a');
-                    link.href = '@Url.Action("Details", "Resource")'
-                        + '?id=' + encodeURIComponent(r.id);
-                    link.textContent = 'Se detaljer';
-
-                    popup.append(title, info, link);
-                    marker.bindPopup(popup);
-                });
-            })
-            .catch(error => {
-                console.error('Klarte ikke å hente ressurser:', error);
-            });
-
-
-            // Henter registrerte behov fra NeedController og viser dem på felleskartet.
-fetch('@Url.Action("Geo", "Need")')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Kunne ikke hente behov');
-        }
-        return response.json();
-    })
-    .then(needs => {
-        needs.forEach(function (need) {
-        const color = getMarkerColor(need);
-        let marker;
-
-// Vis den lagrede formen hvis behovet har formdata.
-        if (need.geometryJson) {
-            const geometry = JSON.parse(need.geometryJson);
-
-            marker = L.geoJSON(geometry, {
-                style: {
-                    color: color,
-                    weight: 3,
-                    fillColor: color,
-                    fillOpacity: 0.25
-                },
-                pointToLayer: function (feature, latlng) {
-                    const radius = feature.properties?.radius;
-
-                    // Gjenopprett sirkler med den lagrede radiusen.
-                    if (typeof radius === 'number' && radius > 0) {
-                        return L.circle(latlng, {
-                            radius: radius,
-                            color: color,
-                            fillOpacity: 0.25
-                        });
-                    }
-
-                    return L.circleMarker(latlng, {
-                        radius: 9,
-                        fillColor: color,
-                        color: '#000',
-                        weight: 1,
-                        fillOpacity: 0.9
-                    });
-                }
-            }).addTo(needLayer);
-        } else {
-            // Eldre behov uten formdata vises som et punkt.
-            marker = L.circleMarker(
-                [need.latitude, need.longitude],
-                {
-                    radius: 9,
-                    fillColor: color,
-                    color: '#000',
-                    weight: 1,
-                    fillOpacity: 0.9
-                }
-            ).addTo(needLayer);
+        // Kartdataene skal fortsatt vises om terrengtillegget ikke lastes.
+        if (typeof L.gridLayer.relief === 'function') {
+            try {
+                L.gridLayer.relief({
+                    mode: 'hillshade', opacity: 0.3, hillshadeExaggeration: 1.8
+                }).addTo(map);
+            } catch (error) {
+                console.warn('Terrenglaget kunne ikke lastes:', error);
+            }
         }
 
-            // Tekstinnhold slik at brukerens tekst ikke tolkes som HTML.
+        // Bruk tekstnoder slik at registrert tekst ikke tolkes som HTML.
+        function createPopup(punkt, detailsUrl) {
             const popup = document.createElement('div');
-
             const title = document.createElement('strong');
-            title.textContent = need.type;
+            title.textContent = punkt.type ?? 'Registrering';
+            popup.append(title);
 
-            const info = document.createElement('p');
-            info.textContent = need.beskrivelse;
+            function addLine(label, value) {
+                if (value == null || value === '') return;
+                const line = document.createElement('p');
+                line.textContent = label + value;
+                popup.append(line);
+            }
+            addLine('Sted: ', punkt.location ?? punkt.area);
+            addLine('Status: ', punkt.status);
+            addLine('Prioritet: ', punkt.prioritet);
+            addLine('Kontakt: ', punkt.kontaktpunkt);
+            addLine('', punkt.beskrivelse ?? punkt.description);
 
-            const link = document.createElement('a');
-            link.href = '@Url.Action("Confirmation", "Need")'
-                + '?id=' + encodeURIComponent(need.id);
-            link.textContent = 'Se detaljer';
+            if (detailsUrl) {
+                const link = document.createElement('a');
+                link.href = detailsUrl + '?id=' + encodeURIComponent(punkt.id);
+                link.textContent = 'Se detaljer';
+                popup.append(link);
+            }
+            return popup;
+        }
 
-            popup.append(title, info, link);
-            marker.bindPopup(popup);
-        });
-    })
-    .catch(error => {
-        console.error('Klarte ikke å hente behov:', error);
-    });
+        async function loadPoints(url, layer, normalize, detailsUrl) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Kunne ikke hente kartdata');
+                const points = await response.json();
+                if (!Array.isArray(points)) throw new Error('Uventet svar fra kartendepunktet');
+                points.forEach(function (item) {
+                    try {
+                        const point = normalize(item);
+                        const feature = createMapFeature(point);
+                        if (!feature) return;
+                        feature.addTo(layer);
+                        feature.bindPopup(createPopup(point, detailsUrl));
+                    } catch (error) {
+                        console.warn('Kunne ikke vise registrering:', item.id, error);
+                    }
+                });
+            } catch (error) {
+                console.error('Klarte ikke å hente kartdata fra ' + url, error);
+            }
+        }
 
+        // Beholder eksempeldataene, og lar avkrysningen skjule behovene også her.
+        loadPoints('@Url.Action("Data", "Kart")', needLayer, p => p, null);
+        loadPoints('@Url.Action("Geo", "Resource")', resourceLayer,
+            r => ({ ...r, kategori: 'ressurs' }), '@Url.Action("Details", "Resource")');
+        loadPoints('@Url.Action("Geo", "Need")', needLayer,
+            n => ({ ...n, kategori: 'behov' }), '@Url.Action("Confirmation", "Need")');
     </script>
 }
