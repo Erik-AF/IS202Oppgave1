@@ -27,6 +27,9 @@
         "Reservert" => "rl-dot--yellow",
         _ => "rl-dot--grey"
     };
+
+    // Bare admin kan velge ressurser og allokere dem til et behov
+    var isAdmin = User.IsInRole(_202Oppgave.Models.Authorization.RoleNames.Admin);
 }
 
 
@@ -95,7 +98,16 @@
                 @* ===== Listen =====
            Én rad per ressurs: bilde, tekst, status og lenke til Details. *@
         <section>
-            <p class="rl-found">@Model.Resources.Count ressurser funnet</p>
+            <div class="rl-toolbar">
+                <p class="rl-found">@Model.Resources.Count ressurser funnet</p>
+                @if (isAdmin && Model.Resources.Any())
+                {
+                    @* Aktiveres av skriptet nederst når minst én ressurs er valgt *@
+                    <button type="button" class="rl-btn" id="allocate-open" disabled>
+                        Alloker valgte (<span data-allocate-count>0</span>)
+                    </button>
+                }
+            </div>
 
             @if (!Model.Resources.Any())
             {
@@ -110,7 +122,16 @@
                 <ul class="rl-list">
                     @foreach (var r in Model.Resources)
                     {
-                        <li>
+                        <li class="@(isAdmin ? "rl-pick" : null)">
+                            @if (isAdmin)
+                            {
+                                @* Avkrysningsboksen ligger utenfor lenken, ellers åpner klikket detaljsiden.
+                                   form="allocate-form" kobler den til skjemaet i dialogen under. *@
+                                <label class="rl-check">
+                                    <input type="checkbox" name="resourceIds" value="@r.Id" form="allocate-form" data-allocate-check />
+                                    <span class="visually-hidden">Velg @r.Type</span>
+                                </label>
+                            }
                             @* hele raden er en lenke til detaljsiden *@
                             <a class="rl-row" asp-action="Details" asp-route-id="@r.Id">
 
@@ -129,6 +150,10 @@
                                             <li>@r.OwnerName</li>
                                         }
                                         <li>@r.Area</li>
+                                        @if (r.NeedName != null)
+                                        {
+                                            <li class="rl-allocated">Allokert til: @r.NeedName</li>
+                                        }
                                         @if (r.AvailableFrom != null || r.AvailableTo != null)
                                         {
                                             <li>@(r.AvailableFrom?.ToString("dd.MM.yyyy") ?? "nå") – @(r.AvailableTo?.ToString("dd.MM.yyyy") ?? "ubestemt")</li>
@@ -150,3 +175,66 @@
         </section>
     </div>
 </div>
+
+@if (isAdmin)
+{
+    @* ===== Allokering =====
+       Dialogen åpnes med «Alloker valgte». Avkrysningsboksene i listen
+       sendes med skjemaet via form-attributtet. *@
+    <dialog class="rl-dialog" id="allocate-dialog" aria-labelledby="allocate-title">
+        <form id="allocate-form" asp-action="Allocate" method="post">
+            <h2 id="allocate-title">Alloker ressurser</h2>
+
+            @if (Model.NeedOptions.Any())
+            {
+                <p><span data-allocate-count>0</span> valgte ressurser tildeles behovet du velger, og får status «Reservert». Ressurser som allerede er allokert, flyttes til det nye behovet.</p>
+
+                <label for="needId" class="rl-label">Behov</label>
+                <select id="needId" name="needId" class="rl-input" required>
+                    <option value="">Velg behov</option>
+                    @foreach (var n in Model.NeedOptions)
+                    {
+                        <option value="@n.Value">@n.Text</option>
+                    }
+                </select>
+            }
+            else
+            {
+                <p>Det er ingen registrerte behov å allokere til ennå.</p>
+            }
+
+            <div class="rl-dialog-actions">
+                <button type="button" class="rl-reset" id="allocate-cancel">Avbryt</button>
+                <button type="submit" class="rl-btn" disabled="@(!Model.NeedOptions.Any())">Alloker</button>
+            </div>
+        </form>
+    </dialog>
+}
+
+@* Skriptet gjør ingenting hvis dialogen ikke finnes (ikke admin) *@
+@section Scripts {
+    <script>
+        (() => {
+            const dialog = document.getElementById('allocate-dialog');
+            const openButton = document.getElementById('allocate-open');
+            if (!dialog || !openButton) return;
+
+            const checks = document.querySelectorAll('[data-allocate-check]');
+            const counters = document.querySelectorAll('[data-allocate-count]');
+
+            // Oppdaterer antall valgte, og slår knappen av/på
+            const update = () => {
+                const selected = [...checks].filter(c => c.checked).length;
+                counters.forEach(el => el.textContent = selected);
+                openButton.disabled = selected === 0;
+            };
+
+            checks.forEach(c => c.addEventListener('change', update));
+            openButton.addEventListener('click', () => dialog.showModal());
+            document.getElementById('allocate-cancel').addEventListener('click', () => dialog.close());
+
+            // Nettleseren kan huske avkryssinger når man går tilbake til siden
+            update();
+        })();
+    </script>
+}

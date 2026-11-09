@@ -2,6 +2,9 @@
 
 @{
     ViewData["Title"] = "Registrerte behov";
+
+    // Bare admin kan ta ressurser vekk fra et behov
+    var isAdmin = User.IsInRole(_202Oppgave.Models.Authorization.RoleNames.Admin);
 }
 
 
@@ -53,6 +56,34 @@
                             <span class="rl-more">Se detaljer</span>
                         </div>
                     </a>
+
+                    @* Ressursene som er allokert til behovet. Ligger utenfor lenken,
+                       fordi et skjema ikke kan ligge inne i en lenke. *@
+                    @if (need.Resources.Any())
+                    {
+                        <div class="nl-allocated">
+                            <h3 class="rl-label">Allokerte ressurser (@need.Resources.Count)</h3>
+                            <ul>
+                                @foreach (var r in need.Resources)
+                                {
+                                    <li>
+                                        <div>
+                                            <a asp-controller="Resource" asp-action="Details" asp-route-id="@r.Id">@r.Type</a>
+                                            <span class="nl-allocated-meta">
+                                                @(string.IsNullOrWhiteSpace(r.CategoryName) ? r.Area : $"{r.CategoryName} · {r.Area}")
+                                            </span>
+                                        </div>
+                                        @if (isAdmin)
+                                        {
+                                            <form asp-controller="Resource" asp-action="Release" asp-route-id="@r.Id" method="post">
+                                                <button type="submit" class="nl-release">Fjern fra behov</button>
+                                            </form>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
                 </li>
             }
         </ul>

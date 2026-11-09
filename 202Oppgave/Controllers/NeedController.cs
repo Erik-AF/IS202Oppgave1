@@ -176,7 +176,20 @@ public class NeedController : Controller
             Description = need.Description,
             Deadline = need.Deadline,
             Latitude = need.Latitude,
-            Longitude = need.Longitude
+            Longitude = need.Longitude,
+            // Ressursene som er allokert til behovet
+            Resources = need.Resources
+                .OrderBy(r => r.Type)
+                .Select(r => new Models.Resource
+                {
+                    Id = r.Id,
+                    Type = r.Type,
+                    Area = r.Name,
+                    Status = r.Status,
+                    OwnerName = r.OwnerName,
+                    CategoryName = r.Category?.Name
+                })
+                .ToList()
         };
     }
 }
