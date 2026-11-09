@@ -4,6 +4,9 @@
 
 @{
     ViewData["Title"] = "Registrert behov";
+    // Bare admin kan ta ressurser vekk fra behovet
+    var isAdmin = User.IsInRole(_202Oppgave.Models.Authorization.RoleNames.Admin);
+
 }
 
 <div class="container home-content">
@@ -16,6 +19,40 @@
         <p><strong>Frist for hjelp:</strong> @Model.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
         <p><strong>Breddegrad:</strong> @Model.Latitude</p>
         <p><strong>Lengdegrad:</strong> @Model.Longitude</p>
+        @* Ressursene admin har allokert til behovet *@
+        <div class="nl-allocated" style="padding: 12px 0 22px;">
+            <h2 class="rl-label">Allokerte ressurser (@Model.Resources.Count)</h2>
+
+            @if (!Model.Resources.Any())
+            {
+                <p>Ingen ressurser er allokert til dette behovet ennå.</p>
+            }
+            else
+            {
+                <ul>
+                    @foreach (var r in Model.Resources)
+                    {
+                        <li>
+                            <div>
+                                <a asp-controller="Resource" asp-action="Details" asp-route-id="@r.Id">@r.Type</a>
+                                <span class="nl-allocated-meta">
+                                    @(string.IsNullOrWhiteSpace(r.CategoryName) ? r.Area : $"{r.CategoryName} · {r.Area}")
+                                </span>
+                            </div>
+                            @if (isAdmin)
+                            {
+                                <form asp-controller="Resource" asp-action="Release" asp-route-id="@r.Id" method="post">
+                                    @* Sender brukeren tilbake hit etterpå, ikke til behovslisten *@
+                                    <input type="hidden" name="returnNeedId" value="@Model.Id" />
+                                    <button type="submit" class="nl-release">Fjern fra behov</button>
+                                </form>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
         <div id="details-map" style="height:350px; width:100%; margin-bottom:1rem;"></div>
         <div class="detail-actions"><p><a asp-action="Index" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Se alle behov</a></p>
         <a asp-action="Create">Registrer et nytt behov</a>

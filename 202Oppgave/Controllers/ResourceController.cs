@@ -330,7 +330,8 @@ public class ResourceController : Controller
     [Authorize(Roles = RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Release(int id)
+    public async Task<IActionResult> Release(int id, int? returnNeedId = null)
+
     {
         var resource = await _repo.GetByIdAsync(id);
         if (resource == null)
@@ -344,8 +345,16 @@ public class ResourceController : Controller
         await _repo.UpdateAsync(resource);
 
         TempData["Success"] = $"«{resource.Type}» ble fjernet fra behovet og er tilgjengelig igjen.";
+        
+        // Kom brukeren fra detaljsiden til et behov, sendes hen tilbake dit
+        if (returnNeedId != null)
+        {
+            return RedirectToAction("Confirmation", "Need", new { id = returnNeedId });
+        }
 
         return RedirectToAction("Index", "Need");
+
+
     }
 
     // Konverterer database-entity til modellen
@@ -421,6 +430,14 @@ public class ResourceController : Controller
         entity.Status = model.Status;
         entity.OwnerName = model.OwnerName;
         entity.CategoryId = model.CategoryId;
+        // Settes ressursen til Tilgjengelig, er den ikke lenger i bruk på et behov.
+        // Setter både navigasjonen og fremmednøkkelen, slik som i Release.
+        if (entity.Status == "Tilgjengelig")
+        {
+            entity.Need = null;
+            entity.NeedId = null;
+        }
+
 
         // Lagre i MariaDB
         await _repo.UpdateAsync(entity);
