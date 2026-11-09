@@ -13,5 +13,7 @@ namespace _202Oppgave.Models.Entities
         public double Longitude { get; set; }
         public string? GeometryJson { get; set; }
 
+        // Ressursene som admin har allokert til dette behovet.
+        public List<Resource> Resources { get; set; } = new();
     }
 }

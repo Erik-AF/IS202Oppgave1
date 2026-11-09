@@ -383,6 +383,9 @@ namespace _202Oppgave.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<int?>("NeedId")
+                        .HasColumnType("int");
+
                     b.Property<string>("OwnerName")
                         .HasColumnType("longtext");
 
@@ -398,6 +401,8 @@ namespace _202Oppgave.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("NeedId");
 
                     b.ToTable("Resources");
                 });
@@ -460,10 +465,22 @@ namespace _202Oppgave.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("_202Oppgave.Models.Entities.Need", "Need")
+                        .WithMany("Resources")
+                        .HasForeignKey("NeedId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Category");
+
+                    b.Navigation("Need");
                 });
 
             modelBuilder.Entity("_202Oppgave.Models.Entities.Category", b =>
+                {
+                    b.Navigation("Resources");
+                });
+
+            modelBuilder.Entity("_202Oppgave.Models.Entities.Need", b =>
                 {
                     b.Navigation("Resources");
                 });

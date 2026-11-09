@@ -36,8 +36,15 @@ namespace _202Oppgave.DataAccess
                     .WithMany(c => c.Resources)
                     .HasForeignKey(e => e.CategoryId)
                     .OnDelete(DeleteBehavior.SetNull);
+
+                // Ett behov kan ha mange ressurser, en ressurs er allokert til maks ett behov.
+                // Slettes behovet, blir NeedId satt til null i stedet for at ressursene slettes.
+                entity.HasOne(e => e.Need)
+                    .WithMany(n => n.Resources)
+                    .HasForeignKey(e => e.NeedId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
-            
+
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.HasKey(c => c.Id);

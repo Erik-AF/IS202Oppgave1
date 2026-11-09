@@ -16,4 +16,7 @@ public class Need
 
     //Muliggjør at former som blir tegnet på kart dukker opp
     public string? GeometryJson { get; set; }
+
+    // Ressursene som er allokert til behovet
+    public List<Resource> Resources { get; set; } = new();
 }

@@ -36,5 +36,12 @@
         public Category Category { get; set; }
 
         public string? GeometryJson { get; set; }
+
+        // Fremmednøkkel til behovet ressursen er allokert til.
+        // Null betyr at ressursen ikke er tildelt noe behov.
+        public int? NeedId { get; set; }
+
+        // Selve behovet. Fylles når vi henter med Include() i repository.
+        public Need? Need { get; set; }
     }
 }

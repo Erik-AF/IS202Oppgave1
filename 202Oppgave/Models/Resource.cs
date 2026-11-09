@@ -54,5 +54,9 @@ public class Resource
     // Kategorien ressursen hører til
     public int? CategoryId { get; set; }
     public string? CategoryName { get; set; }
-    
+
+    // Behovet ressursen er allokert til. Null betyr ikke allokert.
+    public int? NeedId { get; set; }
+    public string? NeedName { get; set; }
+
 }
