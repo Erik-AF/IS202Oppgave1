@@ -1,8 +1,17 @@
 // Delte hjelpefunksjoner for kartvisningene.
 function getMarkerColor(punkt) {
-    if (punkt.kategori === 'behov' && punkt.prioritet === 'Akutt') return '#c84b3c';
-    if (punkt.kategori === 'behov' && punkt.prioritet === 'Planlagt') return '#a7770a';
-    if (punkt.kategori === 'ressurs' && punkt.status === 'Tilgjengelig') return '#20745c';
+    if (punkt.kategori === 'behov') {
+        const priority = String(punkt.prioritet ?? punkt.priority ?? '')
+            .trim().toLocaleLowerCase('nb-NO').replace(/[\s_-]+/g, '');
+        if (priority === 'akutt' || priority === '2') return '#c84b3c';
+        if (['planlagt', 'ikkeakutt', '1'].includes(priority)) return '#e87516';
+    }
+    if (punkt.kategori === 'ressurs') {
+        const status = String(punkt.status ?? '').trim().toLocaleLowerCase('nb-NO');
+        if (status === 'tilgjengelig') return '#20745c';
+        if (status === 'reservert') return '#c49300';
+        if (status === 'utilgjengelig') return '#65737d';
+    }
     if (punkt.kategori === 'offentlig_aktor') return '#3279b5';
     return '#65737d';
 }
@@ -82,15 +91,47 @@ function createMapIcon(punkt) {
     });
 }
 
+// Samme tydelige områdestil i registreringen og kartoversikten.
+function getMapAreaStyle(punkt) {
+    const color = getMarkerColor(punkt);
+    return {
+        color, weight: 5, opacity: 1,
+        fillColor: color, fillOpacity: 0.32,
+        lineCap: 'round', lineJoin: 'round'
+    };
+}
+
+// Gamle lukkede linjer vises som fylte områder uten å endre lagrede data.
+function prepareMapGeometry(geometry) {
+    if (!geometry || typeof geometry !== 'object') return geometry;
+    if (geometry.type === 'Feature') {
+        return { ...geometry, geometry: prepareMapGeometry(geometry.geometry) };
+    }
+    if (geometry.type === 'FeatureCollection') {
+        return { ...geometry, features: geometry.features.map(prepareMapGeometry) };
+    }
+    if (geometry.type === 'LineString') {
+        const points = geometry.coordinates;
+        if (Array.isArray(points) && points.length >= 4) {
+            const first = points[0];
+            const last = points[points.length - 1];
+            if (first[0] === last[0] && first[1] === last[1]) {
+                return { ...geometry, type: 'Polygon', coordinates: [points] };
+            }
+        }
+    }
+    return geometry;
+}
+
 // Beholder kartformen. Sirkler har radius i GeoJSON-egenskapene.
 function createMapFeature(punkt) {
     const color = getMarkerColor(punkt);
-    const style = { color, weight: 3, fillColor: color, fillOpacity: 0.22 };
+    const style = getMapAreaStyle(punkt);
     if (punkt.geometryJson) {
         try {
             const geometry = typeof punkt.geometryJson === 'string'
                 ? JSON.parse(punkt.geometryJson) : punkt.geometryJson;
-            return L.geoJSON(geometry, {
+            return L.geoJSON(prepareMapGeometry(geometry), {
                 style,
                 pointToLayer: function (feature, latlng) {
                     const radius = feature.properties?.radius;
