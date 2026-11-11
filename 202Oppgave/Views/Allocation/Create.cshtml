@@ -1,0 +1,77 @@
+@model _202Oppgave.ViewModels.AllocateViewModel
+
+@*
+    Create.cshtml – allokerer valgte ressurser til et behov.
+    Brukeren kommer hit fra ressurslisten etter å ha krysset av ressurser.
+    Skjemaet sendes til AllocationController.Create (POST).
+*@
+
+@{
+    ViewData["Title"] = "Alloker ressurser";
+}
+
+<div class="container home-content" style="max-width:760px;">
+
+    <a asp-controller="Resource" asp-action="Index">← Tilbake til ressurslisten</a>
+    <h1 style="font-weight:300; margin:1rem 0 0.5rem;">Alloker ressurser</h1>
+    <p style="margin:0 0 2rem;">Velg hvilket behov ressursene skal allokeres til.</p>
+
+    @if (!Model.Resources.Any())
+    {
+        @* Alle valgte ressurser er allerede tatt av noen andre *@
+        <div style="padding:2rem; background:#edeeec;">
+            <p style="margin:0 0 1rem;">Ingen av de valgte ressursene er tilgjengelige lenger.</p>
+            <a asp-controller="Resource" asp-action="Index">Velg andre ressurser</a>
+        </div>
+    }
+    else
+    {
+        @* --- De valgte ressursene --- *@
+        <h2 style="font-size:1.1rem; font-weight:500;">Valgte ressurser (@Model.Resources.Count)</h2>
+        <ul style="list-style:none; padding:0; margin:0 0 2rem; border-top:1px solid #111214;">
+            @foreach (var r in Model.Resources)
+            {
+                <li style="padding:0.9rem 0.25rem; border-bottom:1px solid #d6d7d3;">
+                    <strong style="font-weight:500;">@(r.CategoryName ?? "Uten kategori")</strong>
+                    – @(r.Description ?? r.Type)
+                    <span style="color:#5b5f66;"> · @r.Area</span>
+                </li>
+            }
+        </ul>
+
+        @* --- Skjemaet --- *@
+        <form asp-action="Create" method="post" style="padding:2rem; background:#edeeec;">
+
+            @* Id-ene sendes med som skjulte felt, ett per ressurs.
+               Alle heter "ResourceIds", så de havner i listen i ViewModel. *@
+            @foreach (var r in Model.Resources)
+            {
+                <input type="hidden" name="ResourceIds" value="@r.Id" />
+            }
+
+            <div style="margin-bottom:1.25rem;">
+                <label asp-for="NeedId" style="display:block; font-weight:500; margin-bottom:0.4rem;"></label>
+                <select asp-for="NeedId" asp-items="Model.NeedOptions" class="form-select">
+                    <option value="">Velg behov</option>
+                </select>
+                <span asp-validation-for="NeedId" style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1.5rem;">
+                <label asp-for="Note" style="display:block; font-weight:500; margin-bottom:0.4rem;"></label>
+                <textarea asp-for="Note" class="form-control" rows="3"
+                          placeholder="F.eks. hentes ved låven kl. 08"></textarea>
+                <span asp-validation-for="Note" style="color:var(--brick);"></span>
+            </div>
+
+            <button type="submit"
+                    style="min-height:48px; padding:0 1.4rem; border:1.5px solid #111214; background:#111214; color:#fff; cursor:pointer;">
+                Alloker @Model.Resources.Count ressurs(er) →
+            </button>
+        </form>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

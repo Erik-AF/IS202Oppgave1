@@ -3,7 +3,10 @@
 @*
     Index.cshtml – oversikt over alle registrerte ressurser.
     Filtreringen skjer i ResourceController.Index (GET).
-    Skjemaet sender valgene i adressen, f.eks. /Resource?type=Traktor
+    Skjemaet sender valgene i adressen, f.eks. /Resource?category=Drone
+
+    Tilgjengelige ressurser kan krysses av og allokeres til et behov.
+    De valgte sendes til AllocationController.Create (GET).
 *@
 
 @{
@@ -29,9 +32,38 @@
     };
 }
 
+@section Head {
+    <style>
+        /* --- Allokering: avkrysningsboks per rad og knapp under listen --- */
 
+        /* rad: avkrysningsboks til venstre, resten av raden til høyre */
+        .rl-list > li { display: flex; align-items: center; }
+        .rl-row { flex: 1; }
 
- 
+        .rl-pick {
+            display: flex;
+            justify-content: center;
+            width: 44px;
+            flex-shrink: 0;
+        }
+
+        .rl-pick input { width: 20px; height: 20px; cursor: pointer; }
+
+        /* knappen ligger fast nederst i vinduet mens man blar i listen */
+        .rl-allocate {
+            position: sticky;
+            bottom: 0;
+            padding: 1rem 0;
+            background: #fff;
+            border-top: 1px solid #d6d7d3;
+            text-align: right;
+        }
+
+        /* melding fra AllocationController */
+        .rl-msg { padding: 0.9rem 1rem; background: #edeeec; margin: 0 0 1rem; }
+    </style>
+}
+
 <div class="container rl">
 
     @* ===== Topp: tittel og knapp ===== *@
@@ -92,9 +124,19 @@
             <a asp-action="Index" class="rl-reset">Nullstill filter</a>
         </form>
 
-                @* ===== Listen =====
-           Én rad per ressurs: bilde, tekst, status og lenke til Details. *@
+        @* ===== Listen =====
+           Én rad per ressurs: avkrysningsboks, bilde, tekst, status og lenke til Details.
+
+           Skjemaet sender de avkryssede ressursene til AllocationController.Create (GET),
+           f.eks. /Allocation/Create?resourceIds=3&resourceIds=7 *@
+        <form asp-controller="Allocation" asp-action="Create" method="get">
         <section>
+            @* Melding fra AllocationController, f.eks. "Velg minst én ressurs" *@
+            @if (TempData["Message"] is string message)
+            {
+                <p class="rl-msg">@message</p>
+            }
+
             <p class="rl-found">@Model.Resources.Count ressurser funnet</p>
 
             @if (!Model.Resources.Any())
@@ -111,6 +153,18 @@
                     @foreach (var r in Model.Resources)
                     {
                         <li>
+                            @* Avkrysningsboks bare for tilgjengelige ressurser.
+                               Alle heter "resourceIds", så de valgte havner i én liste.
+                               Står ved siden av lenken, ikke inni, så et klikk på boksen
+                               ikke åpner detaljsiden. *@
+                            <span class="rl-pick">
+                                @if (r.Status == "Tilgjengelig")
+                                {
+                                    <input type="checkbox" name="resourceIds" value="@r.Id"
+                                           aria-label="Velg @(r.CategoryName ?? r.Type)" />
+                                }
+                            </span>
+
                             @* hele raden er en lenke til detaljsiden *@
                             <a class="rl-row" asp-action="Details" asp-route-id="@r.Id">
 
@@ -147,6 +201,15 @@
                     }
                 </ul>
             }
+
+            @* Knappen vises bare når minst én ressurs kan allokeres *@
+            @if (Model.Resources.Any(r => r.Status == "Tilgjengelig"))
+            {
+                <div class="rl-allocate">
+                    <button type="submit" class="rl-btn">Alloker valgte ressurser →</button>
+                </div>
+            }
         </section>
+        </form>
     </div>
 </div>
