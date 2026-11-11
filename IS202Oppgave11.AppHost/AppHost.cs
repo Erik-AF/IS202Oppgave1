@@ -21,7 +21,7 @@ builder.AddDockerfile(
     "202Oppgave/Dockerfile")
     .WithHttpEndpoint(
         port: 5027,
-        targetPort: 8080)
-    .WithLifetime(ContainerLifetime.Persistent);
+        targetPort: 8080);
+    
 
 builder.Build().Run();
