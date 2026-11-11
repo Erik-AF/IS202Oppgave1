@@ -18,9 +18,12 @@ public class AllocatedResourcesViewComponent : ViewComponent
     }
 
     // Kalles fra viewet med: @await Component.InvokeAsync("AllocatedResources", new { needId = ... })
-    public async Task<IViewComponentResult> InvokeAsync(int needId)
+    // returnTo sier hvilken side brukeren skal tilbake til etter "Fjern":
+    // "Confirmation" (behovssiden) eller "Edit" (Rediger behov).
+    public async Task<IViewComponentResult> InvokeAsync(int needId, string returnTo = "Confirmation")
     {
         var allocations = await _allocationRepo.GetForNeedAsync(needId);
+        ViewData["ReturnTo"] = returnTo;
         return View(allocations);
     }
 }

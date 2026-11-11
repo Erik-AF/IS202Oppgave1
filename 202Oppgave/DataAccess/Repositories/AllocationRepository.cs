@@ -51,5 +51,62 @@ namespace _202Oppgave.DataAccess.Repositories
                 .OrderByDescending(a => a.Date)
                 .ToListAsync();
         }
+        public async Task<int?> RemoveAsync(int allocationId)
+        {
+            var allocation = await _context.Allocations
+                .Include(a => a.Resource)
+                .FirstOrDefaultAsync(a => a.AllocationId == allocationId);
+
+            if (allocation == null)
+            {
+                return null;
+            }
+
+            var needId = allocation.NeedId;
+            var resource = allocation.Resource;
+
+            _context.Allocations.Remove(allocation);
+
+            // Ressursen blir tilgjengelig igjen, men bare hvis den ikke
+            // er allokert til andre behov også.
+            var hasOtherAllocations = await _context.Allocations
+                .AnyAsync(a => a.ResourceId == resource.Id && a.AllocationId != allocationId);
+
+            if (!hasOtherAllocations)
+            {
+                resource.Status = "Tilgjengelig";
+            }
+
+            // Én SaveChanges: slettingen og statusendringen lagres sammen
+            await _context.SaveChangesAsync();
+
+            return needId;
+        }
+        public async Task<Dictionary<int, List<string>>> GetResourceNamesByNeedAsync()
+        {
+            // Én spørring: henter bare feltene vi trenger fra Allocations,
+            // Resources og Categories (to JOIN-er i SQL)
+            var rows = await _context.Allocations
+                .Select(a => new
+                {
+                    a.NeedId,
+                    Category = a.Resource.Category != null ? a.Resource.Category.Name : null,
+                    a.Resource.Description,
+                    a.Resource.Type
+                })
+                .ToListAsync();
+
+            // Grupperer per behov, og lager f.eks. "Traktor – John Deere 6R"
+            return rows
+                .GroupBy(r => r.NeedId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(r =>
+                    {
+                        var text = string.IsNullOrWhiteSpace(r.Description) ? r.Type : r.Description;
+                        return r.Category != null ? $"{r.Category} – {text}" : text;
+                    }).ToList());
+        }
+        
     }
 }

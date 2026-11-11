@@ -129,7 +129,7 @@
     </form>
     
     @* Ressursene som er allokert til behovet, under skjemaet *@
-    @await Component.InvokeAsync("AllocatedResources", new { needId = (int)ViewBag.NeedId })
+    @await Component.InvokeAsync("AllocatedResources", new { needId = (int)ViewBag.NeedId, returnTo = "Edit"  })
 </div>
 
 @section Scripts {

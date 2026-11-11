@@ -81,6 +81,26 @@ public class AllocationController : Controller
         // Sender brukeren til behovssiden, der de allokerte ressursene vises
         return RedirectToAction("Confirmation", "Need", new { id = need.Id });
     }
+    
+    // POST: /Allocation/Remove/5
+    // Fjerner en ressurs fra et behov, og sender brukeren tilbake til siden de kom fra.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Remove(int id, string? returnTo)
+    {
+        var needId = await _allocationRepo.RemoveAsync(id);
+
+        if (needId == null)
+        {
+            return NotFound();
+        }
+
+        TempData["Message"] = "Ressursen er fjernet fra behovet og er tilgjengelig igjen.";
+
+        // Bare to lovlige sider å gå tilbake til. Alt annet blir behovssiden.
+        var action = returnTo == "Edit" ? "Edit" : "Confirmation";
+        return RedirectToAction(action, "Need", new { id = needId });
+    }
 
     // Fyller visningsdataene: de valgte ressursene og listen over behov.
     // Brukes både første gang siden vises og når den vises på nytt med feil.

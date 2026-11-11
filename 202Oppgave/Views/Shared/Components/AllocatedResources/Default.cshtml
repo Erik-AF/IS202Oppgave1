@@ -31,6 +31,18 @@
                             <span> · @a.Note</span>
                         }
                     </div>
+                    
+                    @* Fjern ressursen fra behovet. POST, fordi det endrer databasen. *@
+                    <form asp-controller="Allocation" asp-action="Remove" asp-route-id="@a.AllocationId"
+                          method="post" style="margin-top:0.5rem;"
+                          onsubmit="return confirm('Fjerne ressursen fra behovet?');">
+                        <input type="hidden" name="returnTo" value="@ViewData["ReturnTo"]" />
+                        <button type="submit"
+                                style="padding:0.35rem 0.9rem; border:1px solid var(--brick); background:transparent; color:var(--brick); cursor:pointer;">
+                            Fjern
+                        </button>
+                    </form>
+                    
                 </li>
             }
         </ul>
