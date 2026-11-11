@@ -19,6 +19,9 @@ builder.Services.AddScoped<_202Oppgave.DataAccess.Repositories.IResourceReposito
 // Gjør NeedRepository tilgjengelig for controlleren gjennom INeedRepository.
 builder.Services.AddScoped<INeedRepository, NeedRepository>();
 
+// Gjør AllocationRepository tilgjengelig for controllere og ViewComponents.
+builder.Services.AddScoped<IAllocationRepository, AllocationRepository>();
+
 var connectionString = builder.Configuration
     .GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException(

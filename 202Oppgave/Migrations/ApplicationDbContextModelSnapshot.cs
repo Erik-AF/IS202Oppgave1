@@ -218,6 +218,43 @@ namespace _202Oppgave.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("_202Oppgave.Models.Entities.Allocation", b =>
+                {
+                    b.Property<int>("AllocationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("AllocationId"));
+
+                    b.Property<DateTime>("Date")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+
+                    b.Property<int>("NeedId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("AllocationId");
+
+                    b.HasIndex("NeedId");
+
+                    b.HasIndex("ResourceId");
+
+                    b.ToTable("Allocations");
+                });
+
             modelBuilder.Entity("_202Oppgave.Models.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -301,6 +338,11 @@ namespace _202Oppgave.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("datetime(6)");
 
@@ -360,6 +402,11 @@ namespace _202Oppgave.Migrations
                     b.Property<string>("ContactPhone")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
@@ -453,6 +500,25 @@ namespace _202Oppgave.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("_202Oppgave.Models.Entities.Allocation", b =>
+                {
+                    b.HasOne("_202Oppgave.Models.Entities.Need", "Need")
+                        .WithMany("Allocations")
+                        .HasForeignKey("NeedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("_202Oppgave.Models.Entities.Resource", "Resource")
+                        .WithMany("Allocations")
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Need");
+
+                    b.Navigation("Resource");
+                });
+
             modelBuilder.Entity("_202Oppgave.Models.Entities.Resource", b =>
                 {
                     b.HasOne("_202Oppgave.Models.Entities.Category", "Category")
@@ -466,6 +532,16 @@ namespace _202Oppgave.Migrations
             modelBuilder.Entity("_202Oppgave.Models.Entities.Category", b =>
                 {
                     b.Navigation("Resources");
+                });
+
+            modelBuilder.Entity("_202Oppgave.Models.Entities.Need", b =>
+                {
+                    b.Navigation("Allocations");
+                });
+
+            modelBuilder.Entity("_202Oppgave.Models.Entities.Resource", b =>
+                {
+                    b.Navigation("Allocations");
                 });
 #pragma warning restore 612, 618
         }

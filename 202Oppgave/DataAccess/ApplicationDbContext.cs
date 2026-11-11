@@ -17,6 +17,8 @@ namespace _202Oppgave.DataAccess
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Need> Needs { get; set; }
         public DbSet<Category> Categories { get; set; }
+        
+        public DbSet<Allocation> Allocations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,6 +31,10 @@ namespace _202Oppgave.DataAccess
                 entity.Property(e => e.Description).HasMaxLength(1000);
                 entity.Property(e => e.Type).HasMaxLength(100);
                 entity.Property(e => e.ImagePath).HasMaxLength(300);
+                // Databasen fyller inn tidspunktet når en ny ressurs settes inn
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
+                    .ValueGeneratedOnAdd();
                 
                 // Én kategori har mange ressurser.
                 // Slettes en kategori, blir CategoryId satt til null i stedet for at ressursene slettes.
@@ -38,7 +44,7 @@ namespace _202Oppgave.DataAccess
                     .OnDelete(DeleteBehavior.SetNull);
             });
             
-            modelBuilder.Entity<Category>(entity =>
+                        modelBuilder.Entity<Category>(entity =>
             {
                 entity.HasKey(c => c.Id);
                 entity.Property(c => c.Name).HasMaxLength(100).IsRequired();
@@ -58,6 +64,43 @@ namespace _202Oppgave.DataAccess
                     new Category { Id = 10, Name = "Personell/ferdighet" },
                     new Category { Id = 11, Name = "Annet" }
                 );
+            });
+
+            modelBuilder.Entity<Need>(entity =>
+            {
+                // Databasen fyller inn tidspunktet når et nytt behov settes inn
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
+                    .ValueGeneratedOnAdd();
+            });
+
+            // Allocation: koblingstabell mellom Resource og Need (mange-til-mange),
+            // slik som i ER-diagrammet.
+            modelBuilder.Entity<Allocation>(entity =>
+            {
+                entity.HasKey(a => a.AllocationId);
+
+                entity.Property(a => a.State).HasMaxLength(30).IsRequired();
+                entity.Property(a => a.Note).HasMaxLength(500);
+
+                // Databasen setter tidspunktet når allokeringen lages
+                entity.Property(a => a.Date)
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
+                    .ValueGeneratedOnAdd();
+
+                // Én ressurs har mange allokeringer.
+                // Slettes ressursen, slettes allokeringene også.
+                entity.HasOne(a => a.Resource)
+                    .WithMany(r => r.Allocations)
+                    .HasForeignKey(a => a.ResourceId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Ett behov har mange allokeringer.
+                // Slettes behovet, slettes allokeringene også.
+                entity.HasOne(a => a.Need)
+                    .WithMany(n => n.Allocations)
+                    .HasForeignKey(a => a.NeedId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
