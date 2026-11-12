@@ -21,4 +21,30 @@
     font-weight: 500;
 }
 
+.provider-hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
+.provider-hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.provider-hero h1 {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.provider-hero p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-top: 12px;
+    margin-bottom: 0;
+    max-width: 600px;
+}
