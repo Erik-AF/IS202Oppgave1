@@ -11,13 +11,20 @@
     <aside class="map-panel">
         <h2>Vis på kartet</h2>
 
-        <label class="map-layer-row">
+        <div class="map-layer-row">
             <input type="checkbox" id="show-resources" checked />
-            <span>
-                <strong>Ressurser</strong>
-                <small>Registrerte ressurser</small>
-            </span>
-        </label>
+            <button type="button" class="map-category-toggle" data-target="resource-filters">
+                <span>
+                    <strong>Ressurser</strong>
+                    <small>Registrerte ressurser</small>
+                </span>
+                <span class="filter-arrow">⌄</span>
+            </button>
+        </div>
+        <div id="resource-filters" class="map-category-filters" hidden>
+            <button type="button" class="filter-select-all" data-group="resource">Fjern alle</button>
+            <div id="resource-filter-options"></div>
+        </div>
 
         <label class="map-layer-row">
             <input type="checkbox" id="show-needs" checked />
@@ -198,6 +205,76 @@
         font-weight: 700;
         font-size: 14px;
     }
+    .map-category-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex: 1;
+        border: none;
+        background: transparent;
+        color: inherit;
+        text-align: left;
+        cursor: pointer;
+        padding: 0;
+        font: inherit;
+    }
+
+    .map-category-toggle strong,
+    .map-category-toggle small {
+        display: block;
+    }
+
+    .map-category-toggle small {
+        margin-top: 5px;
+        color: #566570;
+        font-size: 13px;
+    }
+
+    .filter-arrow {
+        font-size: 24px;
+        transition: transform 0.2s;
+    }
+
+    .map-category-toggle[aria-expanded="true"] .filter-arrow {
+        transform: rotate(180deg);
+    }
+
+    .map-category-filters {
+        padding: 0 0 18px 38px;
+        max-height: 260px;
+        overflow-y: auto;
+    }
+
+    .map-category-filters[hidden] {
+        display: none;
+    }
+
+    .filter-select-all {
+        background: transparent;
+        border: none;
+        color: #1d705b;
+        cursor: pointer;
+        padding: 8px 0;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .map-filter-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 0;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .map-filter-option input {
+        width: 17px;
+        height: 17px;
+        accent-color: #1d705b;
+        cursor: pointer;
+    }
+    
 </style>
 
 @section Scripts {
@@ -248,6 +325,107 @@
         var needLayer = L.layerGroup();
         var resourceMarkers = [];
         var needMarkers = [];
+        var selectedCategories = {
+            resource: new Set(),
+            need: new Set()
+        };
+
+        function getCategory(point, group) {
+            if (group === 'resource') {
+                return String(point.categoryName ?? point.kategoriNavn ?? 'Annet').trim() || 'Annet';
+            }
+
+            return String(point.type ?? 'Annet').trim() || 'Annet';
+        }
+
+        function renderCategoryFilters(group) {
+            if (group !== 'resource') return;
+
+            var container = document.getElementById('resource-filter-options');
+
+            var counts = new Map();
+
+            resourceMarkers.forEach(function (marker) {
+                var category = marker.filterCategory;
+                counts.set(category, (counts.get(category) || 0) + 1);
+            });
+
+            var categories = [...counts.keys()]
+                .sort((a, b) => a.localeCompare(b, 'nb'));
+
+            container.replaceChildren();
+
+            categories.forEach(function (category) {
+                var label = document.createElement('label');
+                label.className = 'map-filter-option';
+
+                var checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = selectedCategories.resource.has(category);
+
+                checkbox.addEventListener('change', function () {
+                    if (checkbox.checked) {
+                        selectedCategories.resource.add(category);
+                    } else {
+                        selectedCategories.resource.delete(category);
+                    }
+
+                    oppdaterKartlag();
+                    updateSelectAll('resource');
+                });
+
+                var name = document.createElement('span');
+                name.textContent = category;
+
+                var count = document.createElement('span');
+                count.className = 'filter-count';
+                count.textContent = ' (' + counts.get(category) + ')';
+
+                label.append(checkbox, name, count);
+                container.appendChild(label);
+            });
+
+            updateSelectAll('resource');
+        }
+
+        function updateSelectAll(group) {
+            var container = document.getElementById(
+                group === 'resource' ? 'resource-filter-options' : 'need-filter-options'
+            );
+
+            var checkboxes = [...container.querySelectorAll('input[type="checkbox"]')];
+            var allSelected = checkboxes.length > 0 && checkboxes.every(c => c.checked);
+
+            document.querySelector('.filter-select-all[data-group="' + group + '"]')
+                .textContent = allSelected ? 'Fjern alle' : 'Velg alle';
+        }
+
+        document.querySelectorAll('.map-category-toggle').forEach(function (button) {
+            button.setAttribute('aria-expanded', 'false');
+
+            button.addEventListener('click', function () {
+                var panel = document.getElementById(button.dataset.target);
+                panel.hidden = !panel.hidden;
+                button.setAttribute('aria-expanded', String(!panel.hidden));
+            });
+        });
+
+        document.querySelectorAll('.filter-select-all').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var group = button.dataset.group;
+                var markers = group === 'resource' ? resourceMarkers : needMarkers;
+                var categories = [...new Set(markers.map(m => m.filterCategory))];
+
+                if (categories.every(c => selectedCategories[group].has(c))) {
+                    selectedCategories[group].clear();
+                } else {
+                    categories.forEach(c => selectedCategories[group].add(c));
+                }
+
+                renderCategoryFilters(group);
+                oppdaterKartlag();
+            });
+        });
 
         function oppdaterKartlag() {
             var visRessurser = document.getElementById('show-resources').checked;
@@ -256,7 +434,9 @@
             clusterLayer.clearLayers();
 
             if (visRessurser) {
-                clusterLayer.addLayers(resourceMarkers);
+                clusterLayer.addLayers(
+                    resourceMarkers.filter(m => selectedCategories.resource.has(m.filterCategory))
+                );
                 map.addLayer(resourceLayer);
             } else {
                 map.removeLayer(resourceLayer);
@@ -268,13 +448,86 @@
             } else {
                 map.removeLayer(needLayer);
             }
-        }
+}
 
         document.getElementById('show-resources').addEventListener('change', oppdaterKartlag);
         document.getElementById('show-needs').addEventListener('change', oppdaterKartlag);
 
         L.control.zoom({ position: 'topright' }).addTo(map);
         L.control.scale({ position: 'bottomright', imperial: false }).addTo(map);
+
+        var locationMarker = null;
+        var locationAccuracy = null;
+
+        var LocateControl = L.Control.extend({
+            options: { position: 'topright' },
+
+            onAdd: function () {
+                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+                var button = L.DomUtil.create('a', '', container);
+
+                button.href = '#';
+                button.title = 'Finn min posisjon';
+                button.setAttribute('aria-label', 'Finn min posisjon');
+                button.innerHTML = '⌖';
+                button.style.fontSize = '28px';
+
+                L.DomEvent.disableClickPropagation(container);
+                L.DomEvent.disableScrollPropagation(container);
+
+                L.DomEvent.on(button, 'click', function (e) {
+                    L.DomEvent.preventDefault(e);
+
+                    map.locate({
+                        setView: false,
+                        enableHighAccuracy: true,
+                        timeout: 10000
+                    });
+                });
+
+                return container;
+            },
+});
+
+        map.addControl(new LocateControl());
+
+        map.on('locationfound', function (e) {
+            if (locationMarker) {
+                map.removeLayer(locationMarker);
+            }
+
+            if (locationAccuracy) {
+                map.removeLayer(locationAccuracy);
+            }
+
+            locationAccuracy = L.circle(e.latlng, {
+                radius: e.accuracy,
+                color: '#2196F3',
+                weight: 1,
+                fillColor: '#2196F3',
+                fillOpacity: 0.1,
+                interactive: false
+            }).addTo(map);
+
+            locationMarker = L.circleMarker(e.latlng, {
+                radius: 9,
+                color: '#FFFFFF',
+                weight: 3,
+                fillColor: '#2196F3',
+                fillOpacity: 1
+            }).addTo(map);
+
+            map.flyTo(e.latlng, 16, {
+                animate: true,
+                duration: 1.2
+            });
+        });
+
+        map.on('locationerror', function (e) {
+            alert('Kunne ikke finne posisjonen din: ' + e.message);
+        });
+        
+        
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -337,6 +590,9 @@
 
                         function addFeatureToMap(item) {
                             if (item instanceof L.Marker && !(item instanceof L.CircleMarker)) {
+                                var group = layer === resourceLayer ? 'resource' : 'need';
+                                item.filterCategory = getCategory(point, group);
+                                selectedCategories[group].add(item.filterCategory);
                                 item.bindPopup(createPopup(point, detailsUrl));
 
                                 if (layer === resourceLayer) {
@@ -356,7 +612,7 @@
                         console.warn('Kunne ikke vise registrering:', item.id, error);
                     }
                 });
-
+                renderCategoryFilters('resource');
                 oppdaterKartlag();
             } catch (error) {
                 console.error('Klarte ikke å hente kartdata fra ' + url, error);
