@@ -48,3 +48,29 @@
     margin-bottom: 0;
     max-width: 600px;
 }
+
+.provider-nav {
+    background-color: white;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.provider-nav-links {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.provider-nav a {
+    display: inline-block;
+    padding: 18px 0;
+    color: #475569;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+}
+
+.provider-nav a:hover,
+.provider-nav a.active {
+    color: #174D3A;
+    border-bottom-color: #174D3A;
+}

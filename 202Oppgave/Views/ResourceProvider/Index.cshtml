@@ -18,6 +18,27 @@
     </div>
 </section>
 
+<nav class="provider-nav" aria-label="Navigasjon for ressursleverandør">
+    <div class="container provider-nav-links">
+        <a asp-controller="ResourceProvider"
+           asp-action="Index"
+           class="active"
+           aria-current="page">
+            Oversikt
+        </a>
+
+        <a asp-controller="ResourceProvider"
+           asp-action="Resources">
+            Mine ressurser
+        </a>
+
+        <a asp-controller="ResourceProvider"
+           asp-action="Profile">
+            Profil og innstillinger
+        </a>
+    </div>
+</nav>
+
 @section Head {
     <link rel="stylesheet" href="~/css/resource-provider.css" asp-append-version="true" />
 }
