@@ -1,8 +1,15 @@
 @model List<_202Oppgave.Models.Need>
+@using _202Oppgave.DataAccess.Repositories
+@inject IAllocationRepository AllocationRepo
 
 @{
     ViewData["Title"] = "Registrerte behov";
+    
+    // Allokerte ressurser for alle behov, hentet i én spørring.
+    // Nøkkel = behovets Id, verdi = navnene på ressursene.
+    var allocated = await AllocationRepo.GetResourceNamesByNeedAsync();
 }
+
 
 
 
@@ -44,6 +51,18 @@
                                 <li>@need.Location</li>
                                 <li>Frist: @need.Deadline.ToString("dd.MM.yyyy HH:mm")</li>
                             </ul>
+                            @* Ressurser som er allokert til behovet *@
+                            @if (allocated.TryGetValue(need.Id, out var names))
+                            {
+                                <p style="margin:0.5rem 0 0; font-size:0.9rem;">
+                                    <strong style="font-weight:500;">Allokert (@names.Count):</strong>
+                                    @string.Join(", ", names)
+                                </p>
+                            }
+                            else
+                            {
+                                <p style="margin:0.5rem 0 0; font-size:0.9rem; color:#5b5f66;">Ingen ressurser allokert ennå</p>
+                            }
                         </div>
                         <div class="rl-side">
                             <span class="rl-status">
@@ -56,6 +75,7 @@
                 </li>
             }
         </ul>
+        
     }
         </section>
     </div>

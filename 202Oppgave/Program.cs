@@ -19,6 +19,9 @@ builder.Services.AddScoped<_202Oppgave.DataAccess.Repositories.IResourceReposito
 // Gjør NeedRepository tilgjengelig for controlleren gjennom INeedRepository.
 builder.Services.AddScoped<INeedRepository, NeedRepository>();
 
+// Gjør AllocationRepository tilgjengelig for controllere og ViewComponents.
+builder.Services.AddScoped<IAllocationRepository, AllocationRepository>();
+
 var connectionString = builder.Configuration
     .GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException(
@@ -108,6 +111,11 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Viser filer som lastes opp mens appen kjører, f.eks. bilder i wwwroot/uploads.
+// MapStaticAssets viser bare filer som fantes da appen ble bygget.
+
+app.UseStaticFiles();
 
 app.UseRouting();
 

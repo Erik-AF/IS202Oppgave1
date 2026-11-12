@@ -162,9 +162,17 @@ ViewData["Title"] = "Registrer behov";
 <script src="~/js/map-utils.js" asp-append-version="true"></script>
 
 <script>
-    // Opprett kartet
-    const map = L.map('need-map')
-        .setView([58.1467, 7.9956], 13);
+    const norwayBounds = L.latLngBounds(
+        [57.8, 4.0],
+        [71.5, 31.5]
+    );
+
+    const map = L.map('need-map', {
+        maxBounds: norwayBounds,
+        maxBoundsViscosity: 1.0,
+        minZoom: 5,
+        maxZoom: 19
+    }).setView([58.1467, 7.9956], 13);
 
     // OpenStreetMap
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
