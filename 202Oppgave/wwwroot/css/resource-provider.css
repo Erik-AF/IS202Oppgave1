@@ -74,3 +74,43 @@
     color: #174D3A;
     border-bottom-color: #174D3A;
 }
+
+.provider-overview {
+    padding: 40px 0;
+}
+
+.provider-overview h2 {
+    font-size: 24px;
+    margin-bottom: 24px;
+}
+
+.provider-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.provider-stat-card {
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.provider-stat-card h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+.provider-stat-card p {
+    font-size: 32px;
+    font-weight: 700;
+    color: #174D3A;
+}
+
+@media (max-width: 768px) {
+    .provider-stats {
+        grid-template-columns: 1fr;
+    }
+}
