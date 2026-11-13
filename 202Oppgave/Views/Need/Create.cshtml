@@ -51,9 +51,8 @@ ViewData["Title"] = "Registrer behov";
 </style>
 }
 
-<div class="container home-content">
-    <a class="back-link" asp-action="Index">← Til behovsoversikten</a>
-    <p class="eyebrow">Meld inn behov</p>
+<div class="container home-content need-design">
+    <nav class="need-breadcrumb" aria-label="Brødsmuler"><a asp-action="Index">Behov</a><span aria-hidden="true">/</span><span aria-current="page">Registrer behov</span></nav>
     <h1>Registrer behov</h1>
     <p class="page-intro">Beskriv hva som trengs, velg prioritet og marker hvor hjelpen skal frem.</p>
 
@@ -66,6 +65,7 @@ ViewData["Title"] = "Registrer behov";
 
         @* Venstre kolonne: skjemafeltene *@
         <div class="card" style="padding:2rem; min-width:0;">
+            <h2 class="need-section-title"><span class="need-step" aria-hidden="true">1</span>Om behovet</h2>
 
             <div asp-validation-summary="ModelOnly"
                  class="text-danger"
@@ -131,7 +131,7 @@ ViewData["Title"] = "Registrer behov";
 
         </div>
 
-        <div class="resource-map-panel"><h2 class="map-panel-title">Velg plassering</h2><p>
+        <div class="resource-map-panel"><h2 class="need-section-title"><span class="need-step" aria-hidden="true">2</span>Plassering</h2><p>
                 Velg en posisjon eller tegn et område på kartet.
                 Kun én markering kan registreres om gangen.
             </p>
