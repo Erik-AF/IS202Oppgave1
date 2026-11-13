@@ -2,6 +2,13 @@
     var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
     bool IsActive(string controller) => string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
+    // Ny profil er foreløpig avgrenset til de tre behovssidene.
+    var needDesign = IsActive("Need") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
+        || action.Equals("Create", StringComparison.OrdinalIgnoreCase) || action.Equals("Edit", StringComparison.OrdinalIgnoreCase));
+    var brandName = needDesign ? "ko/ordinert" : "CrisisSystem";
+    var brandTagline = needDesign ? "Kart. Behov. Ressurser. Sammen." : "Ressurser. Mennesker. Trygghet.";
+    var brandLogo = needDesign ? "~/images/logo-koordinert.svg" : "~/images/logo.svg";
+
 }
 <!DOCTYPE html>
 <html lang="nb">
@@ -25,9 +32,9 @@
     <div class="utility-bar"><div class="container"><span>Et felles løft for lokal beredskap</span><a asp-controller="Information" asp-action="Hjelp">Slik bruker du tjenesten ↗</a></div></div>
     <header class="site-header">
         <div class="container header-inner">
-            <a class="brand" asp-controller="Home" asp-action="Index" aria-label="CrisisSystem – til forsiden">
-                <img class="brand-logo" src="~/images/logo.svg" alt="" width="42" height="42" />
-                <span>CrisisSystem<small>Ressurser. Mennesker. Trygghet.</small></span>
+            <a class="brand" asp-controller="Home" asp-action="Index" aria-label="@(brandName + " – til forsiden")">
+                <img class="brand-logo" src="@Url.Content(brandLogo)" alt="" width="42" height="42" />
+                <span>@brandName<small>@brandTagline</small></span>
             </a>
             <button class="nav-toggle" type="button" aria-label="Åpne meny" aria-expanded="false" aria-controls="main-nav">Meny <span aria-hidden="true">☰</span></button>
             <nav id="main-nav" class="main-nav" aria-label="Hovedmeny">
@@ -73,11 +80,18 @@
     </main>
     <footer class="site-footer">
         <div class="container footer-grid">
-            <div><a class="footer-brand" asp-controller="Home" asp-action="Index">CrisisSystem ↗</a><p>God beredskap begynner med<br />mennesker som finner hverandre.</p><span class="project-note">Et studentprosjekt ved Universitetet i Agder.</span></div>
+            @if (needDesign)
+            {
+                <div><a class="footer-brand need-footer-brand" asp-controller="Home" asp-action="Index"><img src="@Url.Content(brandLogo)" alt="" width="52" height="52" /><span>@brandName<small>@brandTagline</small></span></a><span class="project-note">Et studentprosjekt ved Universitetet i Agder.</span></div>
+            }
+            else
+            {
+                <div><a class="footer-brand" asp-controller="Home" asp-action="Index">CrisisSystem ↗</a><p>God beredskap begynner med<br />mennesker som finner hverandre.</p><span class="project-note">Et studentprosjekt ved Universitetet i Agder.</span></div>
+            }
             <nav aria-label="Utforsk"><h2>Finn frem</h2><a asp-controller="Resource" asp-action="Index">Tilgjengelige ressurser</a><a asp-controller="Need" asp-action="Index">Registrerte behov</a><a asp-controller="Kart" asp-action="Oversikt">Åpne kartoversikten</a></nav>
             <nav aria-label="Om tjenesten"><h2>Vi hjelper deg</h2><a asp-controller="Information" asp-action="Om">Om CrisisSystem</a><a asp-controller="Information" asp-action="Hjelp">Spørsmål og svar</a><a asp-controller="Information" asp-action="Kontakt">Kontakt oss</a></nav>
         </div>
-        <div class="container footer-bottom"><span>© @DateTime.Now.Year CrisisSystem</span><span>Sammen for et mer robust lokalsamfunn</span><a href="#main-content">Til toppen ↑</a></div>
+        <div class="container footer-bottom"><span>© @DateTime.Now.Year @brandName</span><span>Sammen for et mer robust lokalsamfunn</span><a href="#main-content">Til toppen ↑</a></div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://unpkg.com/leaflet@@1.9.4/dist/leaflet.js"></script>

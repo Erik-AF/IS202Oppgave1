@@ -1,0 +1,65 @@
+@* Kun behovssidene som inkluderer denne filen får designet. *@
+<style>
+body.page-need:is(.action-create,.action-edit,.action-index) .site-header { position: relative; top: auto; }
+.design-concept .need-banner { position: relative; overflow: hidden; background: #18594e; color: #fff; padding: 36px 0 70px; }
+.need-banner .container { position: relative; z-index: 1; }
+.need-banner p { margin: 0; font-size: 1rem; letter-spacing: .04em; }
+.need-banner svg { position: absolute; bottom: -1px; left: 0; width: 100%; height: 65px; pointer-events: none; }
+.design-concept .need-design { color: #17251f; padding-top: 28px; }
+.need-design .need-breadcrumb { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; color: #65706a; font-size: .92rem; }
+.need-breadcrumb a { color: inherit; text-decoration: none; }
+.need-breadcrumb a:hover { text-decoration: underline; }
+.need-breadcrumb [aria-current] { color: #17251f; font-weight: 700; }
+.design-concept .need-design h1 { color: #17251f; font-weight: 750; font-size: clamp(2.3rem,4.5vw,4rem); margin-bottom: 16px; }
+.design-concept .need-design .page-intro { color: #65706a; margin: 0 0 34px; max-width: 850px; }
+.design-concept .need-design #need-layout { gap: 34px; }
+.design-concept .need-design #need-layout > .card { padding: clamp(22px,3vw,32px) !important; border: 1px solid #dbe1d8; border-radius: 14px; background: #fff; }
+.design-concept .need-design .need-section-title { display: flex; align-items: center; gap: 12px; font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; color: #17251f; margin: 0 0 25px; }
+.need-step { display: inline-grid; place-items: center; flex: 0 0 32px; height: 32px; border-radius: 50%; background: #eff2e9; color: #18594e; font-size: 1rem; }
+.design-concept .need-design label { display: block; font-weight: 650; margin-bottom: 8px; color: #17251f; }
+.design-concept .need-design .form-control,.design-concept .need-design .form-select,.design-concept .need-design .rl-input { border: 1px solid #cfd8cc; border-radius: 8px; background-color: #fff; min-height: 48px; width: 100%; }
+.design-concept .need-design textarea.form-control { min-height: 135px; resize: vertical; }
+.design-concept .need-design .resource-map-panel { position: static; border: 1px solid #dbe1d8; border-top: 3px solid #18313a; border-radius: 14px; background: #e9edde; padding: 24px; }
+.design-concept .need-design .resource-map-panel p { color: #485c54; }
+.design-concept .need-design #need-map { border-radius: 6px; }
+.design-concept .need-design .btn-primary,.design-concept .need-design .rl-btn { background: #18594e; border-color: #18594e; color: white; border-radius: 8px !important; }
+.design-concept .need-design .btn-primary:hover,.design-concept .need-design .rl-btn:hover { background: #10483e; }
+.design-concept .need-design .rl-filter { background: #e9edde; border: 1px solid #dbe1d8; border-top: 3px solid #18313a; border-radius: 14px; position: static; }
+.design-concept .need-design .rl-list { border: 0; display: grid; gap: 14px; }
+.design-concept .need-design .rl-list > li { border: 1px solid #dbe1d8; background: white; border-radius: 12px; overflow: hidden; }
+.design-concept .need-design .rl-row { padding: 24px; }
+.design-concept .need-design .rl-head { border: 0; padding-bottom: 0; }
+.design-concept .need-design .rl-head p { color: #65706a; }
+@@media (max-width: 800px) {
+ .design-concept .need-design #need-layout,.design-concept .need-design .rl-layout { grid-template-columns: minmax(0,1fr); }
+ .design-concept .need-design .rl-row { grid-template-columns: minmax(0,1fr); }
+ .design-concept .need-design .rl-side { align-items: flex-start; }
+ .need-banner { padding-top: 24px; }
+}
+
+/* Grønn navigasjonstopp kun på oversikt og registrering; følger normal scrolling. */
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header { background: #18594e; color: white; border-bottom: 0; padding-bottom: 24px; position: relative; top: auto; }
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; height: 36px; pointer-events: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 70' preserveAspectRatio='none'%3E%3Cpath fill='white' opacity='.10' d='M0 15 Q240 70 480 20 T960 25 T1440 10 V70 H0Z'/%3E%3Cpath fill='white' opacity='.10' d='M0 45 Q300 0 600 40 T1200 35 T1440 45 V70 H0Z'/%3E%3Cpath fill='%23faf9f5' d='M0 57 Q240 35 480 57 T960 53 T1440 57 V70 H0Z'/%3E%3C/svg%3E") center bottom / 100% 100% no-repeat; }
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .brand,
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .main-nav a,
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .nav-toggle { color: white; }
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .main-nav a[aria-current] { text-decoration-color: #e3eb97; }
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .main-nav a:hover { color: #e3eb97; }
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .nav-login { background: #10483e; color: white; border-color: #86aaa0; }
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .nav-toggle { border-color: #86aaa0; }
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .need-design { padding-top: 20px; }
+@@media (max-width: 900px) {
+ body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .main-nav { background: #18594e; }
+}
+
+/* Samme mørkegrønne profil i hele toppen og footeren. */
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .utility-bar,
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header,
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-footer,
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .main-nav { background-color: #093833; }
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .nav-login { background: transparent; }
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .brand-logo { width: 52px; height: 52px; object-fit: contain; }
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .need-footer-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .need-footer-brand img { flex-shrink: 0; }
+body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .need-footer-brand small { display: block; font-size: .75rem; font-weight: 400; letter-spacing: 0; margin-top: 6px; color: #e0ebe7; }
+</style>

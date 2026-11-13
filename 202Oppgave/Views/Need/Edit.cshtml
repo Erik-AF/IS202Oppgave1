@@ -61,15 +61,18 @@
     </style>
 }
 
-<div class="container home-content">
-    <a class="back-link" asp-action="Index">← Til behovsoversikten</a>
-    <p class="eyebrow">Meld inn behov</p>
+<partial name="_NeedDesign" />
+<div class="container home-content need-design">
+    <nav class="need-breadcrumb" aria-label="Brødsmuler"><a asp-action="Index">Behov</a><span aria-hidden="true">/</span><span aria-current="page">Rediger behov</span></nav>
     <h1>Rediger behov</h1>
+    <p class="page-intro">Oppdater opplysningene og plasseringen for behovet.</p>
+
     @* Skjemaet omslutter både feltene og kartet, slik at koordinatene under kartet sendes med *@
     <form id="need-layout" class="resource-layout"
           asp-controller="Need" asp-action="Edit" asp-route-id="@ViewBag.NeedId" method="post">
         @* Venstre kolonne: skjemafeltene *@
         <div class="card" style="padding:2rem; min-width:0;">
+            <h2 class="need-section-title"><span class="need-step" aria-hidden="true">1</span>Om behovet</h2>
             <div asp-validation-summary="ModelOnly" style="color:var(--brick); margin-bottom:1rem;"></div>
 
             <div style="margin-bottom:1rem;">
@@ -108,6 +111,7 @@
                     style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">Lagre endringer</button>
         </div>
         <div class="resource-map-panel">
+            <h2 class="need-section-title"><span class="need-step" aria-hidden="true">2</span>Plassering</h2>
             <p>Klikk i kartet for å velge hvor hjelpen trengs.</p>
             <div id="need-map"></div>
 
