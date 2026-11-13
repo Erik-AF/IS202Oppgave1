@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace _202Oppgave.DataAccess
 {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options)

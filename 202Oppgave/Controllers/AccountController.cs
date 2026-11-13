@@ -1,4 +1,5 @@
-﻿using _202Oppgave.Models.Authorization;
+﻿using _202Oppgave.Models.Entities;
+using _202Oppgave.Models.Authorization;
 using _202Oppgave.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +11,7 @@ using System.Text.Encodings.Web;
 
 namespace _202Oppgave.Controllers
 {
-    public class AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
+    public class AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
     IEmailSender emailSender) : Controller
     {
         [AllowAnonymous]
@@ -85,10 +86,12 @@ namespace _202Oppgave.Controllers
                 return View(model);
             }
 
-            var user = new IdentityUser
+            var user = new ApplicationUser
             {
                 UserName = model.Email,
                 Email = model.Email,
+                FullName =model.FullName.Trim(),
+                PhoneNumber = model.PhoneNumber.Trim(),
                 EmailConfirmed = true
             };
 
