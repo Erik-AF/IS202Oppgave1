@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="202Oppgave/202Oppgave.csproj" />
+  <Project Path="CrisisSystem.Tests/CrisisSystem.Tests.csproj" />
   <Project Path="IS202Oppgave11.AppHost/IS202Oppgave11.AppHost.csproj" Id="e5c50acc-02a2-4158-b75d-6c62bf3283ea" />
   <Project Path="IS202Oppgave11.ServiceDefaults/IS202Oppgave11.ServiceDefaults.csproj" />
 </Solution>

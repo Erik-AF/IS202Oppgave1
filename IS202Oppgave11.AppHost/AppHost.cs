@@ -22,6 +22,10 @@ builder.AddDockerfile(
     .WithHttpEndpoint(
         port: 5027,
         targetPort: 8080)
-    .WithLifetime(ContainerLifetime.Persistent);
+    // Lagrer opplastede bilder i et Docker-volum utenfor containeren,
+    // så de ikke slettes når appen bygges og startes på nytt
+    .WithVolume("ressursbilder", "/app/wwwroot/uploads");
+
+    
 
 builder.Build().Run();
