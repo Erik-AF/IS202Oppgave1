@@ -220,6 +220,7 @@ namespace _202Oppgave.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
             modelBuilder.Entity("_202Oppgave.Models.Entities.Allocation", b =>
                 {
                     b.Property<int>("AllocationId")
