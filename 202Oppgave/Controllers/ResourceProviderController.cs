@@ -12,4 +12,17 @@ public class ResourceProviderController : Controller
     {
         return View();
     }
+
+    [HttpGet]
+    public IActionResult Resources()
+    {
+        return View();
+    }
+    
+    [HttpGet]
+    public IActionResult Profile()
+    {
+        return View();
+    }
 }
+
