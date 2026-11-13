@@ -1,3 +1,6 @@
+
+using _202Oppgave.Models.Entities;
+
 using Microsoft.EntityFrameworkCore;
 using _202Oppgave.DataAccess;
 using _202Oppgave.DataAccess.Repositories;
@@ -33,7 +36,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 
 ///Registrere Identity
 builder.Services
-    .AddIdentity<IdentityUser, IdentityRole>(options =>
+    .AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
         options.User.RequireUniqueEmail = true;
@@ -86,7 +89,7 @@ using (var scope = app.Services.CreateScope())
 
 
     
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
     var adminPassword = "!blueSideGromp1";
     var resourcePassword = "!RiverScuttle1";
