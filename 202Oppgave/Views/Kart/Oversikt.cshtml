@@ -464,13 +464,38 @@
 
             onAdd: function () {
                 var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+                container.style.cssText = `
+                border-radius: 18px;
+                overflow: hidden;
+                border: none;
+                background: white;
+               `;
                 var button = L.DomUtil.create('a', '', container);
 
                 button.href = '#';
                 button.title = 'Finn min posisjon';
                 button.setAttribute('aria-label', 'Finn min posisjon');
-                button.innerHTML = '⌖';
-                button.style.fontSize = '28px';
+                button.innerHTML = `
+    <svg width="26" height="26" viewBox="0 0 24 24"
+         fill="none" stroke="#142b38" stroke-width="1.8"
+         stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="7"/>
+        <circle cx="12" cy="12" r="2"/>
+        <path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>
+    </svg>
+`;
+                button.style.cssText = `
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                background: white;
+                border: none;
+                border-radius: 18px;
+                box-sizing: border-box;
+               `;
 
                 L.DomEvent.disableClickPropagation(container);
                 L.DomEvent.disableScrollPropagation(container);
