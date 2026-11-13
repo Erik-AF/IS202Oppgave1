@@ -1,14 +1,40 @@
+
 @{
     ViewData["Title"] = "Mine ressurser";
 }
 
 <partial name="_ProviderNavigation" />
 
-<h1>Mine ressurser</h1>
-<p>Her skal ressursleverandøren kunne administrere sine ressurser.</p>
+<section class="provider-resources">
+    <div class="container">
+
+        <div class="provider-resources-header">
+            <div>
+                <h1>Mine ressurser</h1>
+                <p>Administrer ressursene du har registrert.</p>
+            </div>
+
+            <a asp-controller="Resource"
+               asp-action="Create"
+               class="provider-add-button">
+                + Registrer ressurs
+            </a>
+        </div>
+
+        <div class="provider-empty-state">
+            <h2>Ressurslisten er ikke tilgjengelig ennå</h2>
+            <p>
+                Ressursene dine vises her når de er
+                koblet til brukerkontoen din.
+            </p>
+        </div>
+
+    </div>
+</section>
 
 @section Head {
     <link rel="stylesheet"
           href="~/css/resource-provider.css"
           asp-append-version="true" />
 }
+

@@ -1,3 +1,4 @@
+
 @{
     ViewData["Title"] = "Min side";
 }
@@ -5,44 +6,113 @@
 <section class="provider-hero">
     <div class="container">
         <div class="provider-hero-top">
-            <span> MIN SIDE – RESSURSLEVERANDØR </span>
-            <span> class="provider-status">● Online</span>
+            <span class="provider-eyebrow">
+                MIN SIDE – RESSURSLEVERANDØR
+            </span>
         </div>
 
         <h1>Min oversikt</h1>
-    
         <p>
-            En samlet oversikt over dine ressurser og deres tilgjengelighet.
+            Administrer ressursene dine og hold oversikt
+            over tilgjengeligheten.
         </p>
-    
     </div>
 </section>
 
 <partial name="_ProviderNavigation" />
 
-@section Head {
-    <link rel="stylesheet" href="~/css/resource-provider.css" asp-append-version="true" />
-}
-
 <section class="provider-overview">
     <div class="container">
-        <h2>Ressursoversikt</h2>
 
+        <!-- Statistikk -->
         <div class="provider-stats">
+
             <div class="provider-stat-card">
-                <h3>Mine ressurser</h3>
-                <p>–</p>
+                <div class="provider-stat-icon">▣</div>
+                <div>
+                    <p>–</p>
+                    <h3>Mine ressurser</h3>
+                </div>
             </div>
 
             <div class="provider-stat-card">
-                <h3>Tilgjengelige</h3>
-                <p>–</p>
+                <div class="provider-stat-icon">✓</div>
+                <div>
+                    <p>–</p>
+                    <h3>Tilgjengelige</h3>
+                </div>
             </div>
 
             <div class="provider-stat-card">
-                <h3>Utilgjengelige</h3>
-                <p>–</p>
+                <div class="provider-stat-icon">◷</div>
+                <div>
+                    <p>–</p>
+                    <h3>Utilgjengelige</h3>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Registrering og hurtighandlinger -->
+        <div class="provider-dashboard-grid">
+
+            <div class="provider-register-card">
+                <h2>Legg til en ressurs</h2>
+                <p>
+                    Registrer nytt utstyr, kjøretøy eller
+                    andre ressurser du kan bidra med.
+                </p>
+
+                <a asp-controller="Resource"
+                   asp-action="Create"
+                   class="provider-add-button">
+                    + Registrer ressurs →
+                </a>
+            </div>
+
+            <div class="provider-actions">
+                <h2>Hurtighandlinger</h2>
+
+                <a asp-controller="ResourceProvider"
+                   asp-action="Resources"
+                   class="provider-action-link">
+                    Mine ressurser <span>→</span>
+                </a>
+
+                <a asp-controller="ResourceProvider"
+                   asp-action="Profile"
+                   class="provider-action-link">
+                    Profil og innstillinger <span>→</span>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Ressursliste -->
+        <div class="provider-resource-list">
+            <h2>Mine ressurser</h2>
+
+            <div class="provider-resource-row">
+                <div>
+                    <strong>Ingen ressurser vist ennå</strong>
+                    <p>
+                        Ressurslisten kobles til brukerkontoen
+                        når eierskap er implementert.
+                    </p>
+                </div>
+
+                <a asp-controller="ResourceProvider"
+                   asp-action="Resources">
+                    Se ressurser →
+                </a>
             </div>
         </div>
+
     </div>
 </section>
+
+@section Head {
+    <link rel="stylesheet"
+          href="~/css/resource-provider.css"
+          asp-append-version="true" />
+}

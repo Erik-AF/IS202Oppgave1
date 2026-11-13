@@ -1,57 +1,63 @@
+
+/* Felles farger og bakgrunn */
+body.page-resourceprovider {
+    --provider-green: #194f43;
+    --provider-dark: #102b29;
+    --provider-accent: #00513d;
+    --provider-light: #e1ede2;
+    --provider-bg: #f2f2f2;
+    --provider-border: #e0e5e1;
+}
+
+body.page-resourceprovider main {
+    background: var(--provider-bg);
+}
+
+/* Toppseksjon */
 .provider-hero {
-    background-color: #174D3A;
+    background: var(--provider-green);
     color: white;
-}
-
-.provider-hero {
-    background-color: #174D3A;
-    color: white;
-    padding: 48px 0;
+    padding: 28px 0 32px;
 }
 
 .provider-hero-top {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
-.provider-status {
-    color: #BBF7D0;
-    font-size: 14px;
-    font-weight: 500;
+.provider-eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
-.provider-hero-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.provider-hero-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
+.provider-hero .provider-status {
+    color: #b9f1d1;
+    font-size: 13px;
 }
 
 .provider-hero h1 {
+    color: white;
     font-size: 36px;
-    font-weight: 700;
     line-height: 1.2;
+    font-weight: 700;
     margin: 0;
 }
 
 .provider-hero p {
+    color: #e4f0eb;
     font-size: 16px;
-    line-height: 1.6;
-    margin-top: 12px;
-    margin-bottom: 0;
-    max-width: 600px;
+    line-height: 1.5;
+    max-width: 540px;
+    margin: 12px 0 0;
 }
 
+/* Navigasjon */
 .provider-nav {
-    background-color: white;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--provider-bg);
+    border-bottom: 1px solid var(--provider-border);
 }
 
 .provider-nav-links {
@@ -61,62 +67,161 @@
 }
 
 .provider-nav a {
-    display: inline-block;
-    padding: 18px 0;
-    color: #475569;
-    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 8px;
+    color: var(--provider-dark);
     font-weight: 500;
+    text-decoration: none;
     border-bottom: 3px solid transparent;
 }
 
 .provider-nav a:hover,
 .provider-nav a.active {
-    color: #174D3A;
-    border-bottom-color: #174D3A;
+    color: var(--provider-accent);
+    border-bottom-color: var(--provider-accent);
 }
 
+/* Oversikt */
 .provider-overview {
-    padding: 40px 0;
-}
-
-.provider-overview h2 {
-    font-size: 24px;
-    margin-bottom: 24px;
+    padding: 24px 0 56px;
 }
 
 .provider-stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 22px;
 }
 
 .provider-stat-card {
-    background-color: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: white;
+    border: 1px solid var(--provider-border);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 3px 12px #102b2910;
+}
+
+.provider-stat-icon {
+    color: var(--provider-accent);
+    flex-shrink: 0;
 }
 
 .provider-stat-card h3 {
-    font-size: 16px;
+    color: var(--provider-dark);
+    font-size: 15px;
     font-weight: 500;
-    margin-bottom: 16px;
+    margin: 4px 0 0;
 }
 
 .provider-stat-card p {
-    font-size: 32px;
+    color: var(--provider-dark);
+    font-size: 30px;
     font-weight: 700;
-    color: #174D3A;
+    line-height: 1;
+    margin: 0;
 }
 
-@media (max-width: 768px) {
-    .provider-stats {
-        grid-template-columns: 1fr;
-    }
+/* Hovedinnhold */
+.provider-dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 24px;
+    margin-bottom: 26px;
 }
 
-.provider-resources {
-    padding: 40px 0;
+.provider-register-card {
+    background: var(--provider-light);
+    border-radius: 14px;
+    padding: 30px;
+}
+
+.provider-register-card h2,
+.provider-actions h2,
+.provider-resource-list h2 {
+    color: var(--provider-dark);
+    font-size: 25px;
+    margin: 0 0 12px;
+}
+
+.provider-register-card p {
+    max-width: 360px;
+    margin-bottom: 22px;
+}
+
+.provider-add-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--provider-accent);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.provider-add-button:hover {
+    background: #003e30;
+    color: white;
+}
+
+.provider-actions {
+    background: white;
+    border: 1px solid var(--provider-border);
+    border-radius: 14px;
+    padding: 24px;
+}
+
+.provider-action-link {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 0;
+    color: var(--provider-dark);
+    text-decoration: none;
+    border-bottom: 1px solid var(--provider-border);
+}
+
+.provider-action-link:last-child {
+    border-bottom: none;
+}
+
+/* Ressursliste */
+.provider-resource-list {
+    margin-top: 24px;
+}
+
+.provider-resource-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: white;
+    padding: 18px 22px;
+    border: 1px solid var(--provider-border);
+}
+
+.provider-resource-row:first-of-type {
+    border-radius: 12px 12px 0 0;
+}
+
+.provider-resource-row:last-child {
+    border-radius: 0 0 12px 12px;
+}
+
+.provider-resource-row p {
+    margin: 0;
+    color: #64748b;
+}
+
+/* Mine ressurser */
+.provider-resources,
+.provider-profile {
+    padding: 40px 0 64px;
 }
 
 .provider-resources-header {
@@ -127,92 +232,83 @@
     margin-bottom: 32px;
 }
 
-.provider-resources-header h1 {
+.provider-resources-header h1,
+.provider-profile-header h1 {
     font-size: 28px;
     margin-bottom: 8px;
 }
 
-.provider-resources-header p {
+.provider-resources-header p,
+.provider-profile-header p {
     color: #64748b;
-    margin: 0;
 }
 
-.provider-add-button {
-    display: inline-block;
-    background-color: #174D3A;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.provider-add-button:hover {
-    background-color: #123d2e;
-    color: white;
+.provider-empty-state,
+.provider-profile-card {
+    background: white;
+    border: 1px solid var(--provider-border);
+    border-radius: 12px;
+    padding: 32px;
 }
 
 .provider-empty-state {
-    background-color: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 48px 24px;
     text-align: center;
+    padding: 48px 24px;
 }
 
-.provider-empty-state h2 {
-    font-size: 20px;
-    margin-bottom: 12px;
+.provider-profile-header {
+    margin-bottom: 32px;
 }
 
-.provider-empty-state p {
+.provider-profile-card {
+    max-width: 720px;
+}
+
+.provider-profile-field {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--provider-border);
+}
+
+.provider-profile-field:last-child {
+    border-bottom: none;
+}
+
+.provider-profile-field span {
+    display: block;
     color: #64748b;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.provider-profile-field p {
     margin: 0;
 }
 
-@media (max-width: 768px) {
+/* Responsivt oppsett */
+@media (max-width: 900px) {
+    .provider-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .provider-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .provider-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .provider-hero h1 {
+        font-size: 30px;
+    }
+
     .provider-resources-header {
         flex-direction: column;
         align-items: flex-start;
     }
 }
 
-.provider-overview {
-    padding: 40px 0;
 }
 
-.provider-overview h2 {
-    font-size: 24px;
-    margin-bottom: 24px;
-}
-
-.provider-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-}
-
-.provider-stat-card {
-    background-color: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 24px;
-}
-
-.provider-stat-card h3 {
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 16px;
-}
-
-.provider-stat-card p {
-    font-size: 32px;
-    font-weight: 700;
-    color: #174D3A;
-}
-
-@media (max-width: 768px) {
-    .provider-stats {
-        grid-template-columns: 1fr;
-    }
-}

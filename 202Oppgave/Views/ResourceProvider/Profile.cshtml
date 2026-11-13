@@ -4,11 +4,34 @@
 
 <partial name="_ProviderNavigation" />
 
-<h1>Profil og innstillinger</h1>
-<p>Her skal ressursleverandøren kunne administrere sin profil.</p>
+<section class="provider-profile">
+    <div class="container">
+
+        <div class="provider-profile-header">
+            <h1>Profil og innstillinger</h1>
+            <p>Se informasjon om brukerkontoen din.</p>
+        </div>
+
+        <div class="provider-profile-card">
+            <h2>Kontoinformasjon</h2>
+
+            <div class="provider-profile-field">
+                <span>E-postadresse</span>
+                <p>@User.Identity?.Name</p>
+            </div>
+
+            <div class="provider-profile-field">
+                <span>Brukerrolle</span>
+                <p>Ressursleverandør</p>
+            </div>
+        </div>
+
+    </div>
+</section>
 
 @section Head {
     <link rel="stylesheet"
           href="~/css/resource-provider.css"
           asp-append-version="true" />
 }
+
