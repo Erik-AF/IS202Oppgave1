@@ -1,10 +1,5 @@
-@* Kun behovssidene som inkluderer denne filen får designet. *@
-<style>
+/* Design for registrering, oversikt og redigering av behov. */
 body.page-need:is(.action-create,.action-edit,.action-index) .site-header { position: relative; top: auto; }
-.design-concept .need-banner { position: relative; overflow: hidden; background: #18594e; color: #fff; padding: 36px 0 70px; }
-.need-banner .container { position: relative; z-index: 1; }
-.need-banner p { margin: 0; font-size: 1rem; letter-spacing: .04em; }
-.need-banner svg { position: absolute; bottom: -1px; left: 0; width: 100%; height: 65px; pointer-events: none; }
 .design-concept .need-design { color: #17251f; padding-top: 28px; }
 .need-design .need-breadcrumb { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; color: #65706a; font-size: .92rem; }
 .need-breadcrumb a { color: inherit; text-decoration: none; }
@@ -30,11 +25,10 @@ body.page-need:is(.action-create,.action-edit,.action-index) .site-header { posi
 .design-concept .need-design .rl-row { padding: 24px; }
 .design-concept .need-design .rl-head { border: 0; padding-bottom: 0; }
 .design-concept .need-design .rl-head p { color: #65706a; }
-@@media (max-width: 800px) {
+@media (max-width: 800px) {
  .design-concept .need-design #need-layout,.design-concept .need-design .rl-layout { grid-template-columns: minmax(0,1fr); }
  .design-concept .need-design .rl-row { grid-template-columns: minmax(0,1fr); }
  .design-concept .need-design .rl-side { align-items: flex-start; }
- .need-banner { padding-top: 24px; }
 }
 
 /* Grønn navigasjonstopp kun på oversikt og registrering; følger normal scrolling. */
@@ -48,7 +42,7 @@ body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .sit
 body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .nav-login { background: #10483e; color: white; border-color: #86aaa0; }
 body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .nav-toggle { border-color: #86aaa0; }
 body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .need-design { padding-top: 20px; }
-@@media (max-width: 900px) {
+@media (max-width: 900px) {
  body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .main-nav { background: #18594e; }
 }
 
@@ -58,8 +52,3 @@ body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .sit
 body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-footer,
 body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .main-nav { background-color: #093833; }
 body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .nav-login { background: transparent; }
-body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .site-header .brand-logo { width: 52px; height: 52px; object-fit: contain; }
-body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .need-footer-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .need-footer-brand img { flex-shrink: 0; }
-body.design-concept.page-need:is(.action-index,.action-create,.action-edit) .need-footer-brand small { display: block; font-size: .75rem; font-weight: 400; letter-spacing: 0; margin-top: 6px; color: #e0ebe7; }
-</style>
