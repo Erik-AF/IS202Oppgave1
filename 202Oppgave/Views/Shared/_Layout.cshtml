@@ -16,9 +16,10 @@
     <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    @await RenderSectionAsync("Head", required: false)
-    @* Felles design lastes sist slik at alle sidene får samme typografi og kontroller. *@
+   
+    @* Felles design lastes sist slik at sidene kan ha egne tilpasninger. *@
     <link rel="stylesheet" href="~/css/beredskap.css" asp-append-version="true" />
+    @await RenderSectionAsync("Head", required: false)
 </head>
 <body class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant()">
     <a class="skip-link" href="#main-content">Hopp til innhold</a>
