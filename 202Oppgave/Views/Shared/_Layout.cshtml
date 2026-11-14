@@ -9,6 +9,9 @@
     var brandTagline = "Kart. Behov. Ressurser. Sammen.";
     var brandLogo = "~/images/logo-koordinert.svg";
 
+    var isAuthPage = IsActive("Account") && (action.Equals("Login", StringComparison.OrdinalIgnoreCase) || action.Equals("Register", StringComparison.OrdinalIgnoreCase));
+
+
 }
 <!DOCTYPE html>
 <html lang="nb">
@@ -30,6 +33,12 @@
     {
         <link rel="stylesheet" href="~/css/need.css" asp-append-version="true" />
     }
+
+    @if (isAuthPage)
+    {
+        <link rel="stylesheet" href="~/css/account-auth.css" asp-append-version="true" />
+    }
+
 </head>
 <body class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant()">
     <a class="skip-link" href="#main-content">Hopp til innhold</a>
@@ -65,22 +74,44 @@
         {
             <div class="container"><div class="alert alert-success" role="status">@successMessage</div></div>
         }
-        @if (IsActive("Account"))
+
+        @if (isAuthPage)
+        {
+            <div class="auth-page">
+                <div class="auth-page__overlay">
+                    @RenderBody()
+                </div>
+                <div class="auth-page__waves" aria-hidden="true">
+                    <svg viewBox="0 0 1440 100"
+                         preserveAspectRatio="none">
+                        <path fill="#d9f1f0"
+                              d="M0 35 C180 -15 300 105 480 65 S760 15 950 65 S1230 90 1440 20 L1440 100 L0 100 Z" />
+                        <path fill="#9edbd7" fill-opacity=".8"
+                              d="M0 85 C200 45 310 115 520 80 S820 105 1030 65 S1270 110 1440 55 L1440 100 L0 100 Z" />
+                    </svg>
+                </div>
+            </div>
+        }
+        else if (IsActive("Account"))
         {
             <div class="container account-shell">
                 <aside class="account-story">
                     <p class="eyebrow">En del av fellesskapet</p>
                     <h2>Små bidrag.<br />Stor forskjell.</h2>
                     <p>Sammen gjør vi lokale ressurser synlige når noen trenger dem.</p>
-                    <img src="~/images/forsidelandskap.jpg" alt="Norsk kystsamfunn ved fjell og sjø" />
+                    <img src="~/images/forsidelandskap.jpg"
+                         alt="Norsk kystsamfunn ved fjell og sjø" />
                 </aside>
-                <section class="account-panel">@RenderBody()</section>
+                <section class="account-panel">
+                    @RenderBody()
+                </section>
             </div>
         }
         else
         {
             @RenderBody()
         }
+
     </main>
     <footer class="site-footer">
         <div class="container footer-grid">

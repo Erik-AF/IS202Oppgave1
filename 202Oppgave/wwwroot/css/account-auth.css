@@ -1,0 +1,477 @@
+
+/* ==========================================
+   KO/ORDINERT - LOGIN & REGISTER
+   ========================================== */
+
+body.page-account.action-login,
+body.page-account.action-register {
+    --auth-navy: #0d2149;
+    --auth-green: #004b43;
+    --auth-lime: #dce960;
+    --auth-border: #a8b4c8;
+    color: var(--auth-navy);
+}
+
+/* Toppmeny */
+
+/* ========================================
+   HEADER - LOGIN OG REGISTER
+   ======================================== */
+
+
+/* ==========================================
+   HEADER - SAMME DESIGN SOM BEHOV
+   ========================================== */
+
+/* Header med identisk farge og høyde */
+body.design-concept.page-account:is(.action-login, .action-register) .site-header {
+    background: #093833;
+    color: white;
+    border-bottom: 0;
+    padding-bottom: 24px;
+    position: relative;
+    top: auto;
+    z-index: 10;
+}
+
+    /* Samme bølgeeffekt som på Behov */
+    body.design-concept.page-account:is(.action-login, .action-register) .site-header::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 36px;
+        pointer-events: none;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 70' preserveAspectRatio='none'%3E%3Cpath fill='white' opacity='.10' d='M0 15 Q240 70 480 20 T960 25 T1440 10 V70 H0Z'/%3E%3Cpath fill='white' opacity='.10' d='M0 45 Q300 0 600 40 T1200 35 T1440 45 V70 H0Z'/%3E%3C/svg%3E") center bottom / 100% 100% no-repeat;
+    }
+
+
+    /* Logo og navigasjonslenker */
+    body.design-concept.page-account:is(.action-login, .action-register) .site-header .brand,
+    body.design-concept.page-account:is(.action-login, .action-register) .site-header .main-nav a,
+    body.design-concept.page-account:is(.action-login, .action-register) .site-header .nav-toggle {
+        color: white;
+    }
+
+        /* Aktiv navigasjonslenke */
+        body.design-concept.page-account:is(.action-login, .action-register) .site-header .main-nav a[aria-current] {
+            text-decoration-color: #e3eb97;
+        }
+
+        /* Hover-effekt */
+        body.design-concept.page-account:is(.action-login, .action-register) .site-header .main-nav a:hover {
+            color: #e3eb97;
+        }
+
+    /* Login-knappen – transparent som på Behov */
+    body.design-concept.page-account:is(.action-login, .action-register) .site-header .nav-login {
+        background: transparent;
+        color: white;
+        border-color: #86aaa0;
+    }
+
+    /* Mobilmeny */
+    body.design-concept.page-account:is(.action-login, .action-register) .site-header .nav-toggle {
+        border-color: #86aaa0;
+    }
+
+    /* Samme mørkegrønne farge i header og mobilmeny */
+    body.design-concept.page-account:is(.action-login, .action-register) .site-header .main-nav {
+        background-color: #093833;
+    }
+
+/* Skjul ekstra toppstripe */
+body.page-account:is(.action-login, .action-register) .utility-bar {
+    display: none;
+}
+
+/* Mobil */
+@media (max-width: 900px) {
+    body.design-concept.page-account:is(.action-login, .action-register) .site-header .main-nav {
+        background: #093833;
+    }
+}
+
+
+/* Bakgrunn og plassering */
+body.page-account:is(.action-login, .action-register) .site-main {
+    padding: 0;
+    margin: 0;
+    max-width: none;
+    width: 100%;
+}
+
+.auth-page {
+    position: relative;
+    isolation: isolate;
+    min-height: calc(100svh - 110px);
+    background-image: linear-gradient( 180deg, rgba(0, 52, 49, .49) 0%, rgba(0, 64, 60, .22) 48%, rgba(225, 246, 246, .90) 100% ), url("/images/auth-background.jpg");
+    background-size: cover;
+    background-position: center 45%;
+    overflow: hidden;
+}
+
+.auth-page__overlay {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: inherit;
+    padding: 45px 20px 100px;
+}
+
+.auth-page__waves {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 85px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+    .auth-page__waves svg {
+        width: 100%;
+        height: 100%;
+    }
+
+/* Hvitt kort */
+.auth-card {
+    width: 100%;
+    background: rgba(255, 255, 255, .97);
+    border-radius: 18px;
+    box-shadow: 0 16px 48px rgba(10, 38, 48, .14);
+    padding: 34px 38px 30px;
+    color: var(--auth-navy);
+}
+
+.auth-card--login {
+    max-width: 435px;
+}
+
+.auth-card--register {
+    max-width: 500px;
+}
+
+.auth-heading {
+    margin-bottom: 25px;
+}
+
+.auth-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .03em;
+}
+
+    .auth-eyebrow::before {
+        content: "";
+        width: 38px;
+        height: 3px;
+        background: var(--auth-lime);
+    }
+
+.auth-heading h1 {
+    margin: 0 0 5px;
+    font-size: clamp(30px, 4vw, 39px);
+    font-weight: 800;
+    letter-spacing: -.035em;
+    line-height: 1.15;
+    color: var(--auth-navy);
+}
+
+.auth-heading > p:last-child {
+    margin: 0;
+    font-size: 16px;
+    color: var(--auth-navy);
+}
+
+/* Skjemafelt */
+.auth-field {
+    margin-bottom: 17px;
+}
+
+    .auth-field label,
+    .auth-role-fieldset legend {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+        font-weight: 750;
+        color: var(--auth-navy);
+    }
+
+        .auth-field label span,
+        .auth-role-fieldset legend span {
+            color: #b61e36;
+        }
+
+.auth-input-wrap {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 41px;
+    border: 1px solid var(--auth-border);
+    border-radius: 7px;
+    background: #fafbfc;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+    .auth-input-wrap:focus-within {
+        border-color: var(--auth-green);
+        box-shadow: 0 0 0 3px rgba(0, 75, 67, .12);
+    }
+
+.auth-input-icon {
+    flex: 0 0 42px;
+    text-align: center;
+    font-size: 19px;
+    color: var(--auth-green);
+}
+
+.auth-input-wrap input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    padding: 8px 8px 8px 0;
+    border: 0;
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+    color: var(--auth-navy);
+    font: inherit;
+    font-size: 14px;
+}
+
+    .auth-input-wrap input:focus {
+        outline: none;
+        box-shadow: none;
+        background: transparent;
+    }
+
+    .auth-input-wrap input::placeholder {
+        color: #677184;
+        opacity: 1;
+    }
+
+.auth-toggle-password {
+    flex-shrink: 0;
+    padding: 7px 11px;
+    border: 0;
+    background: transparent;
+    color: var(--auth-green);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .auth-toggle-password:hover {
+        text-decoration: underline;
+    }
+
+/* Glemt passord */
+.auth-forgot {
+    text-align: right;
+    margin: -5px 0 24px;
+}
+
+    .auth-forgot a,
+    .auth-bottom a {
+        color: var(--auth-green);
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    .auth-forgot a {
+        font-size: 13px;
+    }
+
+/* Rollevalg */
+.auth-role-fieldset {
+    border: 0;
+    padding: 0;
+    margin: 8px 0 24px;
+    min-width: 0;
+}
+
+.auth-roles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.auth-role {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    min-height: 102px;
+    padding: 13px 10px;
+    border: 1px solid #dce1e6;
+    border-radius: 10px;
+    background: #fafbfc;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+    .auth-role:hover {
+        border-color: var(--auth-green);
+        background: #f3faf8;
+    }
+
+    .auth-role:has(input:checked) {
+        border-color: var(--auth-green);
+        background: #eaf7f3;
+        box-shadow: 0 0 0 2px rgba(0, 75, 67, .12);
+    }
+
+    .auth-role:has(input:focus-visible) {
+        outline: 3px solid var(--auth-lime);
+        outline-offset: 2px;
+    }
+
+    .auth-role input {
+        flex-shrink: 0;
+        margin-top: 3px;
+        accent-color: var(--auth-green);
+    }
+
+.auth-role-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+}
+
+.auth-role-icon {
+    font-size: 24px;
+    line-height: 1;
+    color: var(--auth-green);
+}
+
+.auth-role strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 12px;
+    line-height: 1.25;
+    color: var(--auth-navy);
+}
+
+.auth-role small {
+    display: block;
+    font-size: 10px;
+    line-height: 1.5;
+    color: var(--auth-navy);
+}
+
+/* Knapper */
+.auth-submit {
+    display: block;
+    width: 100%;
+    min-height: 45px;
+    padding: 11px 20px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--auth-lime);
+    color: var(--auth-navy);
+    font: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    text-align: center;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+}
+
+    .auth-submit:hover {
+        background: #cfdf4d;
+        transform: translateY(-1px);
+    }
+
+    .auth-submit:focus-visible {
+        outline: 3px solid var(--auth-green);
+        outline-offset: 3px;
+    }
+
+.auth-bottom {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px 10px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #c8d0db;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Feilmeldinger */
+.auth-validation {
+    display: block;
+    color: #b42336;
+    font-size: 12px;
+}
+
+    .auth-validation:empty {
+        display: none;
+    }
+
+    .auth-validation:not(:empty) {
+        margin: 5px 0;
+    }
+
+/* Skjul footer på autentiseringssidene */
+body.page-account:is(.action-login, .action-register) .site-footer {
+    display: none;
+}
+
+/* Mobil og nettbrett */
+@media (max-width: 640px) {
+    .auth-page {
+        min-height: calc(100svh - 90px);
+        background-position: 60% center;
+    }
+
+    .auth-page__overlay {
+        align-items: flex-start;
+        padding: 32px 15px 90px;
+    }
+
+    .auth-card {
+        padding: 28px 22px;
+        border-radius: 15px;
+    }
+
+    .auth-heading h1 {
+        font-size: 31px;
+    }
+
+    .auth-roles {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-role {
+        min-height: 78px;
+    }
+
+        .auth-role small {
+            font-size: 12px;
+        }
+
+    .auth-page__waves {
+        height: 55px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .auth-submit,
+    .auth-role,
+    .auth-input-wrap {
+        transition: none;
+    }
+}

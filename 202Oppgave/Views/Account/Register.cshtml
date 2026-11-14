@@ -1,93 +1,159 @@
 
 @model _202Oppgave.ViewModels.Account.RegisterViewModel
+@using _202Oppgave.Models.Authorization
 
 @{
     ViewData["Title"] = "Opprett bruker";
 }
 
-<p class="eyebrow">Bli med</p>
-<h1>Opprett bruker</h1>
-<p>Velg rollen som beskriver hvordan du skal bruke tjenesten.</p>
+<section class="auth-card auth-card--register"
+         aria-labelledby="register-title">
 
-<form asp-action="Register" method="post" class="col-md-6">
-    <div asp-validation-summary="ModelOnly"
-         class="text-danger" role="alert"></div>
-
-    <div class="mb-3">
-        <label asp-for="FullName" class="form-label"></label>
-        <input asp-for="FullName"
-               class="form-control"
-               autocomplete="name" />
-        <span asp-validation-for="FullName"
-              class="text-danger"></span>
+    <div class="auth-heading">
+        <p class="auth-eyebrow">REGISTRER DEG</p>
+        <h1 id="register-title">Opprett bruker</h1>
+        <p>Opprett en konto for å bruke ko/ordinert.</p>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="PhoneNumber" class="form-label"></label>
-        <input asp-for="PhoneNumber"
-               type="tel"
-               class="form-control"
-               autocomplete="tel" />
-        <span asp-validation-for="PhoneNumber"
-              class="text-danger"></span>
+    <form asp-controller="Account"
+          asp-action="Register"
+          method="post">
+
+        <div asp-validation-summary="ModelOnly"
+             class="auth-validation"
+             role="alert"></div>
+
+        <div class="auth-field">
+            <label asp-for="FullName">Navn <span>*</span></label>
+            <div class="auth-input-wrap">
+                <span class="auth-input-icon" aria-hidden="true">♙</span>
+                <input asp-for="FullName"
+                       placeholder="Skriv inn fullt navn"
+                       autocomplete="name" />
+            </div>
+            <span asp-validation-for="FullName"
+                  class="auth-validation"></span>
+        </div>
+
+        <div class="auth-field">
+            <label asp-for="PhoneNumber">Telefon <span>*</span></label>
+            <div class="auth-input-wrap">
+                <span class="auth-input-icon" aria-hidden="true">☎</span>
+                <input asp-for="PhoneNumber"
+                       type="tel"
+                       placeholder="Skriv inn telefonnummer"
+                       autocomplete="tel" />
+            </div>
+            <span asp-validation-for="PhoneNumber"
+                  class="auth-validation"></span>
+        </div>
+
+        <div class="auth-field">
+            <label asp-for="Email">E-post <span>*</span></label>
+            <div class="auth-input-wrap">
+                <span class="auth-input-icon" aria-hidden="true">✉</span>
+                <input asp-for="Email"
+                       type="email"
+                       placeholder="Skriv inn e-post"
+                       autocomplete="email" />
+            </div>
+            <span asp-validation-for="Email"
+                  class="auth-validation"></span>
+        </div>
+
+        <div class="auth-field">
+            <label asp-for="Password">Passord <span>*</span></label>
+            <div class="auth-input-wrap">
+                <span class="auth-input-icon" aria-hidden="true">♙</span>
+                <input asp-for="Password"
+                       type="password"
+                       placeholder="Velg passord"
+                       autocomplete="new-password" />
+                <button type="button"
+                        class="auth-toggle-password"
+                        data-password-toggle="Password"
+                        aria-label="Vis passord"
+                        aria-pressed="false">Vis</button>
+            </div>
+            <span asp-validation-for="Password"
+                  class="auth-validation"></span>
+        </div>
+
+        <div class="auth-field">
+            <label asp-for="ConfirmPassword">
+                Gjenta passord <span>*</span>
+            </label>
+            <div class="auth-input-wrap">
+                <span class="auth-input-icon" aria-hidden="true">♙</span>
+                <input asp-for="ConfirmPassword"
+                       type="password"
+                       placeholder="Gjenta passordet"
+                       autocomplete="new-password" />
+                <button type="button"
+                        class="auth-toggle-password"
+                        data-password-toggle="ConfirmPassword"
+                        aria-label="Vis passord"
+                        aria-pressed="false">Vis</button>
+            </div>
+            <span asp-validation-for="ConfirmPassword"
+                  class="auth-validation"></span>
+        </div>
+
+        <fieldset class="auth-role-fieldset">
+            <legend>Velg rolle <span>*</span></legend>
+
+            <div class="auth-roles">
+                <label class="auth-role">
+                    <input asp-for="Role"
+                           type="radio"
+                           value="@RoleNames.PublicActor" />
+                    <span class="auth-role-content">
+                        <span class="auth-role-icon" aria-hidden="true">▤</span>
+                        <span>
+                            <strong>Offentlig aktør</strong>
+                            <small>
+                                For kommuner, fylker og andre
+                                offentlige virksomheter.
+                            </small>
+                        </span>
+                    </span>
+                </label>
+
+                <label class="auth-role">
+                    <input asp-for="Role"
+                           type="radio"
+                           value="@RoleNames.ResourceProvider" />
+                    <span class="auth-role-content">
+                        <span class="auth-role-icon" aria-hidden="true">♧</span>
+                        <span>
+                            <strong>Ressursleverandør</strong>
+                            <small>
+                                For organisasjoner og virksomheter
+                                som tilbyr ressurser og støtte.
+                            </small>
+                        </span>
+                    </span>
+                </label>
+            </div>
+
+            <span asp-validation-for="Role"
+                  class="auth-validation"></span>
+        </fieldset>
+
+        <button type="submit" class="auth-submit">
+            Opprett bruker
+        </button>
+    </form>
+
+    <div class="auth-bottom">
+        <span>Har du allerede en bruker?</span>
+        <a asp-controller="Account"
+           asp-action="Login">Logg inn</a>
     </div>
-
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label">
-            E-postadresse
-        </label>
-        <input asp-for="Email"
-               class="form-control"
-               autocomplete="email" />
-        <span asp-validation-for="Email"
-              class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Password" class="form-label">
-            Passord
-        </label>
-        <input asp-for="Password"
-               class="form-control"
-               autocomplete="new-password" />
-        <span asp-validation-for="Password"
-              class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="ConfirmPassword" class="form-label">
-            Gjenta passord
-        </label>
-        <input asp-for="ConfirmPassword"
-               class="form-control"
-               autocomplete="new-password" />
-        <span asp-validation-for="ConfirmPassword"
-              class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Role" class="form-label">
-            Brukertype
-        </label>
-        <select asp-for="Role" class="form-select">
-            <option value="">Velg brukertype</option>
-            <option value="ResourceProvider">Ressursleverandør</option>
-            <option value="PublicActor">Offentlig aktør</option>
-        </select>
-        <span asp-validation-for="Role"
-              class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">
-        Opprett bruker
-    </button>
-</form>
-
-<p>
-    Har du allerede en bruker?
-    <a asp-action="Login">Logg inn →</a>
-</p>
+</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/account-auth.js"
+            asp-append-version="true"></script>
 }

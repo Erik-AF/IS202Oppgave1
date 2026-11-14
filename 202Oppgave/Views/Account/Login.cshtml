@@ -1,33 +1,83 @@
+
 @model _202Oppgave.ViewModels.Account.LoginViewModel
 
 @{
     ViewData["Title"] = "Logg inn";
 }
 
-<p class="eyebrow">Velkommen tilbake</p><h1>Logg inn</h1><p>Få tilgang til registrering og oppdatering av ressurser og behov.</p>
-<form asp-action="Login" method="post" class="col-md-6">
-    <input asp-for="ReturnUrl" type="hidden" />
-    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label">E-postadresse</label>
-        <input asp-for="Email" class="form-control" autocomplete="email" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Password" class="form-label">Passord</label>
-        <input asp-for="Password" class="form-control" autocomplete="current-password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="form-check mb-3">
-        <input asp-for="RememberMe" class="form-check-input" />
-        <label asp-for="RememberMe" class="form-check-label">Husk meg</label>
-    </div>
-    <button type="submit" class="btn btn-primary">Logg inn</button>
-</form>
+<section class="auth-card auth-card--login"
+         aria-labelledby="auth-title">
 
-<p class="mt-3"><a asp-action="ForgotPassword">Glemt passordet?</a></p>
+    <div class="auth-heading">
+        <p class="auth-eyebrow">LOGG INN</p>
+        <h1 id="auth-title">Logg inn</h1>
+        <p>Få tilgang til ko/ordinert.</p>
+    </div>
 
-<p>Ny her? <a asp-action="Register">Opprett en bruker →</a></p>
+    <form asp-controller="Account"
+          asp-action="Login"
+          method="post">
+
+        <input asp-for="ReturnUrl" type="hidden" />
+
+        <div asp-validation-summary="ModelOnly"
+             class="auth-validation"
+             role="alert"></div>
+
+        <div class="auth-field">
+            <label asp-for="Email">E-post</label>
+            <div class="auth-input-wrap">
+                <span class="auth-input-icon" aria-hidden="true">✉</span>
+                <input asp-for="Email"
+                       type="email"
+                       placeholder="Skriv inn e-post"
+                       autocomplete="email" />
+            </div>
+            <span asp-validation-for="Email"
+                  class="auth-validation"></span>
+        </div>
+
+        <div class="auth-field">
+            <label asp-for="Password">Passord</label>
+            <div class="auth-input-wrap">
+                <span class="auth-input-icon" aria-hidden="true">♙</span>
+                <input asp-for="Password"
+                       type="password"
+                       placeholder="Skriv inn passord"
+                       autocomplete="current-password" />
+                <button type="button"
+                        class="auth-toggle-password"
+                        data-password-toggle="Password"
+                        aria-label="Vis passord"
+                        aria-pressed="false">
+                    Vis
+                </button>
+            </div>
+            <span asp-validation-for="Password"
+                  class="auth-validation"></span>
+        </div>
+
+        <div class="auth-forgot">
+            <a asp-controller="Account"
+               asp-action="ForgotPassword">
+                Har du glemt passordet?
+            </a>
+        </div>
+
+        <button type="submit" class="auth-submit">
+            Logg inn
+        </button>
+    </form>
+
+    <div class="auth-bottom">
+        <span>Har du ikke en bruker?</span>
+        <a asp-controller="Account"
+           asp-action="Register">Registrer deg</a>
+    </div>
+</section>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/account-auth.js"
+            asp-append-version="true"></script>
 }
