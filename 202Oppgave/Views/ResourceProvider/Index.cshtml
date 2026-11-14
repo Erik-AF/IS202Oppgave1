@@ -169,12 +169,44 @@
                 </a>
             </div>
 
-            <div class="provider-resource-row">
-                <p>
-                    Ressursene dine vises her når de er
-                    koblet til brukerkontoen.
-                </p>
-            </div>
+            @{
+                var testResources = new[]
+                {
+                    new { Id = 1, Name = "Aggregat (100 kW)", Category = "Utstyr", Status = "Tilgjengelig", Icon = "bi-lightning-charge" },
+                    new { Id = 2, Name = "Telt (10 stk)", Category = "Utstyr", Status = "Tilgjengelig", Icon = "bi-house" },
+                    new { Id = 3, Name = "Transport (minibuss)", Category = "Transport", Status = "Utlånt", Icon = "bi-truck" },
+                    new { Id = 4, Name = "Redningsbåt", Category = "Kjøretøy", Status = "Tilgjengelig", Icon = "bi-water" }
+                };
+            }
+
+            @foreach (var resource in testResources)
+            {
+                <div class="provider-resource-row provider-resource-demo">
+                    <div class="provider-resource-info">
+                        <div class="provider-resource-icon">
+                            <i class="bi @resource.Icon" aria-hidden="true"></i>
+                        </div>
+
+                        <div>
+                            <h3>@resource.Name</h3>
+                            <p>@resource.Category</p>
+                        </div>
+                    </div>
+
+                    <span class="provider-resource-status @(resource.Status == "Tilgjengelig" ? "is-available" : "is-loaned")">
+                        <span class="provider-status-dot"></span>
+                        @resource.Status
+                    </span>
+                    
+                    <a asp-controller="ResourceProvider"
+                       asp-action="Details"
+                       asp-route-id="@resource.Id"
+                       class="provider-details-button">
+                        Se detaljer
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+            } 
 
         </div>
 

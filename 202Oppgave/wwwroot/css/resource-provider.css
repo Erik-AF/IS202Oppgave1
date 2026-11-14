@@ -463,3 +463,127 @@ body.page-resourceprovider .utility-bar {
 body.page-resourceprovider .utility-bar a {
     color: #fff;
 }
+
+/* Testressurser på dashboardet */
+
+.provider-resource-demo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 22px;
+    border-bottom: 1px solid #e5e9e6;
+}
+
+.provider-resource-demo:last-child {
+    border-bottom: none;
+}
+
+.provider-resource-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.provider-resource-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #e5f0e8;
+    color: #195746;
+    font-size: 20px;
+}
+
+.provider-resource-info h3 {
+    margin: 0 0 4px;
+    color: #173b35;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.provider-resource-info p {
+    margin: 0;
+    color: #667570;
+    font-size: 14px;
+}
+
+.provider-resource-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.provider-resource-status.is-available {
+    background: #e4f3e8;
+    color: #24683f;
+}
+
+.provider-resource-status.is-loaned {
+    background: #fff0dc;
+    color: #956019;
+}
+
+.provider-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+@media (max-width: 600px) {
+    .provider-resource-demo {
+        flex-wrap: wrap;
+        padding: 16px;
+    }
+
+    .provider-resource-status {
+        margin-left: 62px;
+    }
+}
+
+/* Ressursstatus og detaljknapp */
+
+.provider-resource-controls {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.provider-details-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 13px;
+    border: 1px solid #d8e4dd;
+    border-radius: 8px;
+    color: #195746;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+
+.provider-details-button:hover {
+    background: #eaf3ed;
+    color: #124536;
+}
+
+@media (max-width: 600px) {
+    .provider-resource-controls {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+    }
+}
