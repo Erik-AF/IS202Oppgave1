@@ -7,7 +7,10 @@
     var needDesign = (IsActive("Need") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase) 
                                            || action.Equals("Create", StringComparison.OrdinalIgnoreCase) || action.Equals("Edit", StringComparison.OrdinalIgnoreCase))) 
                      || (IsActive("Resource") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
-                                                  || action.Equals("Create", StringComparison.OrdinalIgnoreCase)));    var brandName = "Ko/ordinert";
+                                                  || action.Equals("Create", StringComparison.OrdinalIgnoreCase)))
+                     || (IsActive("Allocation") && action.Equals("Create", StringComparison.OrdinalIgnoreCase));  
+    
+    var brandName = "Ko/ordinert";
     var brandTagline = "Kart. Behov. Ressurser. Sammen.";
     var brandLogo = "~/images/logo-koordinert.svg";
 
