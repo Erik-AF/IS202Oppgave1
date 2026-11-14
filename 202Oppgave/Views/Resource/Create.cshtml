@@ -113,8 +113,8 @@ ViewData["Title"] = "Registrer ressurs";
 
     /* Nedtrekkslisten for kategori: samme høyde og kant som tekstfeltene.
    appearance: none fjerner macOS-utseendet, så høyden virker i Safari.
-   Pila tegnes som et lite SVG-bilde til høyre */
-    .design-concept .need-design .rr-card .form-select {
+    /* .design-concept foran trengs for å vinne over .card i beredskap.css */
+    .design-concept .need-design .rr-card {
         -webkit-appearance: none;
         appearance: none;
         min-height: 48px;
@@ -298,7 +298,7 @@ ViewData["Title"] = "Registrer ressurs";
             <div class="rr-row">
                 <div>
                     <label asp-for="Type" class="rr-label">Tittel <i>*</i></label>
-                    <input asp-for="Type" class="form-control" placeholder="F.eks. minibuss, aggregat eller telt" />
+                    <input asp-for="Type" class="form-control"/>
                     <span asp-validation-for="Type" class="text-danger"></span>
                 </div>
 
@@ -317,8 +317,7 @@ ViewData["Title"] = "Registrer ressurs";
             @* Beskrivelse med tegnteller (telleren styres av scriptet nederst) *@
             <div class="rr-field">
                 <label asp-for="Description" class="rr-label">Beskrivelse <i>*</i></label>
-                <textarea asp-for="Description" class="form-control" maxlength="500"
-                          placeholder="Kapasitet, bruksområde og eventuelle forbehold"></textarea>
+                <textarea asp-for="Description" class="form-control" maxlength="500"></textarea>
                 <div class="rr-hint"><span id="description-count">0</span> / 500</div>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
@@ -327,7 +326,7 @@ ViewData["Title"] = "Registrer ressurs";
                men kan rettes manuelt *@
             <div class="rr-field">
                 <label asp-for="Area" class="rr-label">Adresse eller sted <i>*</i></label>
-                <input asp-for="Area" class="form-control" placeholder="Fylles ut når du markerer i kartet" />
+                <input asp-for="Area" class="form-control"/>
                 <span asp-validation-for="Area" class="text-danger"></span>
             </div>
 
