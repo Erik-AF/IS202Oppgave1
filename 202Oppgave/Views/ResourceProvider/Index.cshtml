@@ -4,28 +4,6 @@
 }
 
 <section class="provider-hero">
-    <div class="provider-hero-wave" aria-hidden="true">
-        <svg viewBox="0 0 600 250"
-             preserveAspectRatio="none"
-             xmlns="http://www.w3.org/2000/svg">
-            <path d="M-40 250 C120 80 280 240 640 10"
-                  fill="none"
-                  stroke="#20a58a"
-                  stroke-width="2"
-                  opacity="0.65" />
-            <path d="M-40 270 C140 100 300 260 650 30"
-                  fill="none"
-                  stroke="#20a58a"
-                  stroke-width="2"
-                  opacity="0.4" />
-            <path d="M-40 290 C160 120 320 280 660 50"
-                  fill="none"
-                  stroke="#20a58a"
-                  stroke-width="2"
-                  opacity="0.25" />
-        </svg>
-    </div>
-
     <div class="container provider-hero-content">
         <div>
             <span class="provider-eyebrow">
@@ -35,8 +13,9 @@
             <h1>Min oversikt</h1>
 
             <p>
-            Registrer nye ressurser, administrer eksisterende ressurser 
-            og følg med på leveransestatus.
+                Registrer nye ressurser, administrer eksisterende ressurser
+                og følg med på leveransestatus.
+            </p>
         </div>
     </div>
 </section>
@@ -103,7 +82,7 @@
                    asp-action="Resources"
                    class="provider-action-link">
                     <span>
-                        <i class="bi bi-pencil" aria-hidden="true"></i>                        
+                        <i class="bi bi-pencil" aria-hidden="true"></i>
                         Rediger ressurser
                     </span>
                     <i class="bi bi-chevron-right" aria-hidden="true"></i>
@@ -171,8 +150,8 @@
                             </span>
                         </div>
                     </div>
-                    
-                    <a asp-controller="ResourceProvider"
+
+                    <a asp-controller="Resource"
                        asp-action="Details"
                        asp-route-id="@resource.Id"
                        class="provider-details-button">
@@ -180,7 +159,7 @@
                         <i class="bi bi-arrow-right" aria-hidden="true"></i>
                     </a>
                 </div>
-            } 
+            }
 
         </div>
 
@@ -192,3 +171,4 @@
           href="~/css/resource-provider.css"
           asp-append-version="true" />
 }
+

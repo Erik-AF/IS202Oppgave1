@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Mine ressurser";
+    ViewData["Title"] = "Administrer ressurser";
 }
 
 <partial name="_ProviderNavigation" />
@@ -9,23 +9,34 @@
 
         <div class="provider-resources-header">
             <div>
-                <h1>Mine ressurser</h1>
-                <p>Administrer ressursene du har registrert.</p>
+                <p class="provider-page-eyebrow">RESSURSLEVERANDØR</p>
+                <h1>Administrer ressurser</h1>
+                <p class="provider-page-intro">
+                    Se og administrer ressursene du har registrert.
+                </p>
             </div>
-
-            <a asp-controller="Resource"
-               asp-action="Create"
-               class="provider-add-button">
-                + Registrer ressurs
-            </a>
         </div>
 
-        <div class="provider-empty-state">
-            <h2>Ressurslisten er ikke tilgjengelig ennå</h2>
-            <p>
-                Ressursene dine vises her når de er
-                koblet til brukerkontoen din.
-            </p>
+        <div class="provider-page-card">
+            <div class="provider-page-card-header">
+                <h2>Registrerte ressurser</h2>
+
+                <a asp-controller="Resource"
+                   asp-action="Create"
+                   class="provider-page-button">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    Registrer ressurs
+                </a>
+            </div>
+
+            <div class="provider-empty-state">
+                <i class="bi bi-box-seam" aria-hidden="true"></i>
+                <h3>Ingen ressurser å vise ennå</h3>
+                <p>
+                    Ressursene dine vises her når de er
+                    koblet til brukerkontoen din.
+                </p>
+            </div>
         </div>
 
     </div>
