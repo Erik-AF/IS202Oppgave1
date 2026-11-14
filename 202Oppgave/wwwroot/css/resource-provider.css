@@ -438,3 +438,28 @@ body.page-resourceprovider .site-header .main-nav a {
 body.page-resourceprovider .site-header .main-nav a:hover {
     color: #d5eee2;
 }
+
+/* Øvre header farger */
+body.page-resourceprovider .site-header .main-nav button.nav-login {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 8px;
+    color: #fff;
+    padding: 12px 20px;
+    cursor: pointer;
+}
+
+
+body.page-resourceprovider .site-header .main-nav button.nav-login:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #fff;
+    color: #fff;
+}
+
+body.page-resourceprovider .utility-bar {
+    background-color: #123f35;
+}
+
+body.page-resourceprovider .utility-bar a {
+    color: #fff;
+}
