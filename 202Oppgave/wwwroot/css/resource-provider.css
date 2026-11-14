@@ -259,13 +259,21 @@ body.page-resourceprovider main {
 }
 
 .provider-resource-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 180px 180px;
     align-items: center;
-    justify-content: space-between;
     gap: 16px;
     background: white;
     padding: 18px 22px;
     border: 1px solid var(--provider-border);
+}
+
+.provider-resource-row > :nth-child(2) {
+    justify-self: center;
+}
+
+.provider-resource-row > :nth-child(3) {
+    justify-self: end;
 }
 
 .provider-resource-row:first-of-type {
