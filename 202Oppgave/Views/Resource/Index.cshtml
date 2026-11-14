@@ -64,16 +64,25 @@
     </style>
 }
 
-<div class="container rl">
+@* need-design gir samme stil som behovslisten (fra need.css):
+   grønt filterpanel, hvite kort med runde hjørner og grønne knapper *@
+<div class="container rl need-design">
+
+    @* Brødsmulesti, som på behovslisten *@
+    <nav class="need-breadcrumb" aria-label="Brødsmuler">
+        <a asp-controller="Home" asp-action="Index">Hjem</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Ressurser</span>
+    </nav>
 
     @* ===== Topp: tittel og knapp ===== *@
-    <div class="rl-head">
+    <header class="rl-head">
         <div>
-            <p class="eyebrow">Det vi har å bidra med</p><h1>Tilgjengelige ressurser</h1>
+            <h1>Tilgjengelige ressurser</h1>
             <p>Kjøretøy, maskiner, utstyr og mannskap som kan brukes i en krise.</p>
         </div>
-        <a class="rl-btn" asp-action="Create">Registrer ressurs <span aria-hidden="true">→</span></a>
-    </div>
+        <a class="rl-btn" asp-action="Create">Registrer ny ressurs</a>
+    </header>
 
     <div class="rl-layout">
 

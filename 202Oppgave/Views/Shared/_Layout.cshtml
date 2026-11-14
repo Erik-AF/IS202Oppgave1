@@ -6,8 +6,8 @@
     // Registrer ressurs bruker samme design, så siden ser lik ut som Registrer behov.
     var needDesign = (IsActive("Need") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase) 
                                            || action.Equals("Create", StringComparison.OrdinalIgnoreCase) || action.Equals("Edit", StringComparison.OrdinalIgnoreCase))) 
-                     || (IsActive("Resource") && action.Equals("Create", StringComparison.OrdinalIgnoreCase));
-    var brandName = "Ko/ordinert";
+                     || (IsActive("Resource") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
+                                                  || action.Equals("Create", StringComparison.OrdinalIgnoreCase)));    var brandName = "Ko/ordinert";
     var brandTagline = "Kart. Behov. Ressurser. Sammen.";
     var brandLogo = "~/images/logo-koordinert.svg";
 
