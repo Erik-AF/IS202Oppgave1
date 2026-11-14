@@ -1,42 +1,93 @@
+
 @model _202Oppgave.ViewModels.Account.RegisterViewModel
 
 @{
     ViewData["Title"] = "Opprett bruker";
 }
 
-<p class="eyebrow">Bli med</p><h1>Opprett bruker</h1><p>Velg rollen som beskriver hvordan du skal bruke tjenesten.</p>
+<p class="eyebrow">Bli med</p>
+<h1>Opprett bruker</h1>
+<p>Velg rollen som beskriver hvordan du skal bruke tjenesten.</p>
+
 <form asp-action="Register" method="post" class="col-md-6">
-    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <div asp-validation-summary="ModelOnly"
+         class="text-danger" role="alert"></div>
+
     <div class="mb-3">
-        <label asp-for="Email" class="form-label">E-postadresse</label>
-        <input asp-for="Email" class="form-control" autocomplete="email" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+        <label asp-for="FullName" class="form-label"></label>
+        <input asp-for="FullName"
+               class="form-control"
+               autocomplete="name" />
+        <span asp-validation-for="FullName"
+              class="text-danger"></span>
     </div>
+
     <div class="mb-3">
-        <label asp-for="Password" class="form-label">Passord</label>
-        <input asp-for="Password" class="form-control" autocomplete="new-password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
+        <label asp-for="PhoneNumber" class="form-label"></label>
+        <input asp-for="PhoneNumber"
+               type="tel"
+               class="form-control"
+               autocomplete="tel" />
+        <span asp-validation-for="PhoneNumber"
+              class="text-danger"></span>
     </div>
+
     <div class="mb-3">
-        <label asp-for="ConfirmPassword" class="form-label">Gjenta passord</label>
-        <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        <label asp-for="Email" class="form-label">
+            E-postadresse
+        </label>
+        <input asp-for="Email"
+               class="form-control"
+               autocomplete="email" />
+        <span asp-validation-for="Email"
+              class="text-danger"></span>
     </div>
+
     <div class="mb-3">
-    <label asp-for="Role" class="form-label">
-        Brukertype
-    </label>
-    <select asp-for="Role" class="form-select">
-        <option value="">Velg brukertype</option>
-        <option value="ResourceProvider"> Ressursleverandør </option>
-        <option value="PublicActor"> Offentlig aktør </option>
-    </select>
-    <span asp-validation-for="Role" class="text-danger"></span>
+        <label asp-for="Password" class="form-label">
+            Passord
+        </label>
+        <input asp-for="Password"
+               class="form-control"
+               autocomplete="new-password" />
+        <span asp-validation-for="Password"
+              class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Opprett bruker</button>
+
+    <div class="mb-3">
+        <label asp-for="ConfirmPassword" class="form-label">
+            Gjenta passord
+        </label>
+        <input asp-for="ConfirmPassword"
+               class="form-control"
+               autocomplete="new-password" />
+        <span asp-validation-for="ConfirmPassword"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Role" class="form-label">
+            Brukertype
+        </label>
+        <select asp-for="Role" class="form-select">
+            <option value="">Velg brukertype</option>
+            <option value="ResourceProvider">Ressursleverandør</option>
+            <option value="PublicActor">Offentlig aktør</option>
+        </select>
+        <span asp-validation-for="Role"
+              class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Opprett bruker
+    </button>
 </form>
 
-<p>Har du allerede en bruker? <a asp-action="Login">Logg inn →</a></p>
+<p>
+    Har du allerede en bruker?
+    <a asp-action="Login">Logg inn →</a>
+</p>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using _202Oppgave.DataAccess.Repositories;
 using Need = _202Oppgave.Models.Need;
@@ -23,16 +25,25 @@ public class NeedController : Controller
         return View(needs.Select(ToModel).ToList());
     }
 
+    [Authorize]
     [HttpGet]
     public IActionResult Create()
     {
         return View(new NeedViewModel());
     }
 
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(NeedViewModel model)
     {
+        // Oppretteren hentes fra innloggingen, aldri fra skjemadata.
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (User.Identity?.IsAuthenticated != true || string.IsNullOrWhiteSpace(userId))
+        {
+            return Challenge();
+        }
+
         // Beholder skjemadataene dersom brukeren må rette opp feil.
         if (!ModelState.IsValid)
         {
@@ -41,6 +52,7 @@ public class NeedController : Controller
 
         var need = new NeedEntity
         {
+            UserId = userId,
             Type = model.Type,
             Location = model.Location,
             Priority = model.Priority!.Value,

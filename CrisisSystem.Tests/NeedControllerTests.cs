@@ -1,3 +1,6 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using _202Oppgave.Controllers;
 using _202Oppgave.DataAccess.Repositories;
 using _202Oppgave.Models.Entities;
@@ -59,7 +62,7 @@ public class NeedControllerTests
     public async Task Create_InvalidModel_ShouldReturnView()
     {
         var repository = new FakeNeedRepository();
-        var controller = new NeedController(repository);
+        var controller = CreateController(repository);
         var model = new NeedViewModel();
 
         controller.ModelState.AddModelError(
@@ -76,7 +79,7 @@ public class NeedControllerTests
     public async Task Create_ValidModel_ShouldSaveNeed()
     {
         var repository = new FakeNeedRepository();
-        var controller = new NeedController(repository);
+        var controller = CreateController(repository);
 
         var model = new NeedViewModel
         {
@@ -93,6 +96,7 @@ public class NeedControllerTests
 
         var savedNeed = Assert.Single(repository.Needs);
 
+        Assert.Equal("user-123", savedNeed.UserId);
         Assert.Equal(model.Type, savedNeed.Type);
         Assert.Equal(model.Location, savedNeed.Location);
         Assert.Equal(model.Priority, savedNeed.Priority);
@@ -106,7 +110,7 @@ public class NeedControllerTests
     public async Task Create_ValidModel_ShouldRedirectToConfirmation()
     {
         var repository = new FakeNeedRepository();
-        var controller = new NeedController(repository);
+        var controller = CreateController(repository);
 
         var model = new NeedViewModel
         {
@@ -134,6 +138,7 @@ public async Task Edit_ExistingNeed_ShouldUpdateNeed()
     var need = new Need
     {
         Id = 1,
+        UserId = "original-user",
         Type = "Mat",
         Location = "Kristiansand",
         Priority = NeedPriority.IkkeAkutt,
@@ -144,7 +149,7 @@ public async Task Edit_ExistingNeed_ShouldUpdateNeed()
     };
     repository.Needs.Add(need);
 
-    var controller = new NeedController(repository);
+    var controller = CreateController(repository);
     var model = new NeedViewModel
     {
         Type = "Drikkevann",
@@ -158,6 +163,7 @@ public async Task Edit_ExistingNeed_ShouldUpdateNeed()
 
     var result = await controller.Edit(1, model);
 
+    Assert.Equal("original-user", repository.Needs[0].UserId);
     Assert.Equal("Drikkevann", repository.Needs[0].Type);
     Assert.Equal("Grimstad", repository.Needs[0].Location);
     Assert.Equal(NeedPriority.Akutt, repository.Needs[0].Priority);
@@ -182,7 +188,7 @@ public async Task Delete_ExistingNeed_ShouldRemoveNeed()
     var repository = new FakeNeedRepository();
     repository.Needs.Add(new Need { Id = 1 });
 
-    var controller = new NeedController(repository);
+    var controller = CreateController(repository);
 
     var result = await controller.Delete(1);
 
@@ -202,4 +208,45 @@ public async Task Delete_NonExistingNeed_ShouldReturnNotFound()
     Assert.IsType<NotFoundResult>(result);
 }
 
+
+    private static NeedController CreateController(INeedRepository repository)
+    {
+        return new NeedController(repository)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity(
+                        new[] { new Claim(ClaimTypes.NameIdentifier, "user-123") }, "Test"))
+                }
+            }
+        };
+    }
+
+    [Theory]
+    [InlineData(false, "user-123")]
+    [InlineData(true, null)]
+    [InlineData(true, " ")]
+    public async Task Create_WithoutValidIdentity_ShouldNotSave(bool authenticated, string? id)
+    {
+        var repository = new FakeNeedRepository();
+        var controller = CreateController(repository);
+        var claims = id is null ? Array.Empty<Claim>() : new[] { new Claim(ClaimTypes.NameIdentifier, id) };
+        controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims, authenticated ? "Test" : null));
+
+        var result = await controller.Create(new NeedViewModel());
+
+        Assert.IsType<ChallengeResult>(result);
+        Assert.Empty(repository.Needs);
+    }
+
+    [Fact]
+    public void Create_Endpoints_ShouldRequireAuthorization()
+    {
+        var actions = typeof(NeedController).GetMethods().Where(m => m.Name == "Create").ToList();
+        Assert.Equal(2, actions.Count);
+        Assert.All(actions, method => Assert.NotEmpty(method.GetCustomAttributes(typeof(AuthorizeAttribute), true)));
+        Assert.Null(typeof(NeedViewModel).GetProperty("UserId"));
+    }
 }

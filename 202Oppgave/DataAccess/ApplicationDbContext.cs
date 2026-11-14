@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using _202Oppgave.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace _202Oppgave.DataAccess
 {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options)
@@ -68,6 +68,12 @@ namespace _202Oppgave.DataAccess
 
             modelBuilder.Entity<Need>(entity =>
             {
+                entity.Property(e => e.UserId).HasMaxLength(255);
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
                 // Databasen fyller inn tidspunktet når et nytt behov settes inn
                 entity.Property(e => e.CreatedAt)
                     .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")

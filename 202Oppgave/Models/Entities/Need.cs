@@ -1,9 +1,14 @@
-﻿using _202Oppgave.ViewModels;
+using _202Oppgave.ViewModels;
 namespace _202Oppgave.Models.Entities
 {
     public class Need
     {
         public int Id { get; set; }
+
+        // Eldre behov har ukjent oppretter; nye behov får ID fra innlogget bruker.
+        public string? UserId { get; set; }
+        public ApplicationUser? User { get; set; }
+
         public string Type { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;

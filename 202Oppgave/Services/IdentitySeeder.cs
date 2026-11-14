@@ -1,19 +1,22 @@
-﻿using _202Oppgave.Models.Authorization;
+﻿
+using _202Oppgave.Models.Entities;
+using _202Oppgave.Models.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 
 namespace _202Oppgave.Services
 {
     public static class IdentitySeeder
     {
-        public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+        public static async Task SeedRolesAsync(
+            RoleManager<IdentityRole> roleManager)
         {
             string[] roles =
             {
-            RoleNames.ResourceProvider,
-            RoleNames.PublicActor,
-            RoleNames.Admin
+                RoleNames.ResourceProvider,
+                RoleNames.PublicActor,
+                RoleNames.Admin
             };
+
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
@@ -32,7 +35,9 @@ namespace _202Oppgave.Services
             }
         }
 
-        public static async Task SeedDevelopmentAdminAsync(UserManager<IdentityUser> userManager, string password)
+        public static async Task SeedDevelopmentAdminAsync(
+            UserManager<ApplicationUser> userManager,
+            string password)
         {
             await SeedUserAsync(
                 userManager,
@@ -41,7 +46,9 @@ namespace _202Oppgave.Services
                 RoleNames.Admin);
         }
 
-        public static async Task SeedDevelopmentResourceProviderAsync(UserManager<IdentityUser> userManager, string password)
+        public static async Task SeedDevelopmentResourceProviderAsync(
+            UserManager<ApplicationUser> userManager,
+            string password)
         {
             await SeedUserAsync(
                 userManager,
@@ -50,7 +57,9 @@ namespace _202Oppgave.Services
                 RoleNames.ResourceProvider);
         }
 
-        public static async Task SeedDevelopmentPublicActorAsync(UserManager<IdentityUser> userManager, string password)
+        public static async Task SeedDevelopmentPublicActorAsync(
+            UserManager<ApplicationUser> userManager,
+            string password)
         {
             await SeedUserAsync(
                 userManager,
@@ -59,13 +68,17 @@ namespace _202Oppgave.Services
                 RoleNames.PublicActor);
         }
 
-        private static async Task SeedUserAsync(UserManager<IdentityUser> userManager, string email, string password, string role)
+        private static async Task SeedUserAsync(
+            UserManager<ApplicationUser> userManager,
+            string email,
+            string password,
+            string role)
         {
             var user = await userManager.FindByEmailAsync(email);
 
             if (user == null)
             {
-                user = new IdentityUser
+                user = new ApplicationUser
                 {
                     UserName = email,
                     Email = email,
