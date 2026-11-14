@@ -16,9 +16,9 @@ namespace _202Oppgave.ViewModels;
  */
 public class ResourceViewModel : IValidatableObject
 {
-    [Required(ErrorMessage = "Velg type ressurs")]
+    [Required(ErrorMessage = "Skriv en tittel")]
     [StringLength(100, ErrorMessage = "Maks 100 tegn")]
-    [Display(Name = "Type ressurs")]
+    [Display(Name = "Tittel")]
     public string Type { get; set; } = string.Empty;
 
     [StringLength(500, ErrorMessage = "Maks 500 tegn")]
@@ -49,12 +49,12 @@ public class ResourceViewModel : IValidatableObject
     [Display(Name = "Tilgjengelig til")]
     public DateTime? AvailableTo { get; set; }
 
-    [Required(ErrorMessage = "Oppgi kontaktperson")]
+    // Kontaktperson og telefon er valgfrie inntil de hentes fra brukerprofilen.
+    // De er derfor fjernet fra Create-skjemaet, og står som tom tekst hvis de ikke fylles ut.
     [StringLength(100, ErrorMessage = "Maks 100 tegn")]
     [Display(Name = "Kontaktperson")]
     public string ContactName { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Oppgi telefonnummer")]
     [StringLength(20, ErrorMessage = "Maks 20 tegn")]
     [Display(Name = "Telefon")]
     public string ContactPhone { get; set; } = string.Empty;

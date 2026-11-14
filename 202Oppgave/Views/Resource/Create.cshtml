@@ -7,188 +7,380 @@ ViewData["Title"] = "Registrer ressurs";
 
 @section Head {
 <style>
-    #resource-layout {
-        --brick: #b42318;
-    }
-    /* Skjema til venstre og kart til høyre */
-    #resource-layout {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 2rem;
-        align-items: start;
-    }
-
-    /* Sørger for at kartet passer i kolonnen */
-    #resource-layout .resource-map-panel {
-        min-width: 0;
-    }
-
-    /* Kartets størrelse */
+    /* Kartet: full bredde i kortet */
     #resource-map {
         height: 550px;
         width: 100%;
-        border-radius: 12px;
+        border-radius: 10px;
+        border: 1px solid #dfe1da;
+        margin-top: 18px;
     }
 
-    /* På mobil legges kartet under skjemaet */
-    @@media (max-width: 800px) {
-        #resource-layout {
+    /* Små koordinatfelt ved siden av hverandre under kartet */
+    .resource-coords {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 0.75rem;
+    }
+
+    /* Mindre tekst, så feltene ikke tar fokus fra skjemaet */
+    .resource-coords label,
+    .resource-coords input {
+        font-size: 0.85rem;
+    }
+
+    /* Grå bakgrunn viser at feltene ikke kan redigeres.
+       Må være mer spesifikk enn .form-control[readonly] i components.css */
+    .resource-coords .form-control[readonly] {
+        background-color: #edeeec;
+        color: var(--muted);
+        cursor: default;
+    }
+
+    /* Ingen blå fokusramme når man klikker i feltene */
+    .resource-coords .form-control[readonly]:focus {
+        border-color: var(--line-strong);
+        box-shadow: none;
+    }
+
+    /* Skjemaet til venstre og kartet til høyre, som på Registrer behov */
+    .rr-form {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;   /* kortene blir ikke strukket til samme høyde */
+    }
+
+    /* Knapperaden går over begge kolonnene */
+    .rr-actions {
+        grid-column: 1 / -1;
+    }
+
+    /* Hvite kort med runde hjørner, samme stil som behovskortene */
+    .need-design .rr-card {
+        background: #fff;
+        border: 1px solid #dbe1d8;
+        border-radius: 14px;
+        padding: 28px 30px;
+        min-width: 0;
+    }
+    /* Undertekst under korttitlene */
+    .rr-sub {
+        margin: -14px 0 20px;
+        color: #56615b;
+        font-size: .95rem;
+    }
+
+    /* Feltnavn: små store bokstaver, som "PRIORITET" på behovssiden */
+    .need-design .rr-label {
+        display: block;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: #131c18;
+        margin-bottom: 8px;
+    }
+
+    /* Rød stjerne på påkrevde felt */
+    .rr-label i, .rr-star, .rr-required i {
+        font-style: normal;
+        color: #b23c32;
+    }
+
+    /* "valgfritt" etter Bilde */
+    .rr-label em {
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: 0;
+        text-transform: none;
+        color: #8b938e;
+        margin-left: 6px;
+    }
+
+    /* Avstand mellom feltene */
+    .rr-field, .rr-row {
+        margin-bottom: 18px;
+    }
+
+    /* Tittel og kategori ved siden av hverandre */
+    .rr-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+    }
+
+    /* Nedtrekkslisten for kategori: samme høyde og kant som tekstfeltene.
+   appearance: none fjerner macOS-utseendet, så høyden virker i Safari.
+   Pila tegnes som et lite SVG-bilde til høyre */
+    .design-concept .need-design .rr-card .form-select {
+        -webkit-appearance: none;
+        appearance: none;
+        min-height: 48px;
+        padding: 0 40px 0 14px;
+        border: 1px solid #cfd8cc;
+        border-radius: 8px;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2356615b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 12px center;
+        font: inherit;
+        color: #131c18;
+    }
+
+    /* Tegnteller under beskrivelsen */
+    .rr-hint {
+        text-align: right;
+        font-size: .8rem;
+        color: #8b938e;
+        margin-top: 6px;
+    }
+
+    /* Stiplet slippfelt for bildet */
+    .rr-drop {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-height: 76px;
+        padding: 0 16px;
+        border: 1.5px dashed #cfd4cc;
+        border-radius: 8px;
+        background: #fbfbf8;
+        cursor: pointer;
+    }
+    .rr-drop:hover,
+    .rr-drop.is-over {   /* is-over settes av scriptet når man drar en fil over */
+        border-color: #15483d;
+        background: #f2f5ee;
+    }
+    .rr-drop b { display: block; color: #131c18; }
+    .rr-drop u { color: #15483d; }
+    .rr-drop small { display: block; color: #56615b; font-size: .8rem; }
+    .rr-drop-icon {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: #e4e9d6;
+    }
+
+    /* Selve filfeltet skjules. Slippfeltet over brukes i stedet */
+    .rr-file {
+        display: none;
+    }
+
+    /* Forhåndsvisning av valgt bilde */
+    .rr-preview {
+        margin-top: 12px;
+        width: 100%;
+        max-width: 320px;
+        aspect-ratio: 16 / 10;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    /* Raden under kartet: breddegrad, lengdegrad og "Min posisjon" */
+    .rr-coords {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 12px;
+        align-items: end;
+        margin-top: 16px;
+    }
+
+    /* Grå bakgrunn viser at koordinatene ikke kan redigeres.
+   .need-design foran trengs for å vinne over need.css */
+    .need-design .rr-coords .form-control[readonly] {
+        background: #f6f7f2;
+        cursor: default;
+    }
+    .rr-coords .form-control[readonly]:focus {
+        box-shadow: none;
+    }
+
+    /* Knapp med kant: "Min posisjon" og "Til alle ressurser" */
+    .rr-pos, .rr-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 46px;
+        padding: 0 18px;
+        border: 1.5px solid #15483d;
+        border-radius: 8px;
+        background: #fff;
+        color: #15483d;
+        font: inherit;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .rr-pos:hover, .rr-back:hover {
+        background: #f2f5ee;
+    }
+
+    /* Knapperad under kortene */
+    .rr-actions {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        margin-top: 6px;
+    }
+    .rr-required {
+        margin-right: auto;   /* skyver Avbryt og Registrer til høyre */
+        font-size: .85rem;
+        color: #56615b;
+    }
+    .rr-cancel {
+        color: #56615b;
+        text-underline-offset: 4px;
+    }
+
+    /* Slippfeltet er en <label>, så need.css gjør den til display:block.
+   Med .design-concept .need-design foran vinner vår regel, og ikonet havner ved siden av teksten */
+    .design-concept .need-design .rr-drop {
+        display: flex;
+        margin-bottom: 0;
+    }
+
+    /* Mobil: alt under hverandre */
+        @@media (max-width: 900px) {
+        .rr-form,
+        .rr-row,
+        .rr-coords {
             grid-template-columns: 1fr;
+        }
+        .rr-actions {
+            flex-wrap: wrap;
         }
     }
 </style>
 }
 
-<div class="container home-content">
-    <a class="back-link" asp-action="Index">← Til ressursoversikten</a>
-    <p class="eyebrow">Bidra til beredskapen</p>
-    <h1>Registrer ressurs</h1>
-    <p class="page-intro">Gjør utstyr og kapasitet synlig. Legg inn opplysninger og velg plasseringen på kartet.</p>
+<div class="container home-content need-design">
+    @* Brødsmulesti: viser hvor brukeren er *@
+    <nav class="need-breadcrumb" aria-label="Brødsmuler">
+        <a asp-controller="Home" asp-action="Index">Hjem</a>
+        <span aria-hidden="true">/</span>
+        <a asp-action="Index">Ressurser</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Registrer ressurs</span>
+    </nav>
+
+    @* Tittel til venstre og tilbake-knapp til høyre, som på behovssiden *@
+    <header class="rl-head">
+        <div>
+            <h1>Registrer ressurs</h1>
+            <p>Gjør utstyr og kapasitet synlig for beredskap og krisehåndtering.</p>
+        </div>
+        <a class="rr-back" asp-action="Index">← Til alle ressurser</a>
+    </header>
 
     @* Skjemaet omslutter både feltene og kartet, slik at koordinatene under kartet sendes med *@
-    <form id="resource-layout"
-          class="resource-layout"
+    <form id="resource-form"
+          class="rr-form"
           asp-controller="Resource"
           asp-action="Create"
           method="post"
           enctype="multipart/form-data">
 
-    @* Venstre kolonne: skjemafeltene *@
-    <div class="card" style="padding:2rem; min-width:0;">
+        @* Venstre kolonne: skjemafeltene *@
+        <div class="card rr-card">
+            <h2 class="need-section-title"><span class="need-step" aria-hidden="true">1</span>Om ressursen</h2>
 
-    @* Sender kartformen sammen med ressursern. *@
-    <input asp-for="GeometryJson" type="hidden" />
+                        <p class="rr-sub">Beskriv hva du kan bidra med.</p>
 
-    <div asp-validation-summary="ModelOnly"
-         style="color:#b42318; margin-bottom:1rem;">
-    </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    @* Kategorier fra databasen *@
-    <div style="margin-bottom:1rem;">
-        <label asp-for="CategoryId"></label>
-        <select asp-for="CategoryId" asp-items="Model.CategoryOptions" class="form-select">
-            <option value="">Velg kategori</option>
-        </select>
-        <span asp-validation-for="CategoryId" style="color:#b42318;"></span>
-    </div>
+            @* Skjult felt som sender kartformen sammen med skjemaet. *@
+            <input asp-for="GeometryJson" type="hidden" />
 
-    <div style="margin-bottom:1rem;">
-        <label asp-for="Type"></label>
-        <input asp-for="Type" class="form-control"/>
-        <span asp-validation-for="Type"
-              style="color:#b42318;"></span>
-    </div>
+            @* Tittel og kategori ved siden av hverandre *@
+            <div class="rr-row">
+                <div>
+                    <label asp-for="Type" class="rr-label">Tittel <i>*</i></label>
+                    <input asp-for="Type" class="form-control" placeholder="F.eks. minibuss, aggregat eller telt" />
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                </div>
 
-    <div style="margin-bottom:1rem;">
-        <label asp-for="Description"></label>
-        <textarea asp-for="Description"
-                          class="form-control"></textarea>
-        <span asp-validation-for="Description"
-              style="color:#b42318;"></span>
-    </div>
+                @* Kategorier fra databasen *@
+                <div>
+                    <label asp-for="CategoryId" class="rr-label">Kategori <i>*</i></label>
+                    <select asp-for="CategoryId" asp-items="Model.CategoryOptions" class="form-select">
+                        <option value="">Velg kategori</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+            </div>
+            
+            
 
-    <div style="margin-bottom:1rem;">
-        <label asp-for="Area"></label>
-        <input asp-for="Area" class="form-control"/>
-        <span asp-validation-for="Area"
-              style="color:#b42318;"></span>
-    </div>
-    
+            @* Beskrivelse med tegnteller (telleren styres av scriptet nederst) *@
+            <div class="rr-field">
+                <label asp-for="Description" class="rr-label">Beskrivelse <i>*</i></label>
+                <textarea asp-for="Description" class="form-control" maxlength="500"
+                          placeholder="Kapasitet, bruksområde og eventuelle forbehold"></textarea>
+                <div class="rr-hint"><span id="description-count">0</span> / 500</div>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
 
-    <div style="margin-bottom:1rem;">
-        <label asp-for="AvailableFrom"></label>
-        <input asp-for="AvailableFrom"
-               class="form-control"
-               type="date"/>
-    </div>
+            @* Adresse eller sted. Fylles automatisk fra Kartverket når man markerer i kartet,
+               men kan rettes manuelt *@
+            <div class="rr-field">
+                <label asp-for="Area" class="rr-label">Adresse eller sted <i>*</i></label>
+                <input asp-for="Area" class="form-control" placeholder="Fylles ut når du markerer i kartet" />
+                <span asp-validation-for="Area" class="text-danger"></span>
+            </div>
 
-    <div style="margin-bottom:1rem;">
-        <label asp-for="AvailableTo"></label>
-        <input asp-for="AvailableTo"
-               class="form-control"
-               type="date"/>
-    </div>
+            @* Valgfritt ressursbilde.
+               Hele den stiplede boksen er en <label> for filfeltet,
+               så et klikk hvor som helst i boksen åpner filvelgeren. *@
+            <div class="rr-field">
+                <span class="rr-label">Bilde <em>valgfritt</em></span>
+                <label for="Image" class="rr-drop" id="image-drop">
+                    <span class="rr-drop-icon" aria-hidden="true">🖼</span>
+                    <span>
+                        <b>Dra et bilde hit, eller <u>velg fil</u></b>
+                        <small>JPG, PNG eller WEBP, maks 5 MB</small>
+                    </span>
+                </label>
+                @* Selve filfeltet er skjult, boksen over brukes i stedet *@
+                <input asp-for="Image" type="file" accept=".jpg,.jpeg,.png,.webp" class="rr-file" />
+                <span asp-validation-for="Image" class="text-danger"></span>
+                <img id="image-preview" alt="Forhåndsvisning av valgt bilde" hidden class="rr-preview" />
+            </div>
 
-    <div style="margin-bottom:1rem;">
-        <label asp-for="ContactName"></label>
-        <input asp-for="ContactName"
-               class="form-control"/>
-        <span asp-validation-for="ContactName"
-              style="color:#b42318;"></span>
-    </div>
-
-    <div style="margin-bottom:1rem;">
-        <label asp-for="ContactPhone"></label>
-        <input asp-for="ContactPhone"
-               class="form-control"/>
-        <span asp-validation-for="ContactPhone"
-              style="color:#b42318;"></span>
-    </div>
-
-    <div style="margin-bottom:1rem;">
-        <label asp-for="ContactEmail"></label>
-        <input asp-for="ContactEmail"
-               class="form-control"/>
-    </div>
-
-    <div style="margin-bottom:1rem;">
-        <label asp-for="Status"></label>
-        <select asp-for="Status" class="form-select">
-            <option value="Tilgjengelig">Tilgjengelig</option>
-            <option value="Reservert">Reservert</option>
-            <option value="Utilgjengelig">Utilgjengelig</option>
-        </select>
-    </div>
-
-    <div style="margin-bottom:1.5rem;">
-        <label asp-for="OwnerName"></label>
-        <input asp-for="OwnerName"
-               class="form-control"/>
-    </div>
-
-    @* Valgfritt ressursbilde *@
-    <div style="margin-bottom:1.5rem;">
-        <label asp-for="Image"></label>
-        <input asp-for="Image" type="file" accept=".jpg,.jpeg,.png,.webp" class="form-control" />
-        <small style="display:block; color:var(--muted);">JPG, PNG eller WEBP.</small>
-        <span asp-validation-for="Image" style="color:#b42318;"></span>
-        <img id="image-preview" alt="Forhåndsvisning av valgt bilde" hidden
-             style="margin-top:0.75rem; width:100%; max-width:320px; aspect-ratio:16/10; object-fit:cover;" />
-    </div>
-
-    <button type="submit"
-            class="btn btn-primary"
-            style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
-        Registrer
-    </button>
-
-</div>
-
-<div class="resource-map-panel">
-    <p>
-        Velg en posisjon eller tegn et område på kartet.
-        Kun én markering kan registreres om gangen.
-    </p>
-
-    <div id="resource-map"></div>
-    
-    @* Koordinatene fylles automatisk når man markerer i kartet.
-   Feltene er readonly, men sendes likevel med skjemaet. *@
-    <div class="resource-coords">
-        <div>
-            <label asp-for="Latitude"></label>
-            <input asp-for="Latitude" class="form-control" readonly />
-            <span asp-validation-for="Latitude" style="color:#b42318;"></span>
         </div>
-        <div>
-            <label asp-for="Longitude"></label>
-            <input asp-for="Longitude" class="form-control" readonly />
-            <span asp-validation-for="Longitude" style="color:#b42318;"></span>
-        </div>
-    </div>
 
-    
-</div>
+        @* Kort 2: plassering i kartet *@
+        <div class="resource-map-panel">
+            <h2 class="need-section-title">
+                <span class="need-step" aria-hidden="true">2</span>Plassering <i class="rr-star">*</i>
+            </h2>
+            <p class="rr-sub">Klikk i kartet der ressursen står. Adressen fylles ut automatisk fra Kartverket.</p>
+
+            <div id="resource-map"></div>
+
+            @* Koordinatene fylles automatisk når man markerer i kartet.
+               De er readonly, men sendes likevel med skjemaet. *@
+            <div class="rr-coords">
+                <div>
+                    <label asp-for="Latitude" class="rr-label"></label>
+                    <input asp-for="Latitude" class="form-control" readonly />
+                    <span asp-validation-for="Latitude" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="Longitude" class="rr-label"></label>
+                    <input asp-for="Longitude" class="form-control" readonly />
+                    <span asp-validation-for="Longitude" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        @* Knapperad under kortene *@
+        <div class="rr-actions">
+            <span class="rr-required">Felt merket <i>*</i> må fylles ut.</span>
+            <a class="rr-cancel" asp-action="Index">Avbryt</a>
+            <button type="submit" class="btn btn-primary">Registrer ressurs →</button>
+        </div>
 
     </form>
 </div>
@@ -215,6 +407,46 @@ ViewData["Title"] = "Registrer ressurs";
             imagePreview.removeAttribute('src');
             imagePreview.hidden = true;
         }
+    });
+
+    // Tegnteller for beskrivelsen: viser antall tegn av 500
+    const descriptionInput = document.getElementById('Description');
+    const descriptionCount = document.getElementById('description-count');
+
+    function updateDescriptionCount() {
+        descriptionCount.textContent = descriptionInput.value.length;
+    }
+
+    descriptionInput.addEventListener('input', updateDescriptionCount);
+    updateDescriptionCount(); // riktig tall også når siden lastes på nytt etter en skjemafeil
+
+    // Dra og slipp bilde i den stiplede boksen
+    const imageDrop = document.getElementById('image-drop');
+
+    // Nettleseren åpner bildet i fanen hvis vi ikke stopper standardoppførselen
+    ['dragenter', 'dragover'].forEach(function (eventName) {
+        imageDrop.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            imageDrop.classList.add('is-over'); // grønn kant mens filen er over boksen
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(function (eventName) {
+        imageDrop.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            imageDrop.classList.remove('is-over');
+        });
+    });
+
+    imageDrop.addEventListener('drop', function (e) {
+        const files = e.dataTransfer.files;
+        if (!files || files.length === 0) return;
+
+        // Legg den slupne filen i det skjulte filfeltet, så den sendes med skjemaet
+        imageInput.files = files;
+
+        // Si fra at feltet er endret, så forhåndsvisningen over oppdateres
+        imageInput.dispatchEvent(new Event('change'));
     });
 
     // Opprett kartet

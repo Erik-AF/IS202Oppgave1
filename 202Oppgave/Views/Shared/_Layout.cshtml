@@ -2,9 +2,11 @@
     var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
     bool IsActive(string controller) => string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
-    // Behovsdesignet lastes kun for sidene som bruker det.
-    var needDesign = IsActive("Need") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
-        || action.Equals("Create", StringComparison.OrdinalIgnoreCase) || action.Equals("Edit", StringComparison.OrdinalIgnoreCase));
+    // Behovsdesignet (grønn header med bølge, need.css) lastes kun for sidene som bruker det.
+    // Registrer ressurs bruker samme design, så siden ser lik ut som Registrer behov.
+    var needDesign = (IsActive("Need") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase) 
+                                           || action.Equals("Create", StringComparison.OrdinalIgnoreCase) || action.Equals("Edit", StringComparison.OrdinalIgnoreCase))) 
+                     || (IsActive("Resource") && action.Equals("Create", StringComparison.OrdinalIgnoreCase));
     var brandName = "Ko/ordinert";
     var brandTagline = "Kart. Behov. Ressurser. Sammen.";
     var brandLogo = "~/images/logo-koordinert.svg";
@@ -31,7 +33,7 @@
         <link rel="stylesheet" href="~/css/need.css" asp-append-version="true" />
     }
 </head>
-<body class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant()">
+<body class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant() @(needDesign ? "need-theme" : "")">
     <a class="skip-link" href="#main-content">Hopp til innhold</a>
     <div class="utility-bar"><div class="container"><span>Et felles løft for lokal beredskap</span><a asp-controller="Information" asp-action="Hjelp">Slik bruker du tjenesten ↗</a></div></div>
     <header class="site-header">
