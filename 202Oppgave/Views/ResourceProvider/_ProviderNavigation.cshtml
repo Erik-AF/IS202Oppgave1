@@ -8,21 +8,21 @@
            asp-action="Index"
            class="@(currentAction == "Index" ? "active" : "")"
            aria-current="@(currentAction == "Index" ? "page" : null)">
-            Oversikt
+            <i class="bi bi-grid-1x2" aria-hidden="true"></i>Oversikt
         </a>
 
         <a asp-controller="ResourceProvider"
            asp-action="Resources"
            class="@(currentAction == "Resources" ? "active" : "")"
            aria-current="@(currentAction == "Resources" ? "page" : null)">
-            Mine ressurser
+            <i class="bi bi-box-seam" aria-hidden="true"></i>Mine ressurser
         </a>
 
         <a asp-controller="ResourceProvider"
            asp-action="Profile"
            class="@(currentAction == "Profile" ? "active" : "")"
            aria-current="@(currentAction == "Profile" ? "page" : null)">
-            Profil og innstillinger
+            <i class="bi bi-person-gear" aria-hidden="true"></i>Profil og innstillinger
         </a>
     </div>
 </nav>
