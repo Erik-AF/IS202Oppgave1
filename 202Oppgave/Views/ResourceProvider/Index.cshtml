@@ -187,16 +187,16 @@
                             <i class="bi @resource.Icon" aria-hidden="true"></i>
                         </div>
 
-                        <div>
+                        <div class="provider-resource-text">
                             <h3>@resource.Name</h3>
                             <p>@resource.Category</p>
+
+                            <span class="provider-resource-status @(resource.Status == "Tilgjengelig" ? "is-available" : "is-loaned")">
+                                <span class="provider-status-dot"></span>
+                                @resource.Status
+                            </span>
                         </div>
                     </div>
-
-                    <span class="provider-resource-status @(resource.Status == "Tilgjengelig" ? "is-available" : "is-loaned")">
-                        <span class="provider-status-dot"></span>
-                        @resource.Status
-                    </span>
                     
                     <a asp-controller="ResourceProvider"
                        asp-action="Details"
