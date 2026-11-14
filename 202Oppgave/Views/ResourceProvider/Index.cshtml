@@ -4,6 +4,28 @@
 }
 
 <section class="provider-hero">
+    <div class="provider-hero-wave" aria-hidden="true">
+        <svg viewBox="0 0 600 250"
+             preserveAspectRatio="none"
+             xmlns="http://www.w3.org/2000/svg">
+            <path d="M-40 250 C120 80 280 240 640 10"
+                  fill="none"
+                  stroke="#20a58a"
+                  stroke-width="2"
+                  opacity="0.65" />
+            <path d="M-40 270 C140 100 300 260 650 30"
+                  fill="none"
+                  stroke="#20a58a"
+                  stroke-width="2"
+                  opacity="0.4" />
+            <path d="M-40 290 C160 120 320 280 660 50"
+                  fill="none"
+                  stroke="#20a58a"
+                  stroke-width="2"
+                  opacity="0.25" />
+        </svg>
+    </div>
+
     <div class="container provider-hero-content">
         <div>
             <span class="provider-eyebrow">
@@ -11,6 +33,7 @@
             </span>
 
             <h1>Min oversikt</h1>
+
             <p>
                 Administrer ressursene dine og hold
                 oversikt over tilgjengeligheten.
@@ -28,8 +51,9 @@
 
             <div class="provider-stat-card">
                 <div class="provider-stat-icon">
-                    <i class="bi bi-box-seam"></i>
+                    <i class="bi bi-box-seam" aria-hidden="true"></i>
                 </div>
+
                 <div>
                     <p>–</p>
                     <h3>Mine ressurser</h3>
@@ -38,8 +62,9 @@
 
             <div class="provider-stat-card">
                 <div class="provider-stat-icon">
-                    <i class="bi bi-clock-history"></i>
+                    <i class="bi bi-clock-history" aria-hidden="true"></i>
                 </div>
+
                 <div>
                     <p>–</p>
                     <h3>Sist oppdatert</h3>
@@ -51,20 +76,50 @@
         <div class="provider-dashboard-grid">
 
             <div class="provider-register-card">
-                <h2>Legg til en ressurs</h2>
-                <p>
-                    Registrer nytt utstyr, kjøretøy
-                    eller andre ressurser du kan bidra med.
-                </p>
 
-             
-                <a asp-controller="Resource"
-                   asp-action="Create"
-                   class="provider-add-button">
-                    <i class="bi bi-plus-lg"></i>
-                    Registrer ressurs
-                    <i class="bi bi-arrow-right"></i>
-                </a>
+                <div class="provider-register-content">
+                    <h2>Legg til en ressurs</h2>
+
+                    <p>
+                        Registrer nytt utstyr, kjøretøy eller
+                        andre ressurser du kan bidra med.
+                    </p>
+
+                    <a asp-controller="Resource"
+                       asp-action="Create"
+                       class="provider-add-button">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                        <span>Registrer ressurs</span>
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <div class="provider-register-illustration"
+                     aria-hidden="true">
+                    <svg viewBox="0 0 160 100"
+                         width="160"
+                         height="100"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+
+                        <g stroke="#194f43"
+                           stroke-width="3"
+                           stroke-linecap="round"
+                           stroke-linejoin="round">
+
+                            <path d="M80 35 C65 24 60 43 80 57 C100 43 95 24 80 35Z" />
+
+                            <circle cx="48" cy="66" r="9" />
+                            <circle cx="80" cy="73" r="9" />
+                            <circle cx="112" cy="66" r="9" />
+
+                            <path d="M30 93 C30 80 66 80 66 93" />
+                            <path d="M62 98 C62 85 98 85 98 98" />
+                            <path d="M94 93 C94 80 130 80 130 93" />
+
+                        </g>
+                    </svg>
+                </div>
 
             </div>
 
@@ -75,36 +130,37 @@
                    asp-action="Resources"
                    class="provider-action-link">
                     <span>
-                        <i class="bi bi-pencil-square"></i>
+                        <i class="bi bi-pencil-square" aria-hidden="true"></i>
                         Rediger ressurser
                     </span>
-                    <i class="bi bi-chevron-right"></i>
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
                 </a>
 
                 <a asp-controller="Kart"
                    asp-action="Oversikt"
                    class="provider-action-link">
                     <span>
-                        <i class="bi bi-geo-alt"></i>
+                        <i class="bi bi-geo-alt" aria-hidden="true"></i>
                         Vis på kart
                     </span>
-                    <i class="bi bi-chevron-right"></i>
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
                 </a>
 
                 <a asp-controller="ResourceProvider"
                    asp-action="Resources"
                    class="provider-action-link">
                     <span>
-                        <i class="bi bi-calendar-check"></i>
+                        <i class="bi bi-toggle-on" aria-hidden="true"></i>
                         Tilgjengelighet
                     </span>
-                    <i class="bi bi-chevron-right"></i>
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
                 </a>
             </div>
 
         </div>
 
         <div class="provider-resource-list">
+
             <div class="provider-resource-list-header">
                 <h2>Mine ressurser</h2>
 
@@ -120,6 +176,7 @@
                     koblet til brukerkontoen.
                 </p>
             </div>
+
         </div>
 
     </div>
