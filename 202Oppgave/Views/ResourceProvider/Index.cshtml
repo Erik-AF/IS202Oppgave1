@@ -4,18 +4,18 @@
 }
 
 <section class="provider-hero">
-    <div class="container">
-        <div class="provider-hero-top">
+    <div class="container provider-hero-content">
+        <div>
             <span class="provider-eyebrow">
                 MIN SIDE – RESSURSLEVERANDØR
             </span>
-        </div>
 
-        <h1>Min oversikt</h1>
-        <p>
-            Administrer ressursene dine og hold oversikt
-            over tilgjengeligheten.
-        </p>
+            <h1>Min oversikt</h1>
+            <p>
+                Administrer ressursene dine og hold
+                oversikt over tilgjengeligheten.
+            </p>
+        </div>
     </div>
 </section>
 
@@ -24,11 +24,12 @@
 <section class="provider-overview">
     <div class="container">
 
-        <!-- Statistikk -->
         <div class="provider-stats">
 
             <div class="provider-stat-card">
-                <div class="provider-stat-icon">▣</div>
+                <div class="provider-stat-icon">
+                    <i class="bi bi-box-seam"></i>
+                </div>
                 <div>
                     <p>–</p>
                     <h3>Mine ressurser</h3>
@@ -36,38 +37,35 @@
             </div>
 
             <div class="provider-stat-card">
-                <div class="provider-stat-icon">✓</div>
-                <div>
-                    <p>–</p>
-                    <h3>Tilgjengelige</h3>
+                <div class="provider-stat-icon">
+                    <i class="bi bi-clock-history"></i>
                 </div>
-            </div>
-
-            <div class="provider-stat-card">
-                <div class="provider-stat-icon">◷</div>
                 <div>
                     <p>–</p>
-                    <h3>Utilgjengelige</h3>
+                    <h3>Sist oppdatert</h3>
                 </div>
             </div>
 
         </div>
 
-        <!-- Registrering og hurtighandlinger -->
         <div class="provider-dashboard-grid">
 
             <div class="provider-register-card">
                 <h2>Legg til en ressurs</h2>
                 <p>
-                    Registrer nytt utstyr, kjøretøy eller
-                    andre ressurser du kan bidra med.
+                    Registrer nytt utstyr, kjøretøy
+                    eller andre ressurser du kan bidra med.
                 </p>
 
+             
                 <a asp-controller="Resource"
                    asp-action="Create"
                    class="provider-add-button">
-                    + Registrer ressurs →
+                    <i class="bi bi-plus-lg"></i>
+                    Registrer ressurs
+                    <i class="bi bi-arrow-right"></i>
                 </a>
+
             </div>
 
             <div class="provider-actions">
@@ -76,35 +74,51 @@
                 <a asp-controller="ResourceProvider"
                    asp-action="Resources"
                    class="provider-action-link">
-                    Mine ressurser <span>→</span>
+                    <span>
+                        <i class="bi bi-pencil-square"></i>
+                        Rediger ressurser
+                    </span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+
+                <a asp-controller="Kart"
+                   asp-action="Oversikt"
+                   class="provider-action-link">
+                    <span>
+                        <i class="bi bi-geo-alt"></i>
+                        Vis på kart
+                    </span>
+                    <i class="bi bi-chevron-right"></i>
                 </a>
 
                 <a asp-controller="ResourceProvider"
-                   asp-action="Profile"
+                   asp-action="Resources"
                    class="provider-action-link">
-                    Profil og innstillinger <span>→</span>
+                    <span>
+                        <i class="bi bi-calendar-check"></i>
+                        Tilgjengelighet
+                    </span>
+                    <i class="bi bi-chevron-right"></i>
                 </a>
             </div>
 
         </div>
 
-        <!-- Ressursliste -->
         <div class="provider-resource-list">
-            <h2>Mine ressurser</h2>
-
-            <div class="provider-resource-row">
-                <div>
-                    <strong>Ingen ressurser vist ennå</strong>
-                    <p>
-                        Ressurslisten kobles til brukerkontoen
-                        når eierskap er implementert.
-                    </p>
-                </div>
+            <div class="provider-resource-list-header">
+                <h2>Mine ressurser</h2>
 
                 <a asp-controller="ResourceProvider"
                    asp-action="Resources">
-                    Se ressurser →
+                    Se alle ressurser →
                 </a>
+            </div>
+
+            <div class="provider-resource-row">
+                <p>
+                    Ressursene dine vises her når de er
+                    koblet til brukerkontoen.
+                </p>
             </div>
         </div>
 
