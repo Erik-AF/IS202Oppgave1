@@ -63,9 +63,10 @@
 }
 
 .public-actor-create-banner h2 {
-    margin: 0 0 10px;
+    margin: 0 0 12px;
     color: #102b29;
     font-size: 25px;
+    font-weight: 700;
 }
 
 .public-actor-create-banner p {
@@ -93,9 +94,9 @@
 .public-actor-list-header h2 {
     margin: 0 0 8px;
     color: #102b29;
-    font-size: 26px;
+    font-size: 25px;
+    font-weight: 700;
 }
-
 .public-actor-list-header p {
     margin: 0;
     color: #65706a;
