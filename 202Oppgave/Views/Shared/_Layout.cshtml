@@ -1,19 +1,15 @@
 @{
     var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
-
-    bool IsActive(string controller) =>
-        string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
-
-    // Behovsdesignet lastes kun for sidene som bruker det.
-    var needDesign = IsActive("Need") &&
-        (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
-         || action.Equals("Create", StringComparison.OrdinalIgnoreCase)
-         || action.Equals("Edit", StringComparison.OrdinalIgnoreCase));
-
-    var helpInFooter = needDesign ||
-        (IsActive("Kart") && action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase));
-
+    bool IsActive(string controller) => string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
+    // Behovsdesignet (grønn header med bølge, need.css) lastes kun for sidene som bruker det.
+    // Registrer ressurs, ressurslisten og allokering bruker samme design som behovssidene.
+    var needDesign = (IsActive("Need") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
+            || action.Equals("Create", StringComparison.OrdinalIgnoreCase) || action.Equals("Edit", StringComparison.OrdinalIgnoreCase)))
+        || (IsActive("Resource") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
+            || action.Equals("Create", StringComparison.OrdinalIgnoreCase)))
+        || (IsActive("Allocation") && action.Equals("Create", StringComparison.OrdinalIgnoreCase));
+    var helpInFooter = needDesign || (IsActive("Kart") && action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase));
     var brandName = "Ko/ordinert";
     var brandTagline = "Kart. Behov. Ressurser. Sammen.";
     var brandLogo = "~/images/logo-koordinert.svg";
@@ -74,9 +70,7 @@
 
     @await RenderSectionAsync("Head", required: false)
 </head>
-
-<body class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant()">
-
+<body class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant() @(needDesign ? "need-theme" : "")">
     <a class="skip-link" href="#main-content">Hopp til innhold</a>
 
     @if (!helpInFooter)
