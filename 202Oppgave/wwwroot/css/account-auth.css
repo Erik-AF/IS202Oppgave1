@@ -472,3 +472,18 @@ body.page-account:is(.action-login, .action-register)
         background: var(--green-900);
     }
 }
+
+/* Skjul snarveien til innholdet til den får tastaturfokus. */
+body.page-account.action-login .skip-link {
+    position: absolute;
+    top: 0;
+    left: 16px;
+    transform: translateY(-150%);
+    z-index: 3000;
+    padding: 12px 24px;
+    background: var(--lime);
+    color: var(--green-900);
+}
+body.page-account.action-login .skip-link:focus {
+    transform: translateY(0);
+}
