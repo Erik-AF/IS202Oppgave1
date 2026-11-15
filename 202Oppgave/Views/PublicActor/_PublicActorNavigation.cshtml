@@ -1,0 +1,33 @@
+@{
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
+<nav class="provider-nav" aria-label="Navigasjon for offentlig aktør">
+    <div class="container provider-nav-links">
+
+        <a asp-controller="PublicActor"
+           asp-action="Index"
+           class="@(currentAction == "Index" ? "active" : "")"
+           aria-current="@(currentAction == "Index" ? "page" : null)">
+            <i class="bi bi-grid-1x2" aria-hidden="true"></i>
+            Oversikt
+        </a>
+
+        <a asp-controller="PublicActor"
+           asp-action="Needs"
+           class="@(currentAction == "Needs" ? "active" : "")"
+           aria-current="@(currentAction == "Needs" ? "page" : null)">
+            <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+            Mine behov
+        </a>
+
+        <a asp-controller="PublicActor"
+           asp-action="Profile"
+           class="@(currentAction == "Profile" ? "active" : "")"
+           aria-current="@(currentAction == "Profile" ? "page" : null)">
+            <i class="bi bi-person-gear" aria-hidden="true"></i>
+            Profil og innstillinger
+        </a>
+
+    </div>
+</nav>
