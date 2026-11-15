@@ -1,0 +1,50 @@
+@model List<_202Oppgave.Models.Entities.Allocation>
+
+@*
+    Liste over ressurser som er allokert til et behov.
+    Vises av AllocatedResourcesViewComponent på Need/Confirmation og Need/Edit.
+*@
+
+<div style="margin-top:2rem;">
+    <h2 style="font-size:1.2rem; font-weight:400; margin:0 0 0.75rem;">
+        Allokerte ressurser (@Model.Count)
+    </h2>
+
+    @if (!Model.Any())
+    {
+        <p style="color:#5b5f66;">Ingen ressurser er allokert til dette behovet ennå.</p>
+    }
+    else
+    {
+        <ul style="list-style:none; padding:0; margin:0; border-top:1px solid #111214;">
+            @foreach (var a in Model)
+            {
+                <li style="padding:0.9rem 0.25rem; border-bottom:1px solid #d6d7d3;">
+                    <a asp-controller="Resource" asp-action="Details" asp-route-id="@a.ResourceId">
+                        <strong style="font-weight:500;">@(a.Resource.Category?.Name ?? "Uten kategori")</strong>
+                        – @(a.Resource.Description ?? a.Resource.Type)
+                    </a>
+                    <div style="font-size:0.9rem; color:#5b5f66;">
+                        @a.Resource.Name · @a.State · @a.Date.ToString("dd.MM.yyyy HH:mm")
+                        @if (!string.IsNullOrWhiteSpace(a.Note))
+                        {
+                            <span> · @a.Note</span>
+                        }
+                    </div>
+                    
+                    @* Fjern ressursen fra behovet. POST, fordi det endrer databasen. *@
+                    <form asp-controller="Allocation" asp-action="Remove" asp-route-id="@a.AllocationId"
+                          method="post" style="margin-top:0.5rem;"
+                          onsubmit="return confirm('Fjerne ressursen fra behovet?');">
+                        <input type="hidden" name="returnTo" value="@ViewData["ReturnTo"]" />
+                        <button type="submit"
+                                style="padding:0.35rem 0.9rem; border:1px solid var(--brick); background:transparent; color:var(--brick); cursor:pointer;">
+                            Fjern
+                        </button>
+                    </form>
+                    
+                </li>
+            }
+        </ul>
+    }
+</div>

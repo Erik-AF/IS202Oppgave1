@@ -1,11 +1,12 @@
-﻿using System.ComponentModel;
+﻿using _202Oppgave.DataAccess;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
-
-#nullable disable
 
 namespace _202Oppgave.Migrations
 {
     /// <inheritdoc />
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20261113095746_AddUserFullName")]
     public partial class AddUserFullName : Migration
     {
         /// <inheritdoc />

@@ -33,8 +33,16 @@
         public int? CategoryId { get; set; }
         
         //Selve kategorien. Fyller når vi henter med Include() i reposetory∑
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
 
         public string? GeometryJson { get; set; }
+        
+        // Tidspunktet ressursen ble registrert.
+        // Settes automatisk av databasen (DEFAULT CURRENT_TIMESTAMP), ikke av koden.
+        public DateTime CreatedAt { get; set; }
+        
+
+        // Alle allokeringer ressursen er med i (én ressurs, mange allokeringer)
+        public List<Allocation> Allocations { get; set; } = new();
     }
 }
