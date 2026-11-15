@@ -73,8 +73,9 @@
                 </p>
             </div>
 
-            <i class="bi bi-file-earmark-plus public-actor-banner-icon"
-               aria-hidden="true"></i>
+            <div class="public-actor-banner-illustration" aria-hidden="true">
+                <i class="bi bi-file-earmark-plus"></i>
+            </div>
 
             <a asp-controller="Need"
                asp-action="Create"
@@ -89,24 +90,8 @@
         <div class="public-actor-list-header">
 
             <div>
-                <h2>Dine registreringer</h2>
+                <h2>Behovsoversikt</h2>
                 <p>Følg statusen på forespørslene dine.</p>
-            </div>
-
-            <div class="public-actor-list-tools">
-
-                <label class="public-actor-search">
-                    <i class="bi bi-search" aria-hidden="true"></i>
-                    <input type="search"
-                           placeholder="Søk i registreringer"
-                           aria-label="Søk i registreringer"
-                           disabled />
-                </label>
-
-                <select aria-label="Filtrer etter status" disabled>
-                    <option>Alle statuser</option>
-                </select>
-
             </div>
         </div>
 
@@ -114,7 +99,7 @@
         <div class="public-actor-empty-state">
             <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
 
-            <h3>Registreringsoversikten er ikke tilkoblet ennå</h3>
+            <h3>Behovsoversikten er ikke tilgjengelig ennå</h3>
 
             <p>
                 Her vil du kunne se og følge opp dine registrerte behov
