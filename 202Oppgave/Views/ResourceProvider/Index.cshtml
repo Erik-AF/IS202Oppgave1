@@ -1,6 +1,14 @@
 
+@model IEnumerable<_202Oppgave.Models.Entities.Resource>
+
 @{
     ViewData["Title"] = "Min side";
+
+    var recentResources = Model?
+        .OrderByDescending(resource => resource.CreatedAt)
+        .ThenByDescending(resource => resource.Id)
+        .Take(4)
+        .ToList();
 }
 
 <section class="provider-hero">
@@ -11,7 +19,7 @@
             </span>
 
             <h1>Hei, @ViewBag.FullName!</h1>
-            
+
             <p>
                 Registrer nye ressurser, administrer eksisterende ressurser
                 og følg med på leveransestatus.
@@ -122,43 +130,51 @@
                 </a>
             </div>
 
-            @{
-                
-                var testResources = new[]
-                {
-                    new { Id = 1, Name = "Aggregat (100 kW)", Category = "Utstyr", Status = "Tilgjengelig", Icon = "bi-lightning-charge" },
-                    new { Id = 2, Name = "Telt (10 stk)", Category = "Utstyr", Status = "Tilgjengelig", Icon = "bi-house" },
-                    new { Id = 3, Name = "Vannpumpe", Category = "Utstyr", Status = "Utlånt", Icon = "bi-droplet" },
-                    new { Id = 4, Name = "Redningsbåt", Category = "Transport", Status = "Tilgjengelig", Icon = "bi-water" }
-                };
-
-            }
-
-            @foreach (var resource in testResources)
+            @if (recentResources != null && recentResources.Any())
             {
-                <div class="provider-resource-row provider-resource-demo">
-                    <div class="provider-resource-info">
-                        <div class="provider-resource-icon">
-                            <i class="bi @resource.Icon" aria-hidden="true"></i>
+                @foreach (var resource in recentResources)
+                {
+                    var isAvailable = resource.Status == "Tilgjengelig";
+
+                    <div class="provider-resource-row">
+                        <div class="provider-resource-info">
+                            <div class="provider-resource-icon">
+                                <i class="bi bi-box-seam" aria-hidden="true"></i>
+                            </div>
+
+                            <div class="provider-resource-text">
+                                <h3>@resource.Name</h3>
+                                <p>@resource.Type</p>
+
+                                <span class="provider-resource-status @(isAvailable ? "is-available" : "is-loaned")">
+                                    <span class="provider-status-dot"></span>
+                                    @resource.Status
+                                </span>
+                            </div>
                         </div>
 
-                        <div class="provider-resource-text">
-                            <h3>@resource.Name</h3>
-                            <p>@resource.Category</p>
-
-                            <span class="provider-resource-status @(resource.Status == "Tilgjengelig" ? "is-available" : "is-loaned")">
-                                <span class="provider-status-dot"></span>
-                                @resource.Status
-                            </span>
-                        </div>
+                        <a asp-controller="Resource"
+                           asp-action="Details"
+                           asp-route-id="@resource.Id"
+                           class="provider-details-button">
+                            Se detaljer
+                            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                        </a>
                     </div>
+                }
+            }
+            else
+            {
+                <div class="public-resource-empty-state">
+                    <p>
+                        Du har ikke registrert noen ressurser ennå.
+                    </p>
 
                     <a asp-controller="Resource"
-                       asp-action="Details"
-                       asp-route-id="@resource.Id"
-                       class="provider-details-button">
-                        Se detaljer
-                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                       asp-action="Create"
+                       class="provider-add-button">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                        Registrer ressurs
                     </a>
                 </div>
             }
@@ -173,4 +189,3 @@
           href="~/css/resource-provider.css"
           asp-append-version="true" />
 }
-
