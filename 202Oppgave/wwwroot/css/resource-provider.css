@@ -797,3 +797,42 @@ body.design-concept.page-resourceprovider.action-index .provider-hero {
         grid-column: auto;
     }
 }
+
+/* Offentlig aktør – samme header som ressursleverandør */
+body.page-publicactor {
+    --provider-green: #194f43;
+    --provider-dark: #102b29;
+    --provider-accent: #00513d;
+    --provider-light: #e1ede2;
+    --provider-bg: #f2f2f2;
+    --provider-border: #e0e5e1;
+}
+
+body.page-publicactor .site-header {
+    background: #093833;
+    border-bottom: 0;
+    padding-bottom: 24px;
+}
+
+body.page-publicactor .site-header .brand,
+body.page-publicactor .site-header .brand span,
+body.page-publicactor .site-header .brand small,
+body.page-publicactor .site-header .main-nav a {
+    color: white;
+}
+
+body.page-publicactor .site-header .main-nav button.nav-login {
+    background: transparent;
+    border: 1px solid #86aaa0;
+    border-radius: 8px;
+    color: white;
+    padding: 12px 20px;
+}
+
+body.page-publicactor .utility-bar {
+    display: none;
+}
+
+body.page-publicactor main {
+    background: var(--provider-bg);
+}
