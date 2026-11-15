@@ -6,8 +6,12 @@
     ViewData["Title"] = "Registrert behov";
 }
 
-<div class="container home-content">
-    <a class="back-link" asp-action="Index">← Til oversikten</a><div class="card detail-card">
+<div class="container home-content need-design need-details">
+    <nav class="need-breadcrumb" aria-label="Brødsmuler">
+        <a asp-action="Index">Behov</a><span aria-hidden="true">/</span>
+        <span aria-current="page">@Model.Type</span>
+    </nav>
+    <div class="card detail-card">
         <p class="eyebrow">Registrert behov</p><h1>@Model.Type</h1>
         <p>Behovet er registrert.</p>
         <p><strong>Lokasjon:</strong> @Model.Location</p>
@@ -16,31 +20,36 @@
         <p><strong>Frist for hjelp:</strong> @Model.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
         <p><strong>Breddegrad:</strong> @Model.Latitude</p>
         <p><strong>Lengdegrad:</strong> @Model.Longitude</p>
-        <div id="details-map" style="height:350px; width:100%; margin-bottom:1rem;"></div>
+        <div id="details-map" ></div>
         
         @* Melding etter allokering, f.eks. "2 ressurs(er) allokert til behovet." *@
         @if (TempData["Message"] is string message)
         {
-            <p style="padding:0.9rem 1rem; background:#edeeec;">@message</p>
+            <p class="need-details-message">@message</p>
+        }
+
+        @if (User.IsInRole(_202Oppgave.Models.Authorization.RoleNames.PublicActor)
+            || User.IsInRole(_202Oppgave.Models.Authorization.RoleNames.Admin))
+        {
+            <p><a class="btn btn-primary" asp-controller="Allocation" asp-action="FromNeed" asp-route-needId="@Model.Id">Alloker ressurser →</a></p>
         }
 
         @* Ressursene som er allokert til dette behovet *@
         @await Component.InvokeAsync("AllocatedResources", new { needId = Model.Id })
-        <div class="detail-actions"><p><a asp-action="Index" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Se alle behov</a></p>
-        <a asp-action="Create">Registrer et nytt behov</a>
+        <div class="detail-actions"><p><a asp-action="Index" class="btn btn-primary">Se alle behov</a></p>
+        <a asp-action="Create" class="btn btn-primary">Registrer et nytt behov</a>
         <p>
     <a asp-action="Edit" asp-route-id="@Model.Id"
        class="btn btn-primary"
-       style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">
+      >
         Rediger
     </a>
 </p>
 @* Ber om bekreftelse for å unngå at et behov slettes ved et uhell. *@
 <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
       onsubmit="return confirm('Er du sikker på at du vil slette dette behovet?');"
-      style="display:inline;">
-    <button type="submit" class="btn"
-            style="background:var(--brick); color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
+>
+    <button type="submit" class="btn need-delete-button">
         Slett
     </button>
 </form>

@@ -54,3 +54,10 @@ body.design-concept.need-theme .site-header,
 body.design-concept.need-theme .site-footer,
 body.design-concept.need-theme .site-header .main-nav { background-color: #093833; }
 body.design-concept.need-theme .site-header .nav-login { background: transparent; }
+/* Detaljsiden deler profil med registrering og oversikt. */
+.design-concept .need-details .detail-card { padding: clamp(22px,3vw,32px); border: 1px solid #dbe1d8; border-radius: 14px; background: #fff; }
+.need-details #details-map { height: 350px; width: 100%; margin: 24px 0; border: 1px solid #dbe1d8; border-radius: 12px; }
+.need-details .need-details-message { padding: 16px; background: #e9edde; border-radius: 8px; }
+.design-concept .need-details .detail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 24px; }
+.need-details .detail-actions p, .need-details .detail-actions form { margin: 0; }
+.design-concept .need-details .need-delete-button { background: var(--brick); color: #fff; border: 0; border-radius: 8px; cursor: pointer; }
