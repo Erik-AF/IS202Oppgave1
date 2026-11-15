@@ -31,29 +31,7 @@ body:is(.page-need.action-create,.page-need.action-edit,.page-need.action-index,
  .design-concept .need-design .rl-side { align-items: flex-start; }
 }
 
-/* Grønn navigasjonstopp med bølge; følger normal scrolling.
-   Gjelder alle sider der <body> har klassen need-theme (settes i _Layout.cshtml):
-   behovssidene og Registrer ressurs. */
-body.design-concept.need-theme .site-header { background: #18594e; color: white; border-bottom: 0; padding-bottom: 24px; position: relative; top: auto; }
-body.design-concept.need-theme .site-header::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; height: 36px; pointer-events: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 70' preserveAspectRatio='none'%3E%3Cpath fill='white' opacity='.10' d='M0 15 Q240 70 480 20 T960 25 T1440 10 V70 H0Z'/%3E%3Cpath fill='white' opacity='.10' d='M0 45 Q300 0 600 40 T1200 35 T1440 45 V70 H0Z'/%3E%3Cpath fill='%23faf9f5' d='M0 57 Q240 35 480 57 T960 53 T1440 57 V70 H0Z'/%3E%3C/svg%3E") center bottom / 100% 100% no-repeat; }
-body.design-concept.need-theme .site-header .brand,
-body.design-concept.need-theme .site-header .main-nav a,
-body.design-concept.need-theme .site-header .nav-toggle { color: white; }
-body.design-concept.need-theme .site-header .main-nav a[aria-current] { text-decoration-color: #e3eb97; }
-body.design-concept.need-theme .site-header .main-nav a:hover { color: #e3eb97; }
-body.design-concept.need-theme .site-header .nav-login { background: #10483e; color: white; border-color: #86aaa0; }
-body.design-concept.need-theme .site-header .nav-toggle { border-color: #86aaa0; }
-body.design-concept.need-theme .need-design { padding-top: 20px; }
-@media (max-width: 900px) {
- body.design-concept.need-theme .site-header .main-nav { background: #18594e; }
-}
-
-/* Samme mørkegrønne profil i hele toppen og footeren. */
-body.design-concept.need-theme .utility-bar,
-body.design-concept.need-theme .site-header,
-body.design-concept.need-theme .site-footer,
-body.design-concept.need-theme .site-header .main-nav { background-color: #093833; }
-body.design-concept.need-theme .site-header .nav-login { background: transparent; }
+body.design-concept.shared-chrome .need-design { padding-top: 20px; }
 /* Detaljsiden deler profil med registrering og oversikt. */
 .design-concept .need-details .detail-card { padding: clamp(22px,3vw,32px); border: 1px solid #dbe1d8; border-radius: 14px; background: #fff; }
 .need-details #details-map { height: 350px; width: 100%; margin: 24px 0; border: 1px solid #dbe1d8; border-radius: 12px; }
