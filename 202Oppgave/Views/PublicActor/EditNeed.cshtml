@@ -1,0 +1,207 @@
+
+@model _202Oppgave.ViewModels.NeedViewModel
+
+@{
+    ViewData["Title"] = "Rediger behov";
+}
+
+@section Head {
+    <link rel="stylesheet"
+          href="~/css/need.css"
+          asp-append-version="true" />
+
+    <style>
+        #need-layout {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 2rem;
+            align-items: start;
+        }
+
+        #need-map {
+            height: 550px;
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        #need-layout .resource-map-panel {
+            min-width: 0;
+        }
+
+        .resource-coords {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .resource-coords label,
+        .resource-coords input {
+            font-size: 0.85rem;
+        }
+
+        .resource-coords .form-control[readonly] {
+            background-color: #edeeec;
+            color: var(--muted);
+            cursor: default;
+        }
+
+        .resource-coords .form-control[readonly]:focus {
+            border-color: var(--line-strong);
+            box-shadow: none;
+        }
+
+        @@media (max-width: 800px) {
+            #need-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}
+
+<div class="container home-content need-design">
+    <nav class="need-breadcrumb" aria-label="Brødsmuler">
+        <a asp-controller="PublicActor"
+           asp-action="Needs">Administrer behov</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Rediger behov</span>
+    </nav>
+
+    <h1>Rediger behov</h1>
+    <p class="page-intro">
+        Oppdater opplysningene og plasseringen for behovet.
+    </p>
+
+    <form id="need-layout"
+          class="resource-layout"
+          asp-controller="PublicActor"
+          asp-action="EditNeed"
+          asp-route-id="@ViewBag.NeedId"
+          method="post">
+
+        <div class="card" style="padding:2rem; min-width:0;">
+            <h2 class="need-section-title">
+                <span class="need-step" aria-hidden="true">1</span>
+                Om behovet
+            </h2>
+
+            <div asp-validation-summary="ModelOnly"
+                 style="color:var(--brick); margin-bottom:1rem;"></div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Type">Type behov</label>
+                <input asp-for="Type" class="form-control" />
+                <span asp-validation-for="Type"
+                      style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Description">Beskrivelse</label>
+                <textarea asp-for="Description"
+                          class="form-control"></textarea>
+                <span asp-validation-for="Description"
+                      style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Location">Lokasjon</label>
+                <input asp-for="Location" class="form-control" />
+                <span asp-validation-for="Location"
+                      style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Deadline">Frist for hjelp</label>
+                <input asp-for="Deadline"
+                       class="form-control"
+                       type="datetime-local" />
+                <span asp-validation-for="Deadline"
+                      style="color:var(--brick);"></span>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label asp-for="Priority">Prioritet</label>
+                <select asp-for="Priority"
+                        asp-items="Html.GetEnumSelectList<_202Oppgave.ViewModels.NeedPriority>()"
+                        class="form-select">
+                    <option value="">Velg prioritet</option>
+                </select>
+                <span asp-validation-for="Priority"
+                      style="color:var(--brick);"></span>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary"
+                    style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
+                Lagre endringer
+            </button>
+        </div>
+
+        <div class="resource-map-panel">
+            <h2 class="need-section-title">
+                <span class="need-step" aria-hidden="true">2</span>
+                Plassering
+            </h2>
+
+            <p>Klikk i kartet for å velge hvor hjelpen trengs.</p>
+
+            <div id="need-map"></div>
+
+            <div class="resource-coords">
+                <div>
+                    <label asp-for="Latitude">Breddegrad</label>
+                    <input asp-for="Latitude"
+                           class="form-control"
+                           readonly />
+                    <span asp-validation-for="Latitude"
+                          style="color:var(--brick);"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Longitude">Lengdegrad</label>
+                    <input asp-for="Longitude"
+                           class="form-control"
+                           readonly />
+                    <span asp-validation-for="Longitude"
+                          style="color:var(--brick);"></span>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        const map = L.map('need-map').setView([58.1467, 7.9956], 13);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        const latitude = document.getElementById('Latitude');
+        const longitude = document.getElementById('Longitude');
+        let marker;
+
+        if (latitude.value && longitude.value) {
+            const position = [
+                Number(latitude.value.replace(',', '.')),
+                Number(longitude.value.replace(',', '.'))
+            ];
+
+            marker = L.marker(position).addTo(map);
+            map.setView(position, 13);
+        }
+
+        map.on('click', function (e) {
+            latitude.value = e.latlng.lat;
+            longitude.value = e.latlng.lng;
+
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+            marker = L.marker(e.latlng).addTo(map);
+        });
+    </script>
+}

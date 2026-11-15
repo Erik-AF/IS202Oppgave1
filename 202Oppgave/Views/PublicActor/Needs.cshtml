@@ -1,0 +1,108 @@
+
+@model List<_202Oppgave.Models.Entities.Need>
+
+@{
+    ViewData["Title"] = "Administrer behov";
+}
+
+<section class="provider-hero">
+    <div class="container provider-hero-content">
+        <div>
+            <span class="provider-eyebrow">
+                MIN SIDE – OFFENTLIG AKTØR
+            </span>
+
+            <h1>Administrer behov</h1>
+
+            <p>
+                Få oversikt over registreringene dine og følg
+                statusen på hvert enkelt behov.
+            </p>
+        </div>
+    </div>
+</section>
+
+<partial name="_PublicActorNavigation" />
+
+<section class="provider-overview">
+    <div class="container">
+
+        <div class="public-actor-list-header">
+            <div>
+                <h2>Behovsoversikt</h2>
+                <p>Oversikt over behov du har registrert.</p>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="public-actor-needs-list">
+                @foreach (var need in Model)
+                {
+                    <div class="provider-page-card">
+                        <h3>@need.Type</h3>
+
+                        <p>
+                            <strong>Sted:</strong>
+                            @need.Location
+                        </p>
+
+                        <p>
+                            <strong>Prioritet:</strong>
+                            @need.Priority
+                        </p>
+
+                        <p>
+                            <strong>Beskrivelse:</strong>
+                            @need.Description
+                        </p>
+
+                        <p>
+                            <strong>Frist:</strong>
+                            @need.Deadline.ToString("dd.MM.yyyy")
+                        </p>
+                        <a asp-controller="Need"
+                           asp-action="Confirmation"
+                           asp-route-id="@need.Id"
+                           class="provider-page-button">
+                            Se behov
+                            <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="public-actor-empty-state">
+                <i class="bi bi-clipboard2-check"
+                   aria-hidden="true"></i>
+
+                <h3>Ingen registrerte behov</h3>
+
+                <p>
+                    Du har ikke registrert noen behov ennå.
+                    Når du registrerer et behov, vil det vises her.
+                </p>
+
+                <a asp-controller="Need"
+                   asp-action="Create"
+                   class="provider-page-button">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    Registrer behov
+                </a>
+            </div>
+        }
+
+    </div>
+</section>
+
+@section Head {
+    <link rel="stylesheet"
+          href="~/css/resource-provider.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/public-actor.css"
+          asp-append-version="true" />
+}
