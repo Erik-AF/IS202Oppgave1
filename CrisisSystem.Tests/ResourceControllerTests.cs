@@ -6,6 +6,8 @@ using _202Oppgave.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using Xunit;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace CrisisSystem.Tests;
 
@@ -49,13 +51,29 @@ public class ResourceControllerTests
             return Task.FromResult(new List<Category>());
         }
     }
+    
+    // Lager controlleren med en innlogget testbruker, som på NeedControllerTests
+    private static ResourceController CreateLoggedInController(FakeResourceRepository repository)
+    {
+        return new ResourceController(repository, null!)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity(
+                        new[] { new Claim(ClaimTypes.NameIdentifier, "user-123") }, "Test"))
+                }
+            }
+        };
+    }
 
     [Fact]
     public async Task Create_ValidResource_ShouldSaveResource()
     {
         var repository = new FakeResourceRepository();
-        var controller = new ResourceController(repository, null!);
-
+        var controller = CreateLoggedInController(repository);
+        
         var model = new ResourceViewModel
         {
             Type = "Generator",
@@ -76,14 +94,15 @@ public class ResourceControllerTests
         Assert.Equal(model.Latitude, saved.Latitude);
         Assert.Equal(model.Longitude, saved.Longitude);
         Assert.Equal("Testperson", saved.ContactName);
+        Assert.Equal("user-123", saved.UserId);   
     }
 
     [Fact]
     public async Task Create_ValidResource_ShouldRedirectToDetails()
     {
         var repository = new FakeResourceRepository();
-        var controller = new ResourceController(repository, null!);
-
+        var controller = CreateLoggedInController(repository);
+        
         var model = new ResourceViewModel
         {
             Type = "Drikkevann",
@@ -101,6 +120,22 @@ public class ResourceControllerTests
 
         Assert.Equal("Details", redirect.ActionName);
         Assert.Equal(repository.Resources[0].Id, redirect.RouteValues!["id"]);
+    }
+    
+    [Fact]
+    public async Task Create_WithoutLoggedInUser_ShouldNotSave()
+    {
+        var repository = new FakeResourceRepository();
+        var controller = new ResourceController(repository, null!)
+        {
+            // Tom bruker = ikke logget inn
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
+        };
+
+        var result = await controller.Create(new ResourceViewModel());
+
+        Assert.IsType<ChallengeResult>(result);
+        Assert.Empty(repository.Resources);
     }
     
 [Fact]

@@ -1,316 +1,312 @@
 
-/* Felles styling for Om-, Kontakt- og Hjelp-sidene,
-   samt andre komponenter i systemet */
+/* components.css - gjenbrukbare komponenter
+   Knapper, kort, skjema, tabell, badges og kart-boks.
+   Bruk klassene herfra i viewene i stedet for egen CSS, så ser alle sidene like ut.
+   Trenger du noe nytt, legg det inn her. Farger kommer fra :root i site.css. */
 
-/* Kortene: litt skygge og myke hjørner */
-.card,
-.content-card {
-    background-color: #fff;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+/* --- 1. Sideramme (indre sider) --- */
+.page { padding-block: 2.5rem 4rem; }
+
+.page-title {
+    margin: 0 0 0.25rem;
+    font-size: clamp(1.7rem, 4vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
 }
 
-/* Innholdskortene: ekstra luft rundt innholdet */
-.content-card {
-    padding: 1.5rem;
+.page-lead { margin: 0 0 2rem; color: var(--muted); }
+
+/* tittel til venstre og knapper til høyre, bryter ned på smal skjerm */
+.page-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
-/* Overskriftene i kortene: mørkeblå tekst */
-.card h2,
-.card h3,
-.content-card h2,
-.content-card h3 {
-    color: var(--navy);
-}
 
-/* Knappene: avrundede hjørner og tydelig tekst */
+/* --- 2. Knapper ---
+   class="btn" på <a> eller <button>. Varianter: btn-secondary og btn-danger. */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    font-weight: 600;
+    gap: 0.4rem;
+    min-height: 44px;          /* god trykkflate på mobil */
+    padding: 0.7rem 1.25rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: var(--green-900);
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
     text-decoration: none;
     cursor: pointer;
-    border-radius: var(--radius-pill);
-    transition:
-            background-color 0.2s ease,
-            border-color 0.2s ease;
 }
 
-/* Hovedknappene: mørkeblå farge */
-.btn-primary {
-    background-color: var(--navy);
-    border: 1px solid var(--navy);
-    color: #fff;
-}
+.btn:hover { background: var(--green-800); }
 
-/* Hovedknappene: mørkere ved hover */
-.btn-primary:hover {
-    background-color: var(--navy-dark);
-    border-color: var(--navy-dark);
-    color: #fff;
-}
-
-/* Sekundære knapper */
+/* bare kant, for mindre viktige handlinger */
 .btn-secondary {
-    background-color: #fff;
-    border: 1px solid var(--navy);
-    color: var(--navy);
+    background: transparent;
+    color: var(--green-900);
+    box-shadow: inset 0 0 0 2px var(--green-900);
 }
 
-/* Sekundære knapper ved hover */
-.btn-secondary:hover {
-    background-color: var(--surface-soft);
-    border-color: var(--navy);
-    color: var(--navy);
+.btn-secondary:hover { background: rgba(9, 55, 50, 0.08); }
+
+/* lime knapp, for hovedhandlinger på mørk bakgrunn (forsiden) */
+.btn-lime { background: var(--lime); color: var(--green-900); }
+.btn-lime:hover { background: var(--lime-dark); }
+
+/* stor knapp */
+.btn-lg {
+    min-height: 3.75rem;
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
 }
 
-/* Skjemafeltene */
-.form-control,
-.form-select {
+/* liten, lime overskrift med store mellomrom ("DITT BIDRAG TELLER", "FINN FREM") */
+.eyebrow {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--lime);
+}
+
+/* rød, for sletting */
+.btn-danger { background: var(--red); }
+.btn-danger:hover { background: var(--red); filter: brightness(0.85); }
+
+
+/* --- 3. Kort --- */
+.card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+}
+
+.card h2 { margin: 0 0 0.5rem; font-size: 1.6rem; font-weight: 800; }
+.card p { margin: 0 0 1.5rem; color: var(--muted); }
+
+/* kort der hele kortet er en lenke */
+.card-link {
     display: block;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    text-decoration: none;
+}
+
+.card-link strong { display: block; font-size: 1.05rem; }
+.card-link span { color: var(--muted); font-size: 0.95rem; }
+.card-link:hover { border-color: var(--green-600); }
+
+
+/* --- 4. Skjema ---
+   Ett felt i en view:
+   <div class="form-field">
+       <label asp-for="Name"></label>
+       <input asp-for="Name" class="form-control" />
+       <span asp-validation-for="Name" class="text-danger"></span>
+   </div> */
+.form-card { max-width: 640px; }
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1.1rem;
+}
+
+.form-field label { font-weight: 600; }
+
+/* font: inherit gir 16px skrift, som hindrer at iPhone zoomer inn i feltet */
+.form-control {
     width: 100%;
+    min-height: 44px;
+    padding: 0.7rem 0.85rem;
     border: 1px solid var(--line-strong);
     border-radius: var(--radius-md);
-    padding: 0.75rem 1rem;
+    background: #fff;
     color: var(--ink);
-    background-color: #fff;
     font: inherit;
 }
 
-/* Fokus på skjemafeltene */
-.form-control:focus,
-.form-select:focus {
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(59, 110, 165, 0.2);
-    outline: none;
+.form-control:focus { border-color: var(--green-600); }
+
+textarea.form-control { min-height: 120px; resize: vertical; }
+
+.form-hint { color: var(--muted); font-size: 0.9rem; }
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
 }
 
-/* Plassholdertekst */
-.form-control::placeholder {
-    color: var(--muted);
-}
+/* disse klassene legger ASP.NET Core på selv når validering feiler */
+.field-validation-error,
+.text-danger { color: #a3261c; font-size: 0.9rem; }
 
-/* Skrivebeskyttede felt */
-.form-control[readonly] {
-    background-color: #fff;
-    color: var(--ink);
-}
+.input-validation-error { border-color: #a3261c; }
 
-/* Tekstområder */
-textarea.form-control {
-    min-height: 120px;
-    resize: vertical;
-}
-
-/* Etiketter i skjemaene */
-.form-label,
-.card label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--navy);
-    font-weight: 600;
-}
-
-/* Avstand mellom skjemafeltene */
-.mb-3 {
+.validation-summary-errors {
     margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    background: #fbe9e7;
+    color: #a3261c;
 }
 
-.mb-4 {
-    margin-bottom: 1.5rem;
+.validation-summary-errors ul { margin: 0; padding-left: 1.2rem; }
+
+
+/* --- 5. Tabell ---
+   Legg <table class="table"> inni <div class="table-wrap">, så scroller
+   tabellen sideveis i boksen på mobil og ikke hele siden. */
+.table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: #fff;
 }
 
-/* Luft over og under innhold */
-.py-5 {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-}
+.table { width: 100%; min-width: 560px; border-collapse: collapse; }
 
-/* Valideringsmeldinger */
-.text-danger {
-    color: var(--red);
-    font-size: 0.9rem;
-}
-
-/* Spørsmålene på Hjelp-siden */
-.accordion-button {
-    font-weight: 600;
-    color: var(--navy);
-}
-
-/* Åpne spørsmål på Hjelp-siden */
-.accordion-button:not(.collapsed) {
-    background-color: var(--surface-soft);
-    color: var(--navy);
-}
-
-/* Fokus på spørsmål */
-.accordion-button:focus {
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(59, 110, 165, 0.2);
-}
-
-/* Tabellene */
-.table {
-    width: 100%;
-    color: var(--ink);
-}
-
-/* Tabelloverskrifter */
-.table thead {
-    background-color: var(--surface-soft);
-}
-
-.table th {
-    font-weight: 700;
-}
-
-/* Tabellceller */
 .table th,
 .table td {
-    padding: 0.9rem 1rem;
+    padding: 0.75rem 1rem;
+    text-align: left;
     border-bottom: 1px solid var(--line);
 }
 
-/* Statusmerker */
-.badge {
-    display: inline-flex;
-    align-items: center;
-    border-radius: var(--radius-pill);
-    padding: 0.3rem 0.75rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
+.table th { background: var(--sage); font-weight: 700; }
+.table tr:last-child td { border-bottom: 0; }
 
-/* Tilgjengelige ressurser */
-.badge-success {
-    background-color: #e5f5ec;
-    color: #17663a;
-}
-
-/* Planlagte behov eller advarsler */
-.badge-warning {
-    background-color: #fff2d9;
-    color: #805500;
-}
-
-/* Kritiske behov eller feil */
-.badge-danger {
-    background-color: #fde8e8;
-    color: var(--red);
-}
-
-/* =========================================
-   FORSIDEN – HANDLINGSKORT OG OVERSIKT
-   ========================================= */
-
-/* Alle fem kortene på forsiden */
-.home-content .home-action-card,
-.home-content .home-overview-cards > .card-link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+/* teksten som vises når listen er tom */
+.empty-state {
+    padding: 2rem 1rem;
     text-align: center;
-    gap: 1rem;
-
-    padding: 1.75rem;
-    min-width: 0;
-
-    background-color: rgba(255, 255, 255, 0.94);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
-
-    color: var(--navy);
-    text-decoration: none;
-    cursor: pointer;
-
-    transition:
-            box-shadow 0.2s ease,
-            transform 0.2s ease;
-}
-
-/* Mer skygge når musen holdes over kortet */
-.home-content .home-action-card:hover,
-.home-content .home-overview-cards > .card-link:hover {
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
-    transform: translateY(-3px);
-}
-
-/* Synlig fokus ved tastaturnavigasjon */
-.home-content .home-action-card:focus-visible,
-.home-content .home-overview-cards > .card-link:focus-visible {
-    outline: 3px solid var(--accent-blue);
-    outline-offset: 3px;
-}
-
-/* Midtstiller innholdet i de to øverste kortene */
-.home-content .home-action-card .card-text {
-    width: 100%;
-    text-align: center;
-}
-
-/* Overskriftene i handlingskortene */
-.home-content .home-action-card h2 {
-    color: var(--navy);
-    text-align: center;
-}
-
-/* Beskrivelsene i handlingskortene */
-.home-content .home-action-card p {
-    text-align: center;
-}
-
-/* Pilene i handlingskortene */
-.home-content .home-action-card .btn-circle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    pointer-events: none;
-}
-
-/* Midtstiller tekst i de tre nederste kortene */
-.home-content .home-overview-cards > .card-link strong,
-.home-content .home-overview-cards > .card-link span {
-    display: block;
-    text-align: center;
-}
-
-/* Oversiktstitlene */
-.home-content .home-overview-cards > .card-link strong {
-    color: var(--navy);
-    font-weight: 700;
-}
-
-/* Beskrivelsene i oversiktskortene */
-.home-content .home-overview-cards > .card-link span {
     color: var(--muted);
 }
 
-/* =========================================
-   MOBILTILPASNING
-   ========================================= */
 
-@media (max-width: 768px) {
-    .content-card {
-        padding: 1rem;
-    }
+/* --- 6. Badges ---
+   Små fargede etiketter med samme farger som på kartet.
+   Eksempel: <span class="badge badge-urgent">Akutt</span> */
+.badge {
+    display: inline-block;
+    padding: 0.15rem 0.7rem;
+    border-radius: var(--radius-pill);
+    background: #6b7078;       /* grå hvis ingen variant er valgt */
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
 
-    .btn {
-        max-width: 100%;
-    }
+.badge-urgent { background: var(--map-urgent); }
+.badge-planned { background: var(--map-planned); color: var(--green-900); }
+.badge-available { background: var(--map-available); }
+.badge-public { background: var(--map-public); }
 
-    .home-content .home-action-card,
-    .home-content .home-overview-cards > .card-link {
-        padding: 1.25rem;
-    }
+
+/* --- 7. Detaljvisning ---
+   Siden som viser én ressurs/ett behov (<dl> med <dt> og <dd>) */
+.detail-list {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.6rem 1.5rem;
+    margin: 0;
+}
+
+.detail-list dt { font-weight: 700; }
+.detail-list dd { margin: 0; }
+
+/* navn og verdi under hverandre på små skjermer */
+@media (max-width: 520px) {
+    .detail-list { grid-template-columns: 1fr; gap: 0.1rem; }
+    .detail-list dd { margin-bottom: 0.75rem; }
 }
 
 
+/* --- 8. Kart (Marius) ---
+   Leaflet MÅ ha høyde på kart-boksen, ellers vises ikke kartet.
+   I skjema:   <div id="map" class="map-container"></div>
+   Kartside:   <div id="map" class="map-container map-container--full"></div> */
+.map-container {
+    width: 100%;
+    height: 380px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.map-container--full { height: min(72vh, 680px); }
+
+/* tegnforklaring under kartet */
+.map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9rem;
+}
+
+/* fargeprikken foran hver forklaring. Fargen kommer fra --dot (settes under) */
+.map-legend li::before {
+    content: "";
+    display: inline-block;
+    width: 0.8rem;
+    height: 0.8rem;
+    margin-right: 0.4rem;
+    border-radius: 50%;
+    background: var(--dot, #6b7078);
+}
+
+.map-legend .legend-urgent { --dot: var(--map-urgent); }
+.map-legend .legend-planned { --dot: var(--map-planned); }
+.map-legend .legend-available { --dot: var(--map-available); }
+.map-legend .legend-public { --dot: var(--map-public); }
+
+
+/* --- 9. Meldinger ---
+   _Layout viser TempData["Success"] med .alert-success */
+.alert {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+}
+
+.alert-success { background: #e2f3e8; color: #1d6b3d; }
+.alert-danger { background: #fbe9e7; color: #a3261c; }
+
+
+/* --- 10. Utskrift ---
+   Kravet er at man skal kunne skrive ut ressurslister. Skjuler det som ikke
+   hører hjemme på papir. */
+@media print {
+    .site-header,
+    .site-footer,
+    .no-print,                 /* legg på det du vil skjule ved utskrift */
+    .btn,
+    .map-container { display: none !important; }
+
+    .site-main { background: #fff; }
+    .table-wrap { border: 0; overflow: visible; }
+    .table { min-width: 0; }
+}
+
+/* ingen animasjoner for de som har valgt "reduser bevegelse" i systemet */
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+}

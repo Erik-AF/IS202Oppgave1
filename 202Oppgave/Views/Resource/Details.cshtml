@@ -33,8 +33,16 @@
             <p><strong>Beskrivelse:</strong> @Model.Description</p>
         }
         <p><strong>Status:</strong> <span style="color:@statusColor; font-weight:600;">@Model.Status</span></p>
-        <p><strong>Kontakt:</strong> @Model.ContactName, @Model.ContactPhone</p>
-        
+        @* Kontaktinfo fra brukeren som registrerte ressursen *@
+        <p><strong>Registrert av:</strong> @(string.IsNullOrWhiteSpace(Model.ContactName) ? "Ukjent" : Model.ContactName)</p>
+        @if (!string.IsNullOrWhiteSpace(Model.ContactPhone))
+        {
+            <p><strong>Telefon:</strong> <a href="tel:@Model.ContactPhone">@Model.ContactPhone</a></p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.ContactEmail))
+        {
+            <p><strong>E-post:</strong> <a href="mailto:@Model.ContactEmail">@Model.ContactEmail</a></p>
+        }        
         @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
         {
             <div id="details-map" style="height:350px; width:100%;"></div>
