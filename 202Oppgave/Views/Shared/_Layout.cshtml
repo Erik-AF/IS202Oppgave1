@@ -41,7 +41,7 @@
     // Merkevareinformasjon fra main
     var brandName = "Ko/ordinert";
     var brandTagline = "Kart. Behov. Ressurser. Sammen.";
-    var brandLogo = "~/images/logo-koordinert.svg";
+    var brandLogo = "~/images/mork-logo.svg";
 
     // Eget design for innlogging og registrering
     var isAuthPage =
@@ -135,7 +135,7 @@
                aria-label="Ko/ordinert – til forsiden">
 
                 <img class="brand-logo"
-                     src="@(sharedChrome ? Url.Content(brandLogo) : Url.Content("~/images/mork-logo.svg"))"
+                     src="@Url.Content(brandLogo)"
                      alt=""
                      width="42"
                      height="42"/>
