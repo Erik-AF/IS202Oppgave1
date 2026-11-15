@@ -11,7 +11,8 @@
         string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
 
     // Brukes for gjennomsiktig header på forsiden
-    bool isHome = IsActive("Home");
+    bool isHome = IsActive("Home") &&
+        string.Equals(ViewContext.RouteData.Values["action"]?.ToString(), "Index", StringComparison.OrdinalIgnoreCase);
 
     // Henter gjeldende action
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
@@ -38,17 +39,10 @@
         || action.Equals("Hjelp", StringComparison.OrdinalIgnoreCase)
         || action.Equals("Kontakt", StringComparison.OrdinalIgnoreCase));
 
-    // Footer på informasjon, behov, ressurser og kart
-    var helpInfoFooter =
-        informationDesign ||
-        needDesign ||
-        (IsActive("Kart") &&
-            action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase));
-
     // Merkevareinformasjon fra main
     var brandName = "Ko/ordinert";
     var brandTagline = "Kart. Behov. Ressurser. Sammen.";
-    var brandLogo = "~/images/logo-koordinert.svg";
+    var brandLogo = "~/images/mork-logo.svg";
 
     // Eget design for innlogging og registrering
     var isAuthPage =
@@ -58,6 +52,7 @@
 
     // Samme header på forsiden og innloggingssiden
     var useOverlayHeader = isHome || isAuthPage;
+    var sharedChrome = !useOverlayHeader;
 
 }
 
@@ -120,29 +115,15 @@
 @{
     var bodyClass = $"design-concept page-{current.ToLowerInvariant()} action-{action.ToLowerInvariant()}";
 
-    if (needDesign)
+    if (sharedChrome)
     {
-        bodyClass += " need-theme";
+        bodyClass += " shared-chrome";
     }
 }
 
 <body id="top" class="@bodyClass">
 
     <a class="skip-link" href="#main-content">Hopp til innhold</a>
-
-    @* Behold utility-bar fra main *@
-    @if (!useOverlayHeader && !helpInfoFooter)
-    {
-        <div class="utility-bar">
-            <div class="container">
-                <span>Et felles løft for lokal beredskap</span>
-                <a asp-controller="Information"
-                   asp-action="Hjelp">
-                    Slik bruker du tjenesten ↗
-                </a>
-            </div>
-        </div>
-    }
 
     @* ===== Header: design fra fix_homepage ===== *@
     <header class="site-header @(useOverlayHeader ? "site-header--overlay" : "")">
@@ -155,15 +136,15 @@
                aria-label="Ko/ordinert – til forsiden">
 
                 <img class="brand-logo"
-                     src="~/images/mork-logo.svg"
+                     src="@Url.Content(brandLogo)"
                      alt=""
                      width="42"
                      height="42"/>
 
                 <span class="brand-text">
-                    <span class="brand-name">Ko/ordinert</span>
+                    <span class="brand-name">@brandName</span>
                     <span class="brand-tagline">
-                        Ressurser. Mennesker. Trygghet.
+                        @(sharedChrome ? brandTagline : "Ressurser. Mennesker. Trygghet.")
                     </span>
                 </span>
             </a>
@@ -327,6 +308,15 @@
         <div class="container footer-main">
 
             <div class="footer-brand-col">
+                @if (sharedChrome)
+                {
+                    <a class="footer-brand footer-brand-lockup" asp-controller="Home" asp-action="Index">
+                        <img src="@Url.Content(brandLogo)" alt="" width="52" height="52" />
+                        <span>@brandName<small>@brandTagline</small></span>
+                    </a>
+                }
+                else
+                {
                 <a class="footer-brand"
                    asp-controller="Home"
                    asp-action="Index">
@@ -337,6 +327,7 @@
                         <path d="M7 17L17 7M8 7h9v9" />
                     </svg>
                 </a>
+                }
 
                 <p class="footer-tagline">
                     God beredskap begynner med mennesker som finner hverandre.
@@ -383,7 +374,7 @@
                     <li>
                         <a asp-controller="Information"
                            asp-action="Hjelp">
-                            @(helpInfoFooter ? "Slik bruker du tjenesten ↗" : "Spørsmål og svar")
+                            @(sharedChrome ? "Slik bruker du tjenesten ↗" : "Spørsmål og svar")
                         </a>
                     </li>
                     <li>
@@ -429,6 +420,3 @@
 
     </body>
     </html>
-    
-    
-}
