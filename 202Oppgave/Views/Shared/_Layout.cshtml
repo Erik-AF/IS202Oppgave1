@@ -113,7 +113,16 @@
         @await RenderSectionAsync("Head", required: false)
     </head>
 
-<body class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant() @(needDesign ? "need-theme" : "")">
+@{
+    var bodyClass = $"design-concept page-{current.ToLowerInvariant()} action-{action.ToLowerInvariant()}";
+
+    if (needDesign)
+    {
+        bodyClass += " need-theme";
+    }
+}
+
+<body class="@bodyClass">
 
     <a class="skip-link" href="#main-content">Hopp til innhold</a>
 
