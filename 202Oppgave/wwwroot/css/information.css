@@ -1,0 +1,61 @@
+/* Lastes kun på Om oss, Hjelp og Kontakt oss. */
+.design-concept .information-hero { padding-block: 28px 36px; border-bottom: 0; }
+.information-breadcrumb { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; font-size: .92rem; color: #65706a; }
+.information-breadcrumb a { color: inherit; text-decoration: none; }
+.information-breadcrumb a:hover { text-decoration: underline; }
+.information-breadcrumb [aria-current] { color: #17251f; font-weight: 700; }
+.design-concept .information-hero h1 { color: #17251f; font-weight: 750; font-size: clamp(2.3rem,4.5vw,4rem); margin-bottom: 20px; }
+.information-hero .eyebrow { color: #18594e; margin-bottom: 16px; }
+.information-hero .lead { color: #65706a; max-width: 760px; margin-bottom: 0; }
+.design-concept .editorial-section { padding-block: 38px 56px; }
+.design-concept .community-grid { gap: 34px; align-items: stretch; }
+.community-photo { min-width: 0; }
+.community-photo img { height: 100%; min-height: 320px; max-height: 470px; border-radius: 14px; }
+.community-grid > div:last-child { background: white; border: 1px solid #dbe1d8; border-radius: 14px; padding: clamp(24px,3vw,38px); }
+.community-grid h2 { margin-top: 0; }
+.community-grid p:not(.eyebrow) { color: #59696b; }
+.design-concept .community-section { background: #e9edde; padding-block: 48px; }
+.how-grid { gap: 22px; }
+.how-grid article { background: white; border: 1px solid #dbe1d8; border-top: 3px solid #18594e; border-radius: 14px; padding: 28px; }
+.how-grid article a { color: #18594e; }
+.design-concept .btn-primary { background: #18594e; border-color: #18594e; color: white; border-radius: 8px !important; }
+.design-concept .btn-primary:hover { background: #10483e; }
+.design-concept .btn-signal { border-radius: 8px !important; }
+.faq-list { max-width: 900px; display: grid; gap: 14px; }
+.faq-list details { background: white; border: 1px solid #dbe1d8; border-radius: 14px; padding: 0; overflow: hidden; }
+.faq-list summary { padding: 24px 28px; color: #17251f; font-size: 1.1rem; font-weight: 650; }
+.faq-list summary::marker { color: #18594e; }
+.faq-list summary:hover { background: #f0f3eb; }
+.faq-list summary:focus-visible { outline-offset: -5px; border-radius: 12px; }
+.faq-list details[open] { border-color: #9db5a5; }
+.faq-list details[open] summary { background: #e9edde; }
+.faq-list details > p { margin: 0; padding: 22px 28px 26px; color: #59696b; }
+.faq-list a { color: #18594e; text-underline-offset: 4px; }
+.design-concept .join-section { background: #093833; border-bottom-color: #3c5b54; padding-block: 40px; }
+@media (max-width: 800px) {
+    .design-concept .information-hero { padding-block: 22px 24px; }
+    .design-concept .editorial-section { padding-block: 24px 38px; }
+    .design-concept .community-grid { grid-template-columns: minmax(0,1fr); gap: 22px; }
+    .community-photo img { height: 260px; min-height: 0; }
+    .how-grid { grid-template-columns: minmax(0,1fr); }
+    .faq-list summary { padding: 20px; }
+    .faq-list details > p { padding: 18px 20px 22px; }
+}
+
+.design-concept .contact-page { padding-bottom: 60px; }
+.contact-page .contact-intro { margin-bottom: 34px; }
+.contact-page .contact-layout { gap: 34px; align-items: start; }
+.contact-page .contact-form-card { background: #fff; border: 1px solid #dbe1d8; border-radius: 14px; padding: clamp(24px,3vw,36px); min-width: 0; }
+.contact-form-card > .mb-3 { margin-bottom: 22px; }
+.contact-form-card label { display: block; color: #17251f; font-weight: 650; margin-bottom: 8px; }
+.design-concept .contact-form-card .form-control,
+.design-concept .contact-form-card .form-select { width: 100%; border: 1px solid #cfd8cc; border-radius: 8px; min-height: 48px; background: white; }
+.design-concept .contact-form-card .input-validation-error { border-color: var(--brick); }
+.contact-form-card textarea { min-height: 160px; resize: vertical; }
+.contact-page .contact-aside { border: 1px solid #dbe1d8; border-top: 3px solid #18594e; border-radius: 14px; background: #e9edde; padding: 28px; }
+.contact-page .contact-aside p { color: #59696b; }
+.contact-page .contact-aside a { color: #18594e; font-weight: 600; text-underline-offset: 4px; }
+@media (max-width: 800px) {
+    .contact-page .contact-layout { grid-template-columns: minmax(0,1fr); gap: 22px; }
+    .design-concept .contact-page { padding-bottom: 38px; }
+}

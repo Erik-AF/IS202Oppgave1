@@ -2,6 +2,12 @@
     var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
     bool IsActive(string controller) => string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
+    // Behovsdesignet lastes kun for sidene som bruker det.
+    var needDesign = IsActive("Need") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
+        || action.Equals("Create", StringComparison.OrdinalIgnoreCase) || action.Equals("Edit", StringComparison.OrdinalIgnoreCase));
+    var informationDesign = IsActive("Information") && (action.Equals("Om", StringComparison.OrdinalIgnoreCase)
+        || action.Equals("Hjelp", StringComparison.OrdinalIgnoreCase) || action.Equals("Kontakt", StringComparison.OrdinalIgnoreCase));
+    var helpInFooter = informationDesign || needDesign || (IsActive("Kart") && action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase));
     // Behovsdesignet (grønn header med bølge, need.css) lastes kun for sidene som bruker det.
     // Registrer ressurs, ressurslisten og allokering bruker samme design som behovssidene.
     var needDesign = (IsActive("Need") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
@@ -66,6 +72,10 @@
     @if (isAuthPage)
     {
         <link rel="stylesheet" href="~/css/account-auth.css" asp-append-version="true" />
+    }
+    @if (informationDesign)
+    {
+        <link rel="stylesheet" href="~/css/information.css" asp-append-version="true" />
     }
 
     @await RenderSectionAsync("Head", required: false)
