@@ -5,7 +5,9 @@
     // Behovsdesignet lastes kun for sidene som bruker det.
     var needDesign = IsActive("Need") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
         || action.Equals("Create", StringComparison.OrdinalIgnoreCase) || action.Equals("Edit", StringComparison.OrdinalIgnoreCase));
-    var helpInFooter = needDesign || (IsActive("Kart") && action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase));
+    var informationDesign = IsActive("Information") && (action.Equals("Om", StringComparison.OrdinalIgnoreCase)
+        || action.Equals("Hjelp", StringComparison.OrdinalIgnoreCase) || action.Equals("Kontakt", StringComparison.OrdinalIgnoreCase));
+    var helpInFooter = informationDesign || needDesign || (IsActive("Kart") && action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase));
     var brandName = "Ko/ordinert";
     var brandTagline = "Kart. Behov. Ressurser. Sammen.";
     var brandLogo = "~/images/logo-koordinert.svg";
@@ -30,6 +32,10 @@
     @if (needDesign)
     {
         <link rel="stylesheet" href="~/css/need.css" asp-append-version="true" />
+    }
+    @if (informationDesign)
+    {
+        <link rel="stylesheet" href="~/css/information.css" asp-append-version="true" />
     }
 </head>
 <body class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant()">

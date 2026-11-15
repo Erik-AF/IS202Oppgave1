@@ -1,7 +1,8 @@
 @{
     ViewData["Title"] = "Spørsmål og svar";
 }
-<section class="information-hero"><div class="container"><p class="eyebrow">Hjelp og veiledning</p><h1>God oversikt.<br />Enklere å bidra.</h1><p class="lead">Her finner du svar på hvordan du kommer i gang, bruker kartet og holder opplysningene oppdatert.</p></div></section>
+<section class="information-hero"><div class="container">
+    <nav class="information-breadcrumb" aria-label="Brødsmuler"><a asp-controller="Home" asp-action="Index">Hjem</a><span aria-hidden="true">/</span><span aria-current="page">Hjelp</span></nav><p class="eyebrow">Hjelp og veiledning</p><h1>God oversikt.<br />Enklere å bidra.</h1><p class="lead">Her finner du svar på hvordan du kommer i gang, bruker kartet og holder opplysningene oppdatert.</p></div></section>
 <section class="container editorial-section">
     @* Native details fungerer med tastatur og uten JavaScript. *@
     <div class="faq-list">
