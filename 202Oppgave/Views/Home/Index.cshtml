@@ -57,7 +57,7 @@
            <div class="steps-header">
                <h2 id="steps-title">Slik kommer du i gang</h2>
    
-               <a class="steps-more" asp-controller="Home" asp-action="Info">
+               <a class="steps-more" asp-controller="Information" asp-action="Om">
                    Les mer om tjenesten
                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                        <path d="M5 12h14M13 6l6 6-6 6" />
@@ -130,15 +130,15 @@
            
            @* Gjør hele kartflaten klikkbar *@
            <a class="home-map__full-link"
-              asp-controller="Map"
-              asp-action="Index"
+              asp-controller="Kart"
+              asp-action="Oversikt"
               aria-label="Åpne kartoversikten"></a>
    
            <div id="home-map" class="home-map__live" aria-hidden="true"
                 data-markers-url="@Url.Action("Markers", "Map")"></div>
    
            <a class="home-map__card"
-              asp-controller="Map" asp-action="Index">
+              asp-controller="Kart" asp-action="Oversikt">
                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                    <path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z" />
                    <circle cx="12" cy="10" r="2.3" />
