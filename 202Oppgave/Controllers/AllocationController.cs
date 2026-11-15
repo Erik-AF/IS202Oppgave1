@@ -1,3 +1,4 @@
+using _202Oppgave.Services;
 using _202Oppgave.DataAccess.Repositories;
 using _202Oppgave.Models.Authorization;
 using _202Oppgave.ViewModels;
@@ -82,6 +83,46 @@ public class AllocationController : Controller
         return RedirectToAction("Confirmation", "Need", new { id = need.Id });
     }
     
+    [HttpGet]
+    public async Task<IActionResult> FromNeed(int needId)
+    {
+        var model = new NeedAllocationViewModel { NeedId = needId };
+        if (!await FillSuggestionsAsync(model)) return NotFound();
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> FromNeed(NeedAllocationViewModel model)
+    {
+        if (!await FillSuggestionsAsync(model)) return NotFound();
+        var selected = model.ResourceIds.Distinct().ToList();
+        if (selected.Count == 0)
+            ModelState.AddModelError(nameof(model.ResourceIds), "Velg minst én foreslått ressurs.");
+
+        // Beregn på nytt: skjulte ID-er kan endres, og tilgjengeligheten kan ha endret seg.
+        if (selected.Any(id => !model.Suggestions.Any(r => r.Id == id)))
+            ModelState.AddModelError(nameof(model.ResourceIds), "Forslagene har endret seg. Velg blant de tilgjengelige ressursene nedenfor.");
+
+        if (!ModelState.IsValid) return View(model);
+
+        var count = await _allocationRepo.AllocateAsync(model.NeedId, selected, model.Note);
+        TempData["Message"] = count > 0
+            ? $"{count} ressurs(er) allokert til behovet."
+            : "Ingen av ressursene var tilgjengelige lenger. Ingenting ble allokert.";
+        return RedirectToAction("Confirmation", "Need", new { id = model.NeedId });
+    }
+
+    private async Task<bool> FillSuggestionsAsync(NeedAllocationViewModel model)
+    {
+        var need = await _needRepo.GetByIdAsync(model.NeedId);
+        if (need is null) return false;
+        model.NeedTitle = need.Type;
+        model.Location = need.Location;
+        model.Suggestions = NearbyResourceSuggestions.Find(need, await _resourceRepo.GetAllAsync());
+        return true;
+    }
+
     // POST: /Allocation/Remove/5
     // Fjerner en ressurs fra et behov, og sender brukeren tilbake til siden de kom fra.
     [HttpPost]

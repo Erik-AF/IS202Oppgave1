@@ -138,7 +138,7 @@ public async Task Edit_ExistingNeed_ShouldUpdateNeed()
     var need = new Need
     {
         Id = 1,
-        UserId = "original-user",
+        UserId = "user-123",
         Type = "Mat",
         Location = "Kristiansand",
         Priority = NeedPriority.IkkeAkutt,
@@ -163,7 +163,7 @@ public async Task Edit_ExistingNeed_ShouldUpdateNeed()
 
     var result = await controller.Edit(1, model);
 
-    Assert.Equal("original-user", repository.Needs[0].UserId);
+    Assert.Equal("user-123", repository.Needs[0].UserId);
     Assert.Equal("Drikkevann", repository.Needs[0].Type);
     Assert.Equal("Grimstad", repository.Needs[0].Location);
     Assert.Equal(NeedPriority.Akutt, repository.Needs[0].Priority);
@@ -186,7 +186,7 @@ public async Task Edit_NonExistingNeed_ShouldReturnNotFound()
 public async Task Delete_ExistingNeed_ShouldRemoveNeed()
 {
     var repository = new FakeNeedRepository();
-    repository.Needs.Add(new Need { Id = 1 });
+    repository.Needs.Add(new Need { Id = 1, UserId = "user-123" });
 
     var controller = CreateController(repository);
 

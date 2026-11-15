@@ -6,6 +6,7 @@ namespace _202Oppgave.Models;
 public class Need
 {
     public int Id { get; set; }
+    public bool CanManage { get; set; }
     public string Type { get; set; } = string.Empty;
     public string Location { get; set; } = string.Empty;
     public NeedPriority Priority { get; set; }
