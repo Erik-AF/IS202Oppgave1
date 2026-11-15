@@ -25,7 +25,8 @@
             || action.Equals("Confirmation", StringComparison.OrdinalIgnoreCase)))
         || (IsActive("Resource") &&
             (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
-            || action.Equals("Create", StringComparison.OrdinalIgnoreCase)))
+            || action.Equals("Create", StringComparison.OrdinalIgnoreCase) 
+            || action.Equals("Details", StringComparison.OrdinalIgnoreCase)))
         || (IsActive("Allocation") &&
             (action.Equals("Create", StringComparison.OrdinalIgnoreCase)
             || action.Equals("FromNeed", StringComparison.OrdinalIgnoreCase)));

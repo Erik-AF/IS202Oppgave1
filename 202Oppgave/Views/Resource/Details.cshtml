@@ -16,23 +16,66 @@
     };
 }
 
-<div class="container home-content">
-    <a class="back-link" asp-action="Index">← Til oversikten</a><div class="card detail-card">
-        
+@section Head {
+    <style>
+    /* Bildet øverst i kortet, med runde hjørner som kartet */
+    .rd-image {
+        display: block;
+        width: 100%;
+        max-width: 520px;
+        aspect-ratio: 16 / 10;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 24px;
+    }
+
+    /* Statusen i fet skrift. Fargen settes per ressurs i HTML */
+    .rd-status {
+        font-weight: 700;
+    }
+
+    /* Kartet: høyde, kant og runde hjørner, som på behovsdetaljene */
+    #details-map {
+        height: 350px;
+        width: 100%;
+        margin: 24px 0;
+        border: 1px solid #dbe1d8;
+        border-radius: 12px;
+    }
+    </style>
+}
+
+@* need-design og need-details gir samme stil som detaljsiden for behov (fra need.css) *@
+<div class="container home-content need-design need-details">
+
+    @* Brødsmulesti: Hjem / Ressurser / navnet på ressursen *@
+    <nav class="need-breadcrumb" aria-label="Brødsmuler">
+        <a asp-controller="Home" asp-action="Index">Hjem</a>
+        <span aria-hidden="true">/</span>
+        <a asp-action="Index">Ressurser</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">@Model.Type</span>
+    </nav>
+
+    <div class="card detail-card">
+
         @* Opplastet bilde. Vises bare hvis ressursen har et. *@
         @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
         {
-            <img src="@Model.ImagePath" alt="Bilde av @Model.Type"
-                 style="display:block; width:100%; aspect-ratio:16/10; object-fit:cover; margin-bottom:1.25rem;" />
+            <img src="@Model.ImagePath" alt="Bilde av @Model.Type" class="rd-image" />
         }
-        
-        <p class="eyebrow">Ressursdetaljer</p><h1>@Model.Type</h1>
+
+        <p class="eyebrow">Ressursdetaljer</p>
+        <h1>@Model.Type</h1>
+
         <p><strong>Kategori:</strong> @(Model.CategoryName ?? "Ikke satt")</p>
         @if (!string.IsNullOrWhiteSpace(Model.Description))
         {
             <p><strong>Beskrivelse:</strong> @Model.Description</p>
         }
-        <p><strong>Status:</strong> <span style="color:@statusColor; font-weight:600;">@Model.Status</span></p>
+        <p><strong>Adresse eller sted:</strong> @Model.Area</p>
+        <p><strong>Status:</strong> <span class="rd-status" style="color:@statusColor;">@Model.Status</span></p>
+
         @* Kontaktinfo fra brukeren som registrerte ressursen *@
         <p><strong>Registrert av:</strong> @(string.IsNullOrWhiteSpace(Model.ContactName) ? "Ukjent" : Model.ContactName)</p>
         @if (!string.IsNullOrWhiteSpace(Model.ContactPhone))
@@ -42,29 +85,29 @@
         @if (!string.IsNullOrWhiteSpace(Model.ContactEmail))
         {
             <p><strong>E-post:</strong> <a href="mailto:@Model.ContactEmail">@Model.ContactEmail</a></p>
-        }        
+        }
+
+        @* Kartet får høyde, kant og runde hjørner fra need.css (.need-details #details-map) *@
         @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
         {
-            <div id="details-map" style="height:350px; width:100%;"></div>
+            <div id="details-map"></div>
         }
         else
         {
             <p>Ingen kartposisjon er lagret for denne ressursen.</p>
         }
-        <div class="detail-actions"><p><a asp-action="Index" class="btn btn-primary" style="color:#fff; text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Tilbake</a></p>
-        <p><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary" style="color:#fff; 
-        text-decoration:none; display:inline-block; padding:0.65rem 1.4rem; border-radius:999px;">Rediger</a></p>
-        <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
-              
-              onsubmit="return confirm('Er du sikker på at du vil slette denne ressursen?');"
-              style="display:inline;">
-            <button type="submit"
-                    class="btn"
-                    style="background:#b42318; color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">
-                Slett
-            </button>
-        </form>
-    </div>
+
+        @* Knappene får samme stil som på behovssiden (fra need.css) *@
+        <div class="detail-actions">
+            <p><a asp-action="Index" class="btn btn-primary">Se alle ressurser</a></p>
+            <p><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Rediger</a></p>
+
+            @* Ber om bekreftelse for å unngå at en ressurs slettes ved et uhell *@
+            <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+                  onsubmit="return confirm('Er du sikker på at du vil slette denne ressursen?');">
+                <button type="submit" class="btn need-delete-button">Slett</button>
+            </form>
+        </div>
     </div>
 </div>
 @section Scripts {
