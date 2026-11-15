@@ -173,3 +173,31 @@
 }
 
 
+/* Statistikk og registrering på samme rad */
+.public-actor-dashboard-top {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    align-items: stretch;
+    gap: 24px;
+    margin-bottom: 36px;
+}
+
+.public-actor-dashboard-top .public-actor-stats {
+    display: flex;
+    margin-bottom: 0;
+}
+
+.public-actor-dashboard-top .public-actor-stat-card {
+    flex: 1;
+}
+
+.public-actor-dashboard-top .public-actor-create-banner {
+    margin-bottom: 0;
+    min-height: 0;
+}
+
+@media (max-width: 900px) {
+    .public-actor-dashboard-top {
+        grid-template-columns: 1fr;
+    }
+}
