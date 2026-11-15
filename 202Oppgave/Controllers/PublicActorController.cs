@@ -1,3 +1,4 @@
+
 using System.Security.Claims;
 using _202Oppgave.DataAccess.Repositories;
 using _202Oppgave.Models.Authorization;
@@ -54,6 +55,43 @@ public class PublicActorController : Controller
             .ToList();
 
         return View(myNeeds);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditNeed(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrWhiteSpace(userId))
+            return Challenge();
+
+        var need = await _needRepository.GetByIdAsync(id);
+
+        if (need == null || need.UserId != userId)
+            return NotFound();
+
+        return RedirectToAction("Edit", "Need", new { id });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteNeed(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrWhiteSpace(userId))
+            return Challenge();
+
+        var need = await _needRepository.GetByIdAsync(id);
+
+        if (need == null || need.UserId != userId)
+            return NotFound();
+
+        await _needRepository.DeleteAsync(id);
+
+        TempData["Success"] = "Behovet er slettet.";
+
+        return RedirectToAction(nameof(Needs));
     }
 
     [HttpGet]
