@@ -28,96 +28,147 @@
 <section class="provider-overview">
     <div class="container">
 
-        <div class="public-actor-stats">
-            <div class="public-actor-stat-card">
-                <i class="bi bi-folder2-open" aria-hidden="true"></i>
-                <div>
-                    <strong>@totalNeeds</strong>
-                    <span>Registrerte behov</span>
+        <div class="public-actor-dashboard">
+
+            <div class="public-actor-dashboard-main">
+
+                <div class="public-actor-dashboard-top">
+
+                    <div class="public-actor-stat-card">
+                        <i class="bi bi-folder2-open" aria-hidden="true"></i>
+
+                        <div>
+                            <strong>@totalNeeds</strong>
+                            <span>Registrerte behov</span>
+                            <p>Totalt antall behov du har opprettet</p>
+                        </div>
+                    </div>
+
+                    <div class="public-actor-create-banner">
+                        <div>
+                            <h2>Registrer et nytt behov</h2>
+                            <p>
+                                Søk om utstyr, transport eller annen
+                                bistand ved en krisesituasjon.
+                            </p>
+                        </div>
+
+                        <a asp-controller="Need"
+                           asp-action="Create"
+                           class="provider-add-button">
+                            <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                            Registrer behov
+                        </a>
+                    </div>
+
                 </div>
-            </div>
-        </div>
 
-        <div class="public-actor-create-banner">
-            <div>
-                <h2>Registrer et nytt behov</h2>
-                <p>
-                    Søk om utstyr, transport eller annen bistand ved en krisesituasjon.
-                </p>
-            </div>
+                <div class="public-actor-list-header">
+                    <div>
+                        <h2>Siste registrerte behov</h2>
+                        <p>Oversikt over nylig registrerte behov.</p>
+                    </div>
 
-            <a asp-controller="Need"
-               asp-action="Create"
-               class="provider-add-button">
-                <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                Registrer behov
-            </a>
-        </div>
+                    <a asp-controller="PublicActor"
+                       asp-action="Needs"
+                       class="provider-page-button">
+                        Se alle behov
+                        <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+                    </a>
+                </div>
 
-        <div class="public-actor-list-header">
-            <div>
-                <h2>Siste registrerte behov</h2>
-                <p>En oversikt over registreringene dine.</p>
-            </div>
-
-            <a asp-controller="PublicActor"
-               asp-action="Needs"
-               class="provider-page-button">
-                Se alle behov
-                <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
-            </a>
-        </div>
-
-        @if (Model != null && Model.Any())
-        {
-            <div class="public-actor-needs-list">
-                @foreach (var need in Model.OrderByDescending(n => n.Id).Take(3))
+                @if (Model != null && Model.Any())
                 {
-                    <div class="provider-page-card">
-                        <h3>@need.Type</h3>
+                    <div class="public-actor-compact-list">
+                        @foreach (var need in Model.OrderByDescending(n => n.CreatedAt).ThenByDescending(n => n.Id).Take(3))
+                        {
+                            <div class="public-actor-compact-item">
+
+                                <div class="public-actor-need-type">
+                                    <i class="bi bi-box-seam" aria-hidden="true"></i>
+                                    <strong>@need.Type</strong>
+                                </div>
+
+                                <div class="public-actor-need-location">
+                                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                                    <span>@need.Location</span>
+                                </div>
+
+                                <span class="public-actor-priority">
+                                    @need.Priority
+                                </span>
+
+                                <div class="public-actor-need-deadline">
+                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                    <span>Frist: @need.Deadline.ToString("dd.MM.yyyy")</span>
+                                </div>
+
+                                <a asp-controller="Need"
+                                   asp-action="Confirmation"
+                                   asp-route-id="@need.Id"
+                                   class="public-actor-manage-link">
+                                    Administrer
+                                    <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+                                </a>
+
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="public-actor-empty-state">
+                        <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
+
+                        <h3>Ingen registrerte behov</h3>
 
                         <p>
-                            <strong>Sted:</strong> @need.Location
+                            Du har ikke registrert noen behov ennå.
+                            Når du registrerer et behov, vil det vises her.
                         </p>
 
-                        <p>
-                            <strong>Prioritet:</strong> @need.Priority
-                        </p>
-
-                        <p>
-                            <strong>Frist:</strong> @need.Deadline.ToString("dd.MM.yyyy")
-                        </p>
-
-                        <a asp-controller="PublicActor"
-                           asp-action="Needs"
+                        <a asp-controller="Need"
+                           asp-action="Create"
                            class="provider-page-button">
-                            Administrer behov
-                            <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+                            <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                            Registrer behov
                         </a>
                     </div>
                 }
+
             </div>
-        }
-        else
-        {
-            <div class="public-actor-empty-state">
-                <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
 
-                <h3>Ingen registrerte behov</h3>
+            <aside class="public-actor-quick-actions">
+                <h2>Hurtighandlinger</h2>
 
-                <p>
-                    Du har ikke registrert noen behov ennå.
-                    Når du registrerer et behov, vil det vises her.
-                </p>
+                <a asp-controller="Map"
+                   asp-action="Index"
+                   class="public-actor-quick-link">
+                    <i class="bi bi-map" aria-hidden="true"></i>
 
-                <a asp-controller="Need"
-                   asp-action="Create"
-                   class="provider-page-button">
-                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                    Registrer behov
+                    <span>
+                        <strong>Kartoversikt</strong>
+                        <small>Finn ressurser og tilgjengelig utstyr</small>
+                    </span>
+
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
                 </a>
-            </div>
-        }
+
+                <a asp-controller="Resource"
+                   asp-action="Index"
+                   class="public-actor-quick-link">
+                    <i class="bi bi-grid" aria-hidden="true"></i>
+
+                    <span>
+                        <strong>Ressurser</strong>
+                        <small>Se tilgjengelige ressurser i systemet</small>
+                    </span>
+
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </a>
+            </aside>
+
+        </div>
 
     </div>
 </section>
@@ -131,4 +182,3 @@
           href="~/css/public-actor.css"
           asp-append-version="true" />
 }
-
