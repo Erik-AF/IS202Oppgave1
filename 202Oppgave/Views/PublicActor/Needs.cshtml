@@ -1,3 +1,4 @@
+
 @model List<_202Oppgave.Models.Entities.Need>
 
 @{
@@ -26,75 +27,71 @@
 <section class="provider-overview">
     <div class="container">
 
-        <div class="public-actor-stats">
-            <div class="public-actor-stat-card">
-                <i class="bi bi-layers" aria-hidden="true"></i>
-                <div>
-                    <strong>–</strong>
-                    <span>Aktive</span>
-                </div>
-            </div>
-
-            <div class="public-actor-stat-card">
-                <i class="bi bi-envelope" aria-hidden="true"></i>
-                <div>
-                    <strong>–</strong>
-                    <span>Under behandling</span>
-                </div>
-            </div>
-
-            <div class="public-actor-stat-card">
-                <i class="bi bi-check-circle" aria-hidden="true"></i>
-                <div>
-                    <strong>–</strong>
-                    <span>Løst</span>
-                </div>
-            </div>
-
-            <div class="public-actor-stat-card">
-                <i class="bi bi-folder2-open" aria-hidden="true"></i>
-                <div>
-                    <strong>–</strong>
-                    <span>Totalt</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="public-actor-create-banner">
-            <div>
-                <h2>Trenger du flere ressurser?</h2>
-                <p>Opprett en ny forespørsel om utstyr, transport eller annen bistand.</p>
-            </div>
-
-            <a asp-controller="Need"
-               asp-action="Create"
-               class="provider-add-button">
-                <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                Opprett behov
-            </a>
-        </div>
-
         <div class="public-actor-list-header">
             <div>
-                <h2>Dine registreringer</h2>
-                <p>Oversikt over behov du har meldt inn.</p>
+                <h2>Behovsoversikt</h2>
+                <p>Oversikt over behov du har registrert.</p>
             </div>
         </div>
 
-        <div class="public-actor-empty-state">
-            <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
-            <h3>Ingen registreringer å vise</h3>
-            <p>
-                Registreringene dine vil vises her når
-                oversikten kobles til databasen.
-            </p>
+        @if (Model != null && Model.Any())
+        {
+            <div class="public-actor-needs-list">
+                @foreach (var need in Model)
+                {
+                    <div class="provider-page-card">
+                        <h3>@need.Type</h3>
 
-            <a asp-controller="Need"
-               asp-action="Create"
-               class="provider-page-button">
-                Opprett behov
-            </a>
-        </div>
+                        <p>
+                            <strong>Sted:</strong>
+                            @need.Location
+                        </p>
+
+                        <p>
+                            <strong>Prioritet:</strong>
+                            @need.Priority
+                        </p>
+
+                        <p>
+                            <strong>Beskrivelse:</strong>
+                            @need.Description
+                        </p>
+
+                        <p>
+                            <strong>Frist:</strong>
+                            @need.Deadline.ToString("dd.MM.yyyy")
+                        </p>
+
+                        <a asp-controller="Need"
+                           asp-action="Confirmation"
+                           asp-route-id="@need.Id"
+                           class="provider-page-button">
+                            Se behov
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="public-actor-empty-state">
+                <i class="bi bi-clipboard2-check"
+                   aria-hidden="true"></i>
+
+                <h3>Ingen registrerte behov</h3>
+
+                <p>
+                    Du har ikke registrert noen behov ennå.
+                    Når du registrerer et behov, vil det vises her.
+                </p>
+
+                <a asp-controller="Need"
+                   asp-action="Create"
+                   class="provider-page-button">
+                    Registrer behov
+                </a>
+            </div>
+        }
 
     </div>
 </section>
