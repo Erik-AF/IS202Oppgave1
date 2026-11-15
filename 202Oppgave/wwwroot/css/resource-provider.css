@@ -1,0 +1,799 @@
+
+/* Felles farger og bakgrunn */
+body.page-resourceprovider {
+    --provider-green: #194f43;
+    --provider-dark: #102b29;
+    --provider-accent: #00513d;
+    --provider-light: #e1ede2;
+    --provider-bg: #f2f2f2;
+    --provider-border: #e0e5e1;
+}
+
+body.page-resourceprovider main {
+    background: var(--provider-bg);
+}
+
+/* Toppseksjon */
+.provider-hero {
+    background: #093833;
+    color: white;
+    padding: 28px 0 32px;
+}
+
+.provider-hero-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.provider-eyebrow {
+    display: inline-block;
+    position: relative;
+    top: -8px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.provider-hero .provider-status {
+    color: #b9f1d1;
+    font-size: 13px;
+}
+
+.provider-hero h1 {
+    color: white;
+    font-size: 36px;
+    line-height: 1.2;
+    font-weight: 700;
+    margin: 0;
+}
+
+.provider-hero p {
+    color: #e4f0eb;
+    font-size: 16px;
+    line-height: 1.5;
+    max-width: 540px;
+    margin: 12px 0 0;
+}
+
+/* Navigasjon */
+.provider-nav {
+    background: var(--provider-bg);
+    border-bottom: 1px solid var(--provider-border);
+}
+
+.provider-nav-links {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.provider-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 8px;
+    color: var(--provider-dark);
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+}
+
+.provider-nav a:hover,
+.provider-nav a.active {
+    color: var(--provider-accent);
+    border-bottom-color: var(--provider-accent);
+}
+
+/* Oversikt */
+.provider-overview {
+    padding: 24px 0 56px;
+}
+
+.provider-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.provider-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: white;
+    border: 1px solid var(--provider-border);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 3px 12px #102b2910;
+}
+
+.provider-stat-icon {
+    color: var(--provider-accent);
+    flex-shrink: 0;
+}
+
+.provider-stat-card h3 {
+    color: var(--provider-dark);
+    font-size: 15px;
+    font-weight: 600;
+    margin: 4px 0 0;
+}
+
+.provider-stat-card p {
+    color: var(--provider-dark);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0;
+}
+
+/* Hovedinnhold */
+.provider-dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 24px;
+    margin-bottom: 26px;
+}
+
+.provider-register-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 205px;
+    align-items: center;
+    gap: 24px;
+    background: #e1ede2;
+    border-radius: 14px;
+    padding: 30px;
+}
+
+.provider-register-content {
+    min-width: 0;
+}
+
+.provider-register-content h2 {
+    margin: 0 0 12px;
+}
+
+.provider-register-content p {
+    max-width: 350px;
+    margin: 0 0 22px;
+}
+
+.provider-register-illustration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 205px;
+    height: 125px;
+    background: #d4e6d7;
+    border-radius: 50%;
+}
+
+.provider-add-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    white-space: nowrap;
+    background: #00513d;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .provider-register-card {
+        grid-template-columns: 1fr;
+    }
+
+    .provider-register-illustration {
+        display: none;
+    }
+}
+
+.provider-register-illustration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 205px;
+    height: 125px;
+    background: #d4e6d7;
+    border-radius: 50%;
+}
+
+.provider-register-card h2,
+.provider-actions h2,
+.provider-resource-list h2 {
+    color: var(--provider-dark);
+    font-size: 25px;
+    margin: 0 0 12px;
+}
+
+.provider-register-card p {
+    max-width: 360px;
+    margin-bottom: 22px;
+}
+
+.provider-add-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--provider-accent);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.provider-add-button:hover {
+    background: #003e30;
+    color: white;
+}
+
+.provider-actions {
+    background: white;
+    border: 1px solid var(--provider-border);
+    border-radius: 14px;
+    padding: 24px;
+}
+
+.provider-action-link {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 0;
+    font-weight: 500;
+    color: var(--provider-dark);
+    text-decoration: none;
+    border-bottom: 1px solid var(--provider-border);
+}
+
+.provider-action-link:last-child {
+    border-bottom: none;
+}
+
+/* Ressursliste */
+.provider-resource-list {
+    margin-top: 24px;
+}
+
+.provider-resource-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: white;
+    padding: 18px 22px;
+    border: 1px solid var(--provider-border);
+}
+
+.provider-resource-row:first-of-type {
+    border-radius: 12px 12px 0 0;
+}
+
+.provider-resource-row:last-child {
+    border-radius: 0 0 12px 12px;
+}
+
+.provider-resource-row p {
+    margin: 0;
+    color: #64748b;
+}
+
+
+/* Undersider – samme design som registreringssidene */
+.provider-resources,
+.provider-profile {
+    padding: 48px 0 80px;
+    color: #17251f;
+}
+
+.provider-resources-header,
+.provider-profile-header {
+    margin-bottom: 34px;
+}
+
+.provider-page-eyebrow {
+    margin: 0 0 12px;
+    color: #18594e;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.provider-resources-header h1,
+.provider-profile-header h1 {
+    color: #17251f;
+    font-size: clamp(2.3rem, 4.5vw, 4rem);
+    font-weight: 750;
+    line-height: 1.15;
+    margin: 0 0 16px;
+}
+
+.provider-resources-header .provider-page-intro,
+.provider-profile-header .provider-page-intro {
+    color: #65706a;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 850px;
+}
+
+.provider-page-card {
+    background: #fff;
+    border: 1px solid #dbe1d8;
+    border-radius: 14px;
+    padding: clamp(22px, 3vw, 32px);
+}
+
+.provider-page-card h2 {
+    color: #17251f;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 25px;
+}
+
+.provider-page-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.provider-page-card-header h2 {
+    margin-bottom: 0;
+}
+
+.provider-page-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #18594e;
+    color: white;
+    border: 1px solid #18594e;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.provider-page-button:hover {
+    background: #10483e;
+    color: white;
+}
+
+.provider-empty-state {
+    text-align: center;
+    padding: 56px 20px;
+    color: #65706a;
+}
+
+.provider-empty-state > i {
+    display: block;
+    font-size: 32px;
+    color: #18594e;
+    margin-bottom: 16px;
+}
+
+.provider-empty-state h3 {
+    color: #17251f;
+    font-size: 1.2rem;
+    margin: 0 0 10px;
+}
+
+.provider-empty-state p {
+    margin: 0;
+}
+
+.provider-profile-field {
+    padding: 18px 0;
+    border-bottom: 1px solid #dbe1d8;
+}
+
+.provider-profile-field:last-child {
+    border-bottom: none;
+}
+
+.provider-profile-field span {
+    display: block;
+    color: #65706a;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.provider-profile-field p {
+    color: #17251f;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Responsivt oppsett */
+@media (max-width: 900px) {
+    .provider-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .provider-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .provider-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .provider-hero h1 {
+        font-size: 30px;
+    }
+
+    .provider-resources-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+.provider-hero {
+    position: relative;
+    overflow: hidden;
+}
+
+.provider-hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+
+.provider-resource-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.provider-resource-list-header h2 {
+    margin: 0;
+}
+
+.provider-resource-list-header a {
+    color: var(--provider-accent);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.provider-action-link span {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.provider-action-link:hover {
+    color: var(--provider-accent);
+}
+
+body.page-resourceprovider .site-header {
+    background: #194f43;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+body.page-resourceprovider .site-header .brand,
+body.page-resourceprovider .site-header .brand span,
+body.page-resourceprovider .site-header .brand small,
+body.page-resourceprovider .site-header .main-nav a {
+    color: #ffffff;
+}
+
+body.page-resourceprovider .site-header .main-nav a:hover {
+    color: #d5eee2;
+}
+
+/* Øvre header farger */
+body.page-resourceprovider .site-header .main-nav button.nav-login {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 8px;
+    color: #fff;
+    padding: 12px 20px;
+    cursor: pointer;
+}
+
+
+body.page-resourceprovider .site-header .main-nav button.nav-login:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #fff;
+    color: #fff;
+}
+
+body.page-resourceprovider .utility-bar {
+    background-color: #123f35;
+}
+
+body.page-resourceprovider .utility-bar a {
+    color: #fff;
+}
+
+/* Testressurser på dashboardet */
+
+.provider-resource-demo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 22px;
+    border-bottom: 1px solid #e5e9e6;
+}
+
+.provider-resource-demo:last-child {
+    border-bottom: none;
+}
+
+.provider-resource-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.provider-resource-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #e5f0e8;
+    color: #195746;
+    font-size: 20px;
+}
+
+.provider-resource-info h3 {
+    margin: 0 0 4px;
+    color: #173b35;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.provider-resource-info p {
+    margin: 0;
+    color: #667570;
+    font-size: 14px;
+}
+
+.provider-resource-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.provider-resource-status.is-available {
+    background: #e4f3e8;
+    color: #24683f;
+}
+
+.provider-resource-status.is-loaned {
+    background: #fff0dc;
+    color: #956019;
+}
+
+.provider-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+@media (max-width: 600px) {
+    .provider-resource-demo {
+        flex-wrap: wrap;
+        padding: 16px;
+    }
+
+    .provider-resource-status {
+        margin-left: 62px;
+    }
+}
+
+/* Ressursstatus og detaljknapp */
+
+.provider-resource-controls {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.provider-details-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 13px;
+    border: 1px solid #d8e4dd;
+    border-radius: 8px;
+    color: #195746;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+
+.provider-details-button:hover {
+    background: #eaf3ed;
+    color: #124536;
+}
+
+@media (max-width: 600px) {
+    .provider-resource-controls {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+    }
+}
+
+.provider-resource-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.provider-resource-text .provider-resource-status {
+    margin-top: 6px;
+}
+
+
+/* Samme header som Registrerte behov – kun undersidene */
+body.design-concept.page-resourceprovider:is(.action-resources, .action-profile) .utility-bar {
+    display: none;
+}
+
+body.design-concept.page-resourceprovider:is(.action-resources, .action-profile) .site-header {
+    background: #093833;
+    color: white;
+    border-bottom: 0;
+    padding-bottom: 24px;
+    position: relative;
+    top: auto;
+}
+
+body.design-concept.page-resourceprovider:is(.action-resources, .action-profile) .site-header::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 36px;
+    pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 70' preserveAspectRatio='none'%3E%3Cpath fill='white' opacity='.10' d='M0 15 Q240 70 480 20 T960 25 T1440 10 V70 H0Z'/%3E%3Cpath fill='white' opacity='.10' d='M0 45 Q300 0 600 40 T1200 35 T1440 45 V70 H0Z'/%3E%3Cpath fill='%23faf9f5' d='M0 57 Q240 35 480 57 T960 53 T1440 57 V70 H0Z'/%3E%3C/svg%3E") center bottom / 100% 100% no-repeat;
+}
+
+body.design-concept.page-resourceprovider:is(.action-resources, .action-profile) .site-header .brand,
+body.design-concept.page-resourceprovider:is(.action-resources, .action-profile) .site-header .main-nav a,
+body.design-concept.page-resourceprovider:is(.action-resources, .action-profile) .site-header .nav-toggle {
+    color: white;
+}
+
+body.design-concept.page-resourceprovider:is(.action-resources, .action-profile) .site-header .main-nav a:hover {
+    color: #e3eb97;
+}
+
+body.design-concept.page-resourceprovider:is(.action-resources, .action-profile) .site-header .nav-login {
+    background: transparent;
+    color: white;
+    border-color: #86aaa0;
+}
+
+@media (max-width: 900px) {
+    body.design-concept.page-resourceprovider:is(.action-resources, .action-profile) .site-header .main-nav {
+        background: #093833;
+    }
+}
+
+
+/* Samme hovedheader som Registrerte behov – kun Min oversikt */
+body.design-concept.page-resourceprovider.action-index .utility-bar {
+    display: none;
+}
+
+body.design-concept.page-resourceprovider.action-index .site-header {
+    position: relative;
+    top: auto;
+    background: #093833;
+    color: white;
+    border-bottom: 0;
+    padding-bottom: 24px;
+}
+
+body.design-concept.page-resourceprovider.action-index .site-header .nav-login {
+    background: transparent;
+    color: white;
+    border-color: #86aaa0;
+}
+
+body.design-concept.page-resourceprovider.action-index .provider-hero {
+    background: #093833;
+}
+
+
+/* Profilskjema */
+.provider-profile-layout {
+    display: grid;
+    gap: 24px;
+}
+
+.provider-profile-description {
+    color: #65706a;
+    margin: -10px 0 28px;
+}
+
+.provider-profile-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.provider-profile-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.provider-profile-form-field label {
+    color: #102c38;
+    font-weight: 600;
+}
+
+.provider-profile-form-field .form-control {
+    width: 100%;
+    min-height: 52px;
+    font: inherit;
+}
+
+.provider-profile-full-width {
+    grid-column: 1 / -1;
+}
+
+.provider-profile-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 28px;
+}
+
+.provider-profile .provider-page-button {
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.provider-profile-password-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    color: #18594e;
+    font-weight: 600;
+}
+
+@media (max-width: 800px) {
+    .provider-profile-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .provider-profile-full-width {
+        grid-column: auto;
+    }
+}
