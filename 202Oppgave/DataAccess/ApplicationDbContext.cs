@@ -27,6 +27,13 @@ namespace _202Oppgave.DataAccess
             modelBuilder.Entity<Resource>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                // Én bruker kan ha mange ressurser.
+                // Restrict: en bruker som har ressurser kan ikke slettes ved et uhell.
+                entity.Property(e => e.UserId).HasMaxLength(255);
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
                 entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.Description).HasMaxLength(1000);
                 entity.Property(e => e.Type).HasMaxLength(100);

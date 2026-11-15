@@ -3,6 +3,13 @@
     public class Resource
     {
         public int Id { get; set; }
+        
+        // Brukeren som registrerte ressursen.
+        // Nullable, fordi eldre ressurser ble registrert før vi koblet til bruker.
+        // Kontaktinfo (navn, telefon, e-post) hentes fra brukeren.
+        public string? UserId { get; set; }
+        
+        public ApplicationUser? User { get; set; }
 
         public string Type { get; set; } = string.Empty;
 

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ResourceEntity = _202Oppgave.Models.Entities.Resource;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 
 // Skiller mellom den gamle modellen og database-entity
 using ResourceModel = _202Oppgave.Models.Resource;
@@ -120,6 +121,13 @@ public class ResourceController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ResourceViewModel model)
     {
+        // Hvem som registrerer hentes fra innloggingen, aldri fra skjemaet.
+        // Da kan ingen registrere en ressurs i en annens navn.
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (User.Identity?.IsAuthenticated != true || string.IsNullOrWhiteSpace(userId))
+        {
+            return Challenge();
+        }
         if (!ModelState.IsValid)
         {
             await FillCategoryOptionsAsync(model);   
@@ -129,6 +137,7 @@ public class ResourceController : Controller
         // Konverterer ViewModel til database-entity
         var resource = new ResourceEntity
         {
+            UserId = userId,
             Type = model.Type,
             Description = model.Description,
             Name = model.Area,
@@ -277,9 +286,11 @@ public class ResourceController : Controller
             Longitude = entity.Longitude,
             AvailableFrom = entity.AvailableFrom,
             AvailableTo = entity.AvailableTo,
-            ContactName = entity.ContactName,
-            ContactPhone = entity.ContactPhone,
-            ContactEmail = entity.ContactEmail,
+            // Kontaktinfo hentes fra brukeren som registrerte ressursen.
+            // Eldre ressurser har ingen bruker, da brukes feltene som ble lagret på ressursen.
+            ContactName = entity.User?.FullName ?? entity.ContactName,
+            ContactPhone = entity.User?.PhoneNumber ?? entity.ContactPhone,
+            ContactEmail = entity.User?.Email ?? entity.ContactEmail,
             Status = entity.Status,
             OwnerName = entity.OwnerName,
             ImagePath = entity.ImagePath,
