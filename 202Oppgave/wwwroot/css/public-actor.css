@@ -547,3 +547,24 @@
 }
 
 
+/* Knapp for behovsdetaljer */
+.public-actor-details-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 18px;
+    background: #00513d;
+    color: #fff;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.public-actor-details-button:hover {
+    background: #093833;
+    color: #fff;
+}
+
