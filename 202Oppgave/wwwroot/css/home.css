@@ -614,3 +614,25 @@
     position: relative;
     z-index: 2;
 }
+
+/* Forsidens header ligger over bildet, men scroller bort med siden. */
+body.page-home.action-index .site-header--overlay {
+    position: relative;
+    top: auto;
+    background: transparent;
+    box-shadow: none;
+}
+
+body.page-home.action-index .skip-link {
+    position: absolute;
+    top: 0;
+    left: 16px;
+    transform: translateY(-150%);
+    z-index: 3000;
+    padding: 12px 24px;
+    background: var(--lime);
+    color: var(--green-900);
+}
+body.page-home.action-index .skip-link:focus {
+    transform: translateY(0);
+}
