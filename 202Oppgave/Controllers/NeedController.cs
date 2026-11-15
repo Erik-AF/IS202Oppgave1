@@ -5,6 +5,7 @@ using _202Oppgave.DataAccess.Repositories;
 using Need = _202Oppgave.Models.Need;
 using NeedEntity = _202Oppgave.Models.Entities.Need;
 using _202Oppgave.ViewModels;
+using _202Oppgave.Models.Authorization;
 
 namespace _202Oppgave.Controllers;
 
@@ -25,14 +26,16 @@ public class NeedController : Controller
         return View(needs.Select(ToModel).ToList());
     }
 
-    [Authorize]
+    // Bare offentlige aktører og admin kan registrere behov, ikke providere
+    [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     [HttpGet]
     public IActionResult Create()
     {
         return View(new NeedViewModel());
     }
 
-    [Authorize]
+    // Bare offentlige aktører og admin kan registrere behov, ikke providere
+    [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(NeedViewModel model)

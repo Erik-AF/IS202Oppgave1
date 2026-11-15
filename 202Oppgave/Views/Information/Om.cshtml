@@ -11,7 +11,15 @@
 <section class="community-section"><div class="container"><div class="section-heading"><div><p class="eyebrow">Slik henger det sammen</p><h2>Fra registrering<br />til samarbeid.</h2></div></div>
 <div class="how-grid">
     <article><h3>Gjør ressursene synlige</h3><p>Leverandører registrerer hva de har, hvor det finnes og hvordan de kan kontaktes.</p><a asp-controller="Resource" asp-action="Create">Bidra med en ressurs →</a></article>
-    <article><h3>Fortell hva som trengs</h3><p>Offentlige aktører beskriver behovet, setter prioritet og velger plassering.</p><a asp-controller="Need" asp-action="Create">Registrer et behov →</a></article>
+    <article>
+        <h3>Fortell hva som trengs</h3>
+        <p>Offentlige aktører beskriver behovet, setter prioritet og velger plassering.</p>
+        @* Providere kan ikke registrere behov, så lenken skjules for dem *@
+        @if (!User.IsInRole("ResourceProvider"))
+        {
+            <a asp-controller="Need" asp-action="Create">Registrer et behov →</a>
+        }
+    </article>
     <article><h3>Se sammenhengen</h3><p>Kartet samler registreringene og gir en geografisk oversikt over behov og ressurser.</p><a asp-controller="Kart" asp-action="Oversikt">Åpne kartoversikten →</a></article>
 </div></div></section>
 <section class="container editorial-section"><div class="section-heading"><div><p class="eyebrow">Sammen for Norge</p><h2>Alle har noe å bidra med.</h2></div><a class="btn btn-primary" asp-controller="Account" asp-action="Register">Opprett en bruker ↗</a></div></section>

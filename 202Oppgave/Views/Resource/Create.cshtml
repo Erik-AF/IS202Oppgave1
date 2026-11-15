@@ -261,8 +261,12 @@ ViewData["Title"] = "Registrer ressurs";
     <nav class="need-breadcrumb" aria-label="Brødsmuler">
         <a asp-controller="Home" asp-action="Index">Hjem</a>
         <span aria-hidden="true">/</span>
-        <a asp-action="Index">Ressurser</a>
-        <span aria-hidden="true">/</span>
+        @* Providere har ikke tilgang til ressurslisten, så det leddet skjules for dem *@
+        @if (!User.IsInRole("ResourceProvider"))
+        {
+            <a asp-action="Index">Ressurser</a>
+            <span aria-hidden="true">/</span>
+        }
         <span aria-current="page">Registrer ressurs</span>
     </nav>
 
@@ -272,7 +276,11 @@ ViewData["Title"] = "Registrer ressurs";
             <h1>Registrer ressurs</h1>
             <p>Gjør utstyr og kapasitet synlig for beredskap og krisehåndtering.</p>
         </div>
-        <a class="rr-back" asp-action="Index">← Til alle ressurser</a>
+        @* Tilbake-knappen vises bare for brukere som har tilgang til ressurslisten *@
+        @if (!User.IsInRole("ResourceProvider"))
+        {
+            <a class="rr-back" asp-action="Index">← Til alle ressurser</a>
+        }
     </header>
 
     @* Skjemaet omslutter både feltene og kartet, slik at koordinatene under kartet sendes med *@
@@ -377,8 +385,15 @@ ViewData["Title"] = "Registrer ressurs";
         @* Knapperad under kortene *@
         <div class="rr-actions">
             <span class="rr-required">Felt merket <i>*</i> må fylles ut.</span>
-            <a class="rr-cancel" asp-action="Index">Avbryt</a>
-            <button type="submit" class="btn btn-primary">Registrer ressurs →</button>
+            @* Providere sendes til Min side, de andre til ressurslisten *@
+            @if (User.IsInRole("ResourceProvider"))
+            {
+                <a class="rr-cancel" asp-controller="ResourceProvider" asp-action="Index">Avbryt</a>
+            }
+            else
+            {
+                <a class="rr-cancel" asp-action="Index">Avbryt</a>
+            }            <button type="submit" class="btn btn-primary">Registrer ressurs →</button>
         </div>
 
     </form>

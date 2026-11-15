@@ -174,11 +174,15 @@
                     Hjem
                 </a>
 
-                <a asp-controller="Resource"
-                   asp-action="Index"
-                   aria-current="@(IsActive("Resource") ? "page" : null)">
-                    Ressurser
-                </a>
+                @* Ressurslisten er bare for offentlige aktører og admin, så den skjules for ressurseiere *@
+                @if (!User.IsInRole("ResourceProvider"))
+                {
+                    <a asp-controller="Resource"
+                       asp-action="Index"
+                       aria-current="@(IsActive("Resource") ? "page" : null)">
+                        Ressurser
+                    </a>
+                }
 
                 @* Rollebasert visning fra main *@
                 @if (!User.IsInRole("ResourceProvider"))
@@ -346,12 +350,15 @@
             <nav class="footer-col" aria-label="Finn frem">
                 <p class="eyebrow">Finn frem</p>
                 <ul>
-                    <li>
-                        <a asp-controller="Resource"
-                           asp-action="Index">
-                            Tilgjengelige ressurser
-                        </a>
-                    </li>
+                    @if (!User.IsInRole("ResourceProvider"))
+                    {
+                        <li>
+                            <a asp-controller="Resource"
+                               asp-action="Index">
+                                Tilgjengelige ressurser
+                            </a>
+                        </li>
+                    }
                     <li>
                         <a asp-controller="Need"
                            asp-action="Index">
