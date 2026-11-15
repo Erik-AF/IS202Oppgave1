@@ -15,13 +15,13 @@
     <p class="page-intro">Til behovet <strong>@Model.NeedTitle</strong> – @Model.Location</p>
     <section class="suggestions-card">
         <h2>Foreslåtte ressurser</h2>
-        <p>Opptil tre nærmeste tilgjengelige ressurser innenfor 5 km luftlinje fra behovets kartpunkt. Forslagene er basert på avstand, ikke ressurstype.</p>
+
         <form asp-action="FromNeed" method="post">
             <input asp-for="NeedId" type="hidden" />
             <div asp-validation-summary="All" class="text-danger" role="alert"></div>
             @if (Model.Suggestions.Count == 0)
             {
-                <p class="suggestions-empty" role="status">Ingen tilgjengelige ressurser med gyldig plassering er funnet innenfor 5 km.</p>
+                <p class="suggestions-empty" role="status">Ingen tilgjengelige ressurser i nærheten</p>
             }
             else
             {

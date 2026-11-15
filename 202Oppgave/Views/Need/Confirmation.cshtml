@@ -38,6 +38,8 @@
         @await Component.InvokeAsync("AllocatedResources", new { needId = Model.Id })
         <div class="detail-actions"><p><a asp-action="Index" class="btn btn-primary">Se alle behov</a></p>
         <a asp-action="Create" class="btn btn-primary">Registrer et nytt behov</a>
+        @if (Model.CanManage)
+        {
         <p>
     <a asp-action="Edit" asp-route-id="@Model.Id"
        class="btn btn-primary"
@@ -53,6 +55,7 @@
         Slett
     </button>
 </form>
+        }
     </div>
     </div>
 </div>
