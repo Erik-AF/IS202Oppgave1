@@ -1,3 +1,4 @@
+
 @{
     ViewData["Title"] = "Min side";
 }
@@ -12,8 +13,8 @@
             <h1>Hei, @ViewBag.FullName!</h1>
 
             <p>
-                Registrer nye behov, administrer eksisterende behov
-                og få oversikt over tilgjengelige ressurser.
+                Få oversikt over registreringene dine,
+                følg opp forespørsler og finn tilgjengelige ressurser.
             </p>
         </div>
     </div>
@@ -24,85 +25,108 @@
 <section class="provider-overview">
     <div class="container">
 
-        <div class="provider-dashboard-grid">
+        @* Statistikkort *@
+        <div class="public-actor-stats">
 
-            <div class="provider-register-card">
-                <div class="provider-register-content">
-
-                    <h2>Legg til et behov</h2>
-
-                    <p>
-                        Registrer behov for utstyr, transport eller
-                        andre ressurser ved en hendelse.
-                    </p>
-
-                    <a asp-controller="Need"
-                       asp-action="Create"
-                       class="provider-add-button">
-                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                        <span>Registrer behov</span>
-                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
-                    </a>
-
-                </div>
-
-                <div class="provider-register-illustration"
-                     aria-hidden="true">
-                    <i class="bi bi-clipboard2-plus"
-                       style="font-size: 76px; color: #194f43;"></i>
+            <div class="public-actor-stat-card">
+                <i class="bi bi-layers" aria-hidden="true"></i>
+                <div>
+                    <strong>–</strong>
+                    <span>Aktive behov</span>
                 </div>
             </div>
 
-            <div class="provider-actions">
-                <h2>Hurtighandlinger</h2>
+            <div class="public-actor-stat-card">
+                <i class="bi bi-envelope" aria-hidden="true"></i>
+                <div>
+                    <strong>–</strong>
+                    <span>Under behandling</span>
+                </div>
+            </div>
 
-                <a asp-controller="PublicActor"
-                   asp-action="Needs"
-                   class="provider-action-link">
-                    <span>
-                        <i class="bi bi-pencil" aria-hidden="true"></i>
-                        Administrer behov
-                    </span>
-                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
-                </a>
+            <div class="public-actor-stat-card">
+                <i class="bi bi-check-circle" aria-hidden="true"></i>
+                <div>
+                    <strong>–</strong>
+                    <span>Løst</span>
+                </div>
+            </div>
 
-                <a asp-controller="Resource"
-                   asp-action="Index"
-                   class="provider-action-link">
-                    <span>
-                        <i class="bi bi-box-seam" aria-hidden="true"></i>
-                        Se tilgjengelige ressurser
-                    </span>
-                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
-                </a>
-
-                <a asp-controller="Kart"
-                   asp-action="Oversikt"
-                   class="provider-action-link">
-                    <span>
-                        <i class="bi bi-geo-alt" aria-hidden="true"></i>
-                        Vis på kart
-                    </span>
-                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
-                </a>
+            <div class="public-actor-stat-card">
+                <i class="bi bi-folder2-open" aria-hidden="true"></i>
+                <div>
+                    <strong>–</strong>
+                    <span>Totalt</span>
+                </div>
             </div>
 
         </div>
 
-        <div class="provider-resource-list">
-            <div class="provider-resource-list-header">
-                <h2>Mine behov</h2>
+        @* Registreringsbanner *@
+        <div class="public-actor-create-banner">
 
-                <a asp-controller="PublicActor"
-                   asp-action="Needs">
-                    Se alle behov →
-                </a>
+            <div>
+                <h2>Registrer et nytt behov</h2>
+                <p>
+                    Meld inn utstyr, transport eller annen bistand
+                    som trengs ved en hendelse.
+                </p>
             </div>
 
+            <i class="bi bi-file-earmark-plus public-actor-banner-icon"
+               aria-hidden="true"></i>
+
+            <a asp-controller="Need"
+               asp-action="Create"
+               class="provider-add-button">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Registrer behov
+            </a>
+
+        </div>
+
+        @* Registreringsoversikt *@
+        <div class="public-actor-list-header">
+
+            <div>
+                <h2>Dine registreringer</h2>
+                <p>Følg statusen på forespørslene dine.</p>
+            </div>
+
+            <div class="public-actor-list-tools">
+
+                <label class="public-actor-search">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                    <input type="search"
+                           placeholder="Søk i registreringer"
+                           aria-label="Søk i registreringer"
+                           disabled />
+                </label>
+
+                <select aria-label="Filtrer etter status" disabled>
+                    <option>Alle statuser</option>
+                </select>
+
+            </div>
+        </div>
+
+        @* Tomtilstand frem til databasekoblingen er klar *@
+        <div class="public-actor-empty-state">
+            <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
+
+            <h3>Registreringsoversikten er ikke tilkoblet ennå</h3>
+
             <p>
-                Her vil behovene som er knyttet til din brukerkonto,
-                vises når vi kobler oversikten til databasen.
+                Her vil du kunne se og følge opp dine registrerte behov
+                når oversikten er koblet til databasen.
             </p>
+
+            <a asp-controller="Need"
+               asp-action="Create"
+               class="provider-page-button">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Opprett en registrering
+            </a>
         </div>
 
     </div>
@@ -112,4 +136,9 @@
     <link rel="stylesheet"
           href="~/css/resource-provider.css"
           asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/public-actor.css"
+          asp-append-version="true" />
 }
+
