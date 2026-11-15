@@ -724,3 +724,73 @@ body.design-concept.page-resourceprovider.action-index .provider-hero {
     background: #093833;
 }
 
+
+/* Profilskjema */
+.provider-profile-layout {
+    display: grid;
+    gap: 24px;
+}
+
+.provider-profile-description {
+    color: #65706a;
+    margin: -10px 0 28px;
+}
+
+.provider-profile-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.provider-profile-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.provider-profile-form-field label {
+    color: #102c38;
+    font-weight: 600;
+}
+
+.provider-profile-form-field .form-control {
+    width: 100%;
+    min-height: 52px;
+    font: inherit;
+}
+
+.provider-profile-full-width {
+    grid-column: 1 / -1;
+}
+
+.provider-profile-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 28px;
+}
+
+.provider-profile .provider-page-button {
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.provider-profile-password-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    color: #18594e;
+    font-weight: 600;
+}
+
+@media (max-width: 800px) {
+    .provider-profile-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .provider-profile-full-width {
+        grid-column: auto;
+    }
+}
