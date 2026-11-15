@@ -1,3 +1,6 @@
+
+@model _202Oppgave.ViewModels.ProfileViewModel
+
 @{
     ViewData["Title"] = "Profil og innstillinger";
 }
@@ -8,24 +11,102 @@
     <div class="container">
 
         <div class="provider-profile-header">
+            <p class="provider-page-eyebrow">MIN SIDE – RESSURSLEVERANDØR</p>
             <h1>Profil og innstillinger</h1>
-            <p>Se informasjon om brukerkontoen din.</p>
+            <p class="provider-page-intro">
+                Administrer personopplysningene og sikkerheten
+                til brukerkontoen din.
+            </p>
         </div>
 
-        <div class="provider-profile-card">
-            <h2>Kontoinformasjon</h2>
+        @if (TempData["Success"] is string successMessage)
+        {
+            <div class="alert alert-success" role="status">
+                @successMessage
+            </div>
+        }
 
-            <div class="provider-profile-field">
-                <span>E-postadresse</span>
-                <p>@User.Identity?.Name</p>
+        <div class="provider-profile-layout">
+
+            <div class="provider-page-card">
+                <h2>Personopplysninger</h2>
+
+                <p class="provider-profile-description">
+                    Oppdater informasjonen som er knyttet til
+                    brukerkontoen din.
+                </p>
+
+                <form asp-controller="ResourceProvider"
+                      asp-action="Profile"
+                      method="post">
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger"></div>
+
+                    <div class="provider-profile-form-grid">
+
+                        <div class="provider-profile-form-field">
+                            <label asp-for="FullName"></label>
+                            <input asp-for="FullName"
+                                   autocomplete="name" />
+                            <span asp-validation-for="FullName"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="provider-profile-form-field">
+                            <label asp-for="PhoneNumber"></label>
+                            <input asp-for="PhoneNumber"
+                                   autocomplete="tel" />
+                            <span asp-validation-for="PhoneNumber"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="provider-profile-form-field provider-profile-full-width">
+                            <label asp-for="Email"></label>
+                            <input asp-for="Email"
+                                   autocomplete="email" />
+                            <span asp-validation-for="Email"
+                                  class="text-danger"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="provider-profile-form-actions">
+                        <button type="submit"
+                                class="provider-page-button">
+                            Lagre endringer
+                            <i class="bi bi-arrow-right"
+                               aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                </form>
             </div>
 
-            <div class="provider-profile-field">
-                <span>Brukerrolle</span>
-                <p>Ressursleverandør</p>
+            <div class="provider-page-card">
+                <h2>Sikkerhet og konto</h2>
+
+                <div class="provider-profile-field">
+                    <span>Brukerrolle</span>
+                    <p>Ressursleverandør</p>
+                </div>
+
+                <div class="provider-profile-field">
+                    <span>Passord</span>
+                    <p>Passordet ditt er beskyttet.</p>
+
+                    <a asp-controller="Account"
+                       asp-action="ForgotPassword"
+                       class="provider-profile-password-link">
+                        Tilbakestill passord
+                        <i class="bi bi-arrow-up-right"
+                           aria-hidden="true"></i>
+                    </a>
+                </div>
+
             </div>
+
         </div>
-
     </div>
 </section>
 
@@ -34,4 +115,3 @@
           href="~/css/resource-provider.css"
           asp-append-version="true" />
 }
-
