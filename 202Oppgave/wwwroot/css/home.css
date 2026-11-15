@@ -615,14 +615,13 @@
     z-index: 2;
 }
 
-/* Forsidens header ligger over bildet, men scroller bort med siden. */
+/* Headeren ligger over forsidebildet og scroller bort med siden. */
 body.page-home.action-index .site-header--overlay {
     position: relative;
     top: auto;
     background: transparent;
     box-shadow: none;
 }
-
 body.page-home.action-index .skip-link {
     position: absolute;
     top: 0;

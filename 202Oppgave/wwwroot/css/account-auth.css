@@ -473,7 +473,7 @@ body.page-account:is(.action-login, .action-register)
     }
 }
 
-/* Tilgjengelighetslenken vises bare ved tastaturfokus på innlogging. */
+/* Skjul snarveien til innholdet til den får tastaturfokus. */
 body.page-account.action-login .skip-link {
     position: absolute;
     top: 0;

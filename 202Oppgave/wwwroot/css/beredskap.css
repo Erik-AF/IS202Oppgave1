@@ -17,8 +17,8 @@
     --map-available: #367650;
     --map-public: #286ca2;
     --container: 1240px;
-    --radius-md: 3px;
-    --radius-lg: 4px;
+    --radius-md: 10px;
+    --radius-lg: 20px;
     --rl-ink: var(--navy);
     --rl-text: var(--ink);
     --rl-muted: var(--muted);
@@ -41,19 +41,20 @@ body.design-concept { background: var(--paper); color: var(--ink); font-family: 
 .utility-bar .container { display: flex; justify-content: space-between; gap: 16px; padding-block: 8px; }
 .utility-bar a { text-decoration: none; }
 .design-concept .site-header { background: var(--paper); border-bottom: 1px solid var(--line); }
-.design-concept .header-inner { min-height: 94px; }
-.design-concept .brand { gap: 11px; font-size: 1.45rem; font-weight: 700; letter-spacing: -.05em; }
+.design-concept .site-header .container { max-width: var(--container-header); padding-inline: 1.25rem; }
+.design-concept .header-inner { min-height: var(--header-h); }
+.design-concept .site-header .brand { gap: .85rem; font-family: var(--font); font-weight: 400; letter-spacing: normal; }
 .design-concept .brand-logo { width: 42px; height: 42px; }
 .brand small { display: block; font-size: .63rem; font-weight: 400; letter-spacing: .02em; margin-top: 2px; }
-.design-concept .main-nav { gap: 23px; }
-.design-concept .main-nav a { font-size: .86rem; font-weight: 600; }
+.design-concept .main-nav { gap: 2.5rem; }
+.design-concept .main-nav a { font-size: 1.05rem; font-weight: 500; }
 .design-concept .main-nav a[aria-current] { text-decoration-color: var(--navy); text-decoration-thickness: 2px; }
-.design-concept .main-nav .nav-login { border-radius: 2px; border: 1px solid var(--navy); font: inherit; font-size: .85rem; cursor: pointer; }
+.design-concept .main-nav .nav-login { border-radius: 10px; border: 1px solid var(--navy); font: inherit; font-size: 1.05rem; cursor: pointer; }
 .main-nav form { margin: 0; }
 .design-concept .nav-toggle { font: inherit; font-size: .9rem; padding: 10px; gap: 10px; }
 .eyebrow { text-transform: uppercase; letter-spacing: .15em; font-size: .72rem; font-weight: 700; margin: 0 0 22px; }
 .small-line { display: inline-block; width: 30px; height: 2px; margin: 0 14px 4px 0; background: currentColor; }
-.design-concept .btn, .design-concept .rl-btn { border-radius: 2px !important; font: inherit; font-size: .92rem; font-weight: 600; min-height: 48px; padding: 12px 23px !important; border: 1px solid var(--navy); text-decoration: none; gap: 24px; }
+.design-concept .btn, .design-concept .rl-btn { border-radius: 10px !important; font: inherit; font-size: .92rem; font-weight: 600; min-height: 48px; padding: 12px 23px !important; border: 1px solid var(--navy); text-decoration: none; gap: 24px; }
 .design-concept .btn-signal { background: var(--signal); border-color: var(--signal); color: var(--navy); }
 .design-concept .btn-signal:hover { background: #f0f4c4; }
 .design-concept .btn-secondary { background: transparent; color: var(--navy); }
@@ -293,7 +294,7 @@ body.page-need .rl-row { grid-template-columns: minmax(0,1fr) auto; }
 .information-page { padding-block: 60px; }
 .information-page > .card { padding: 32px; max-width: 850px; }
 /* Felles logo i navigasjon og footer på alle sider. */
-body.design-concept .site-header .brand-logo { width: 52px; height: 52px; object-fit: contain; }
+body.design-concept .site-header .brand-logo { width: auto; height: 56px; object-fit: contain; }
 body.design-concept .footer-brand-lockup { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 body.design-concept .footer-brand-lockup img { flex-shrink: 0; }
 body.design-concept .footer-brand-lockup small { display: block; font-size: .75rem; font-weight: 400; letter-spacing: 0; margin-top: 6px; color: #e0ebe7; }
@@ -313,8 +314,49 @@ body.design-concept.shared-chrome .site-header .nav-toggle { border-color: #86aa
 }
 
 /* Samme mørkegrønne profil i hele toppen og footeren. */
-body.design-concept.shared-chrome .utility-bar,
-body.design-concept.shared-chrome .site-header,
-body.design-concept.shared-chrome .site-footer,
-body.design-concept.shared-chrome .site-header .main-nav { background-color: #093833; }
-body.design-concept.shared-chrome .site-header .nav-login { background: transparent; }
+body.design-concept:is(.page-kart.action-oversikt,.page-information.action-om,.page-information.action-hjelp,.page-information.action-kontakt) .utility-bar,
+body.design-concept:is(.page-kart.action-oversikt,.page-information.action-om,.page-information.action-hjelp,.page-information.action-kontakt) .site-header,
+body.design-concept:is(.page-kart.action-oversikt,.page-information.action-om,.page-information.action-hjelp,.page-information.action-kontakt) .site-footer,
+body.design-concept:is(.page-kart.action-oversikt,.page-information.action-om,.page-information.action-hjelp,.page-information.action-kontakt) .site-header .main-nav { background-color: #093833; }
+body.design-concept:is(.page-kart.action-oversikt,.page-information.action-om,.page-information.action-hjelp,.page-information.action-kontakt) .site-header .nav-login { background: transparent; }
+
+/* Samme proporsjoner som på forsiden, med plass til bølgen under menyen. */
+body.design-concept.shared-chrome .site-header { height: calc(var(--header-h) + 24px); font-family: var(--font); line-height: 1.5; }
+body.design-concept.shared-chrome .site-header .brand { gap: .85rem; letter-spacing: normal; }
+body.design-concept.shared-chrome .site-header .brand-logo { height: 56px; width: auto; }
+@media (max-width: 900px) {
+    .design-concept .main-nav { gap: 0; }
+}
+@media (max-width: 480px) {
+    body.design-concept.shared-chrome .site-header .brand-logo { height: 44px; }
+}
+
+/* Logo, slagord og innloggingsknapp følger hjemmesidens mål og typografi. */
+body.design-concept .site-header .brand-tagline {
+    font-family: var(--font);
+    font-size: .85rem;
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: 1.15;
+}
+body.design-concept .site-header .main-nav .nav-login {
+    font-family: var(--font);
+    font-size: 1.05rem;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: normal;
+    padding: .8rem 1.75rem;
+    border: 1px solid rgba(255, 255, 255, .85);
+    border-radius: 10px;
+    background: transparent;
+    color: #fff;
+}
+body.design-concept .site-header .main-nav .nav-login:hover {
+    background: rgba(255, 255, 255, .12);
+}
+@media (max-width: 900px) {
+    body.design-concept .site-header .main-nav .nav-login { padding: .85rem 1.4rem; }
+}
+@media (max-width: 480px) {
+    body.design-concept .site-header .brand-logo { height: 44px; }
+}
