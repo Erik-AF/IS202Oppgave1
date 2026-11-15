@@ -26,7 +26,7 @@
 <partial name="_PublicActorNavigation" />
 
 <section class="provider-overview">
-    <div class="container"</div>
+    <div class="container">
 
         <div class="public-actor-stats">
             <div class="public-actor-stat-card">
@@ -76,9 +76,17 @@
                     <div class="provider-page-card">
                         <h3>@need.Type</h3>
 
-                        <p><strong>Sted:</strong> @need.Location</p>
-                        <p><strong>Prioritet:</strong> @need.Priority</p>
-                        <p><strong>Frist:</strong> @need.Deadline.ToString("dd.MM.yyyy")</p>
+                        <p>
+                            <strong>Sted:</strong> @need.Location
+                        </p>
+
+                        <p>
+                            <strong>Prioritet:</strong> @need.Priority
+                        </p>
+
+                        <p>
+                            <strong>Frist:</strong> @need.Deadline.ToString("dd.MM.yyyy")
+                        </p>
 
                         <a asp-controller="PublicActor"
                            asp-action="Needs"
@@ -105,11 +113,14 @@
                 <a asp-controller="Need"
                    asp-action="Create"
                    class="provider-page-button">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
                     Registrer behov
                 </a>
             </div>
         }
 
+    </div>
+</section>
 
 @section Head {
     <link rel="stylesheet"
@@ -120,3 +131,4 @@
           href="~/css/public-actor.css"
           asp-append-version="true" />
 }
+
