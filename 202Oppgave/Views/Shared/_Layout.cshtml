@@ -2,20 +2,21 @@
     var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
     bool IsActive(string controller) => string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
-    // Behovsdesignet lastes kun for sidene som bruker det.
-    var needDesign = IsActive("Need") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
-        || action.Equals("Create", StringComparison.OrdinalIgnoreCase) || action.Equals("Edit", StringComparison.OrdinalIgnoreCase));
-    var informationDesign = IsActive("Information") && (action.Equals("Om", StringComparison.OrdinalIgnoreCase)
-        || action.Equals("Hjelp", StringComparison.OrdinalIgnoreCase) || action.Equals("Kontakt", StringComparison.OrdinalIgnoreCase));
-    var helpInFooter = informationDesign || needDesign || (IsActive("Kart") && action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase));
-    // Behovsdesignet (grønn header med bølge, need.css) lastes kun for sidene som bruker det.
-    // Registrer ressurs, ressurslisten og allokering bruker samme design som behovssidene.
+    // Behovsdesignet brukes på Need, Resource og Allocation.
     var needDesign = (IsActive("Need") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
-            || action.Equals("Create", StringComparison.OrdinalIgnoreCase) || action.Equals("Edit", StringComparison.OrdinalIgnoreCase)))
+        || action.Equals("Create", StringComparison.OrdinalIgnoreCase)
+        || action.Equals("Edit", StringComparison.OrdinalIgnoreCase)))
         || (IsActive("Resource") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
-            || action.Equals("Create", StringComparison.OrdinalIgnoreCase)))
+        || action.Equals("Create", StringComparison.OrdinalIgnoreCase)))
         || (IsActive("Allocation") && action.Equals("Create", StringComparison.OrdinalIgnoreCase));
-    var helpInFooter = needDesign || (IsActive("Kart") && action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase));
+
+    // Informasjonsdesignet brukes på Om, Hjelp og Kontakt.
+    var informationDesign = IsActive("Information") && (action.Equals("Om", StringComparison.OrdinalIgnoreCase)
+        || action.Equals("Hjelp", StringComparison.OrdinalIgnoreCase)
+        || action.Equals("Kontakt", StringComparison.OrdinalIgnoreCase));
+
+    // Footer vises på begge designene og Kart/Oversikt.
+    var helpInfoFooter = informationDesign || needDesign || (IsActive("Kart") && action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase));
     var brandName = "Ko/ordinert";
     var brandTagline = "Kart. Behov. Ressurser. Sammen.";
     var brandLogo = "~/images/logo-koordinert.svg";
@@ -83,7 +84,7 @@
 <body class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant() @(needDesign ? "need-theme" : "")">
     <a class="skip-link" href="#main-content">Hopp til innhold</a>
 
-    @if (!helpInFooter)
+    @if (!helpInfoFooter)
     {
         <div class="utility-bar">
             <div class="container">
@@ -303,7 +304,7 @@
 
                 <a asp-controller="Information"
                    asp-action="Hjelp">
-                    @(helpInFooter ? "Slik bruker du tjenesten ↗" : "Spørsmål og svar")
+                    @(helpInfoFooter ? "Slik bruker du tjenesten ↗" : "Spørsmål og svar")
                 </a>
 
                 <a asp-controller="Information"
