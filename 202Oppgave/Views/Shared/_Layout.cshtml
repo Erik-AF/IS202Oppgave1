@@ -53,6 +53,9 @@
         (action.Equals("Login", StringComparison.OrdinalIgnoreCase)
         || action.Equals("Register", StringComparison.OrdinalIgnoreCase));
 
+    // Samme header på forsiden og innloggingssiden
+    var useOverlayHeader = isHome || isAuthPage;
+
 }
 
 <!DOCTYPE html>
@@ -93,7 +96,7 @@
     @* ===== Ikoner og ekstra styling fra main ===== *@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    @if (!isHome)
+    @if (!useOverlayHeader)
     {
         <link rel="stylesheet"
               href="~/css/beredskap.css"
@@ -131,7 +134,7 @@
 
 
     @* Behold utility-bar fra main *@
-    @if (!isHome && !helpInfoFooter)
+    @if (!useOverlayHeader && !helpInfoFooter)
     {
         <div class="utility-bar">
             <div class="container">
@@ -145,7 +148,7 @@
     }
 
     @* ===== Header: design fra fix_homepage ===== *@
-    <header class="site-header @(isHome ? "site-header--overlay" : "")">
+    <header class="site-header @(useOverlayHeader ? "site-header--overlay" : "")">
         <div class="container header-inner">
 
             @* Logo og tekst fra designbranchen *@
