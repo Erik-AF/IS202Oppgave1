@@ -6,12 +6,13 @@
 }
 
 <!-- Kontaktskjema -->
-<section class="py-5">
-    <div class="container" >
+<section class="information-hero contact-page">
+    <div class="container">
+        <nav class="information-breadcrumb" aria-label="Brødsmuler"><a asp-controller="Home" asp-action="Index">Hjem</a><span aria-hidden="true">/</span><span aria-current="page">Kontakt oss</span></nav>
         <p class="eyebrow">Vi vil høre fra deg</p><h1 class="mb-3">Kontakt oss</h1>
-        <p class="mb-4">Har du spørsmål eller tilbakemeldinger? Bruk skjemaet til å formulere meldingen din. I denne demonstrasjonen vises innholdet på en bekreftelsesside.</p>
+        <p class="lead contact-intro">Har du spørsmål eller tilbakemeldinger? Bruk skjemaet til å formulere meldingen din. I denne demonstrasjonen vises innholdet på en bekreftelsesside.</p>
 
-        <div class="contact-layout"><form asp-controller="Information" asp-action="Kontakt" method="post">
+        <div class="contact-layout"><form class="contact-form-card" asp-controller="Information" asp-action="Kontakt" method="post">
 
             <div class="mb-3">
                 <label asp-for="Navn" class="form-label">Navn</label>
