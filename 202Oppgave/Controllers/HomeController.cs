@@ -1,25 +1,58 @@
 using System.Diagnostics;
+using _202Oppgave.DataAccess.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using _202Oppgave.Models;
+using _202Oppgave.ViewModels;
 
 namespace _202Oppgave.Controllers;
 
 public class HomeController : Controller
+
 {
-    public IActionResult Index()
-    {
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
+private readonly INeedRepository _needRepository;
+public HomeController(INeedRepository needRepository)
+{
+    _needRepository = needRepository;
 }
 
+public async Task<IActionResult> Index()
+{
+    // Henter registrerte behov fra databasen.
+    var needs = await _needRepository.GetAllAsync();
+
+    // Viser de tre behovene med lavest ID først.
+    // Dette påvirker ikke sorteringen i behovoversikten.
+    var oldestNeeds = needs
+        .OrderBy(n => n.Id)
+        .Take(3)
+        .ToList();
+
+    var model = new HomeViewModel()
+    {
+        ActiveNeedCount = needs.Count,
+
+        ActiveNeedTypes = oldestNeeds
+            .Select(n => n.Type)
+            .ToList()
+    };
+
+    return View(model);
+}
+public IActionResult Privacy()
+{
+    return View();
+}
+
+[ResponseCache(
+    Duration = 0,
+    Location = ResponseCacheLocation.None,
+    NoStore = true)]
+public IActionResult Error()
+{
+    return View(new ErrorViewModel
+    {
+        RequestId = Activity.Current?.Id
+                    ?? HttpContext.TraceIdentifier
+    });
+}
+}

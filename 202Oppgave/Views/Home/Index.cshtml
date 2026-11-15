@@ -1,54 +1,210 @@
+@* Index.cshtml - forsiden (Sarah)
+   Hører til HomeController.Index(). Header, meny og footer kommer fra _Layout.cshtml.
+   Stilen ligger i home.css (lastes under i @section Head).
+
+   Seksjoner: 1. Hero  2. Steg  3. Kartkort  4. Aktive hendelser  5. CTA-bånd
+
+   Lenkene forutsetter disse controllerne:
+     Resource/Create og Resource/Index (Vetle)
+     Need/Create og Need/Index         (Sindre)
+     Map/Index og Map/Markers          (Marius) *@
 @{
-    ViewData["Title"] = "Sammen står vi sterkere";
+    // tittelen i nettleserfanen ("Hjem - CrisisSystem")
+    
+    @model _202Oppgave.ViewModels.HomeViewModel
+    ViewData["Title"] = "Hjem";
 }
-<section class="front-hero">
-    <img class="front-hero-image" src="~/images/forsidelandskap.jpg" alt="Et norsk kystsamfunn mellom fjellene og havet" fetchpriority="high" />
-    <div class="container front-hero-content">
-        <p class="eyebrow"><span class="small-line" aria-hidden="true"></span>Sammen for Norge</p>
-        <h1>Beredskap er<br />et <em>felles ansvar.</em></h1>
-        <p class="hero-lead">Noen har det som trengs. Andre trenger hjelp.<br />Vi gjør det enklere å finne hverandre.</p>
+
+@section Head {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+}
+
+@* ===== 1. Hero =====
+   Stort banner med bakgrunnsbilde. Headeren ligger gjennomsiktig oppå det.
+   Tre lag: bilde (.hero-bg), mørkegrønn overlay (.hero-overlay) og tekst (.hero-content).
+   Bildet flyttes litt ved scrolling, se site.js (parallakse).
+   Foto: Jesse de Backer, Unsplash. *@
+<section class="hero">
+    @* bildet er bare pynt (tom alt). data-parallax er det site.js bruker for å finne det *@
+    <img src="~/images/hero.jpg" alt="" aria-hidden="true"
+         class="hero-bg" data-parallax fetchpriority="high" decoding="async" />
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <div class="container hero-content">
+        <p class="hero-kicker">Sammen for Norge</p>
+        <h1>Beredskap er<br />et <span class="accent">felles ansvar.</span></h1>
+        <p class="hero-lead">
+            Noen har det som trengs. Andre trenger hjelp.<br />
+            Vi gjør det enklere å finne hverandre.
+        </p>
+
         <div class="hero-actions">
-            <a class="btn btn-signal" asp-controller="Resource" asp-action="Index">Finn en ressurs <span aria-hidden="true">↗</span></a>
-            <a class="hero-text-link" asp-controller="Kart" asp-action="Oversikt">Se oversikten på kart <span aria-hidden="true">→</span></a>
+            @* Jeg vil bidra: registrere en ressurs (Vetle) *@
+            <a class="btn btn-lime btn-lg" asp-controller="Resource" asp-action="Create">Jeg vil bidra</a>
+            @* Jeg trenger hjelp: registrere et behov (Sindre) *@
+            <a class="link-underline" asp-controller="Need" asp-action="Create">Jeg trenger hjelp</a>
         </div>
     </div>
-    <div class="hero-caption">Lokale ressurser. Felles trygghet.</div>
 </section>
-<section class="action-band" aria-label="Registrer ditt bidrag eller behov">
-    <div class="container action-band-grid">
-        <a asp-controller="Need" asp-action="Create"><span class="action-symbol" aria-hidden="true">＋</span><span><strong>Jeg trenger hjelp</strong><small>Meld inn et behov i ditt område</small></span><span class="action-arrow" aria-hidden="true">↗</span></a>
-        <a asp-controller="Resource" asp-action="Create"><span class="action-symbol" aria-hidden="true">↗</span><span><strong>Jeg kan bidra</strong><small>Gjør en ressurs tilgjengelig</small></span><span class="action-arrow" aria-hidden="true">↗</span></a>
+
+<div class="container home-content">
+
+@* ===== 2. Slik kommer du i gang =====
+       Overskrift + tre steg.*@
+     
+       <section class="steps" aria-labelledby="steps-title">
+           <div class="steps-header">
+               <h2 id="steps-title">Slik kommer du i gang</h2>
+   
+               <a class="steps-more" asp-controller="Home" asp-action="Info">
+                   Les mer om tjenesten
+                   <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                       <path d="M5 12h14M13 6l6 6-6 6" />
+                   </svg>
+               </a>
+           </div>
+   
+           <div class="steps-grid">
+   
+               <article class="step">
+                   <div class="step-top">
+                       <span class="step-number" aria-label="Steg 1">1</span>
+                       <svg class="step-symbol" viewBox="0 0 24 24"
+                            aria-hidden="true" fill="currentColor">
+                           <circle cx="9" cy="7" r="3.2" />
+                           <path d="M2.5 19.5v-1.2c0-3.1 2.9-5.4 6.5-5.4s6.5 2.3 6.5 5.4v1.2H2.5Z" />
+                           <path d="M19 5v8M15 9h8" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" />
+                       </svg>
+                   </div>
+   
+                   <div>
+                       <h3 class="step-title">Registrer deg</h3>
+                       <p class="step-text">Opprett en bruker for å komme i gang.</p>
+                   </div>
+               </article>
+   
+               <article class="step">
+                   <div class="step-top">
+                       <span class="step-number" aria-label="Steg 2">2</span>
+                       <svg class="step-symbol" viewBox="0 0 24 24"
+                            aria-hidden="true" fill="none"
+                            stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                           <rect x="5" y="4.5" width="14" height="17" rx="2" />
+                           <rect x="9" y="2.5" width="6" height="4" rx="1"
+                                 fill="currentColor" stroke="none" />
+                           <path d="m8 11 1.5 1.5L12 10M14 11h2M8 17h8" />
+                       </svg>
+                   </div>
+   
+                   <div>
+                       <h3 class="step-title">Meld inn</h3>
+                       <p class="step-text">Registrer et behov eller en ressurs.</p>
+                   </div>
+               </article>
+   
+               <article class="step">
+                   <div class="step-top">
+                       <span class="step-number" aria-label="Steg 3">3</span>
+                       <svg class="step-symbol" viewBox="0 0 24 24"
+                            aria-hidden="true" fill="currentColor">
+                           <path d="M12 2.5a7.5 7.5 0 0 0-7.5 7.5c0 5.4 7.5 12 7.5 12s7.5-6.6 7.5-12A7.5 7.5 0 0 0 12 2.5Zm0 10.6a3.1 3.1 0 1 1 0-6.2 3.1 3.1 0 0 1 0 6.2Z" />
+                       </svg>
+                   </div>
+   
+                   <div>
+                       <h3 class="step-title">Få oversikt</h3>
+                       <p class="step-text">Se behov og ressurser i kartet.</p>
+                   </div>
+               </article>
+   
+           </div>
+       </section>
+   
+       @* 3. Kartoversikt – Leaflet og lenker beholdt *@
+       <section class="home-map" aria-label="Kartoversikt">
+           <div class="home-map__bg" aria-hidden="true"></div>
+           
+           @* Gjør hele kartflaten klikkbar *@
+           <a class="home-map__full-link"
+              asp-controller="Map"
+              asp-action="Index"
+              aria-label="Åpne kartoversikten"></a>
+   
+           <div id="home-map" class="home-map__live" aria-hidden="true"
+                data-markers-url="@Url.Action("Markers", "Map")"></div>
+   
+           <a class="home-map__card"
+              asp-controller="Map" asp-action="Index">
+               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                   <path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z" />
+                   <circle cx="12" cy="10" r="2.3" />
+               </svg>
+   
+               <span class="home-map__text">
+                   <strong>Kartoversikt</strong>
+                   <span>Ressurser og behov på ett kart</span>
+               </span>
+   
+               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                   <path d="M5 12h14M13 6l6 6-6 6" />
+               </svg>
+           </a>
+   
+           <ul class="home-map__legend" aria-label="Tegnforklaring">
+               <li><span class="dot dot--resource"></span>Ressurser</li>
+               <li><span class="dot dot--need"></span>Behov</li>
+           </ul>
+       </section>
+   
+       @* 4. Aktive hendelser – dynamiske verdier beholdt *@
+       <section class="events" aria-labelledby="events-title">
+         
+           @* Gjør hele seksjonen klikkbar *@
+           <a class="events-full-link"
+              asp-controller="Need"
+              asp-action="Index"
+              aria-label="Se aktive hendelser"></a>
+           
+           <span class="events-icon" aria-hidden="true">
+               <svg class="icon" viewBox="0 0 24 24">
+                   <path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16z"/>
+                   <path d="M10 20.5a2 2 0 0 0 4 0"/>
+               </svg>
+           </span>
+
+           <div class="events-text">
+               <h2 class="events-title" id="events-title">
+                   Aktive hendelser
+                   <span class="count-badge">@Model.ActiveNeedCount</span>
+               </h2>
+               <p class="events-sub">@Model.SummaryText</p>
+           </div>
+
+           <a class="btn btn-secondary events-link"
+              asp-controller="Need" asp-action="Index">
+               Se aktive hendelser
+               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                   <path d="M5 12h14M13 6l6 6-6 6"/>
+               </svg>
+           </a>
+       </section>
+   </div>
+
+@* ===== 5. CTA-bånd =====
+   Full bredde, mørkegrønt. Footeren under har samme farge. *@
+
+<section class="cta-band">
+    <div class="container cta-inner">
+        <div>
+            <p class="eyebrow">Ditt bidrag teller</p>
+        </div>
     </div>
 </section>
-<section class="container editorial-section">
-    <div class="section-heading"><div><p class="eyebrow">Fra oversikt til handling</p><h2>Riktig hjelp.<br />På riktig sted.</h2></div><p>Kjøretøy, utstyr og lokalkunnskap finnes rundt oss. Med en felles oversikt blir det lettere å se hva som er tilgjengelig, og hvor behovene er størst.</p></div>
-    <div class="feature-grid">
-        <a class="feature-card" asp-controller="Resource" asp-action="Index">
-            <div class="feature-image"><img src="~/images/ressurser/helikopter.jpg" alt="Helikopter som eksempel på en beredskapsressurs" loading="lazy" /><span class="image-tag">Ressurser</span></div>
-            <div class="feature-body"><h3>Se hva vi kan stille med <span aria-hidden="true">↗</span></h3><p>Utforsk tilgjengelig utstyr og kjøretøy. Filtrer etter kategori, status og sted.</p></div>
-        </a>
-        <a class="feature-card" asp-controller="Need" asp-action="Index">
-            <div class="feature-image"><img src="~/images/ressurser/aggregat.jpg" alt="Utstyr for lokal strømberedskap" loading="lazy" /><span class="image-tag">Behov</span></div>
-            <div class="feature-body"><h3>Finn ut hvor du trengs <span aria-hidden="true">↗</span></h3><p>Se innmeldte behov, hvor hjelpen trengs og hvor mye det haster.</p></div>
-        </a>
-        <a class="feature-card" asp-controller="Kart" asp-action="Oversikt">
-            <div class="feature-image"><img src="~/images/forsidelandskap.jpg" alt="Kystlandskap og bebyggelse i Norge" loading="lazy" /><span class="image-tag">Kartoversikt</span></div>
-            <div class="feature-body"><h3>Se det store bildet <span aria-hidden="true">↗</span></h3><p>Utforsk ressurser og behov på samme kart, med punkter og registrerte områder.</p></div>
-        </a>
-    </div>
-</section>
-<section class="community-section">
-    <div class="container community-grid">
-        <div class="community-photo"><img src="~/images/ressurser/bat.jpg" alt="Båt som kan bidra med transport på sjøen" loading="lazy" /></div>
-        <div class="community-copy"><p class="eyebrow">Beredskap starter lokalt</p><h2>Det viktigste vi har,<br />er hverandre.</h2><p>En båt. Et aggregat. Et par ekstra hender. Når vi deler det vi har, står lokalsamfunnet sterkere.</p><p>CrisisSystem knytter ressursleverandører og offentlige aktører sammen gjennom en felles oversikt.</p><a class="btn btn-secondary" asp-controller="Information" asp-action="Om">Bli kjent med tjenesten →</a></div>
-    </div>
-</section>
-<section class="container editorial-section">
-    <div class="section-heading"><div><p class="eyebrow">Slik kommer du i gang</p><h2>Fra ditt bidrag<br />til vår beredskap.</h2></div><a class="text-link" asp-controller="Information" asp-action="Hjelp">Se spørsmål og svar ↗</a></div>
-    <div class="how-grid">
-        <article><h3>Opprett en bruker</h3><p>Velg om du representerer en offentlig aktør eller bidrar som ressursleverandør.</p><a asp-controller="Account" asp-action="Register">Registrer deg →</a></article>
-        <article><h3>Gjør det synlig</h3><p>Beskriv hva du kan tilby eller trenger. Velg plasseringen direkte i kartet.</p><a asp-controller="Resource" asp-action="Create">Registrer en ressurs →</a></article>
-        <article><h3>Finn hverandre</h3><p>Bruk oversikten og kontaktopplysningene på ressursene til å koordinere videre.</p><a asp-controller="Kart" asp-action="Oversikt">Utforsk kartet →</a></article>
-    </div>
-</section>
-<section class="join-section"><div class="container"><div><p class="eyebrow">Ditt bidrag teller</p><h2>Hva kan du bidra med?</h2></div><a class="btn btn-signal" asp-controller="Resource" asp-action="Create">Registrer en ressurs ↗</a></div></section>
+
+@* Kartkoden for forsiden. Leaflet er allerede lastet i _Layout. *@
+@section Scripts {
+    <script src="~/js/home-map.js" asp-append-version="true"></script>
+}

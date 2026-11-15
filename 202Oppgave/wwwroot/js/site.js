@@ -1,17 +1,11 @@
 ﻿
-// JavaScript code.
-
-/**
- * site.js – logikk for mobilmenyen.
- * Eier: Sarah (Frontend/UI).
- *
- * Leaflet-koden ligger i kartsiden, siden den kun brukes der.
- */
+/* site.js - felles JavaScript (Sarah)
+   1) hamburgermeny   2) header får bakgrunn ved scrolling   3) parallakse på hero-bildet
+   Kartkoden ligger ikke her: home-map.js (forsiden) og Marius sin egen fil (kartsidene). */
 
 
 // --- 1. Hamburgermeny ---
 // CSS viser menyen når den har klassen "is-open" (se site.css)
-
 (function () {
     const toggle = document.querySelector('.nav-toggle');
     const nav = document.getElementById('main-nav');
@@ -38,9 +32,70 @@
 })();
 
 
-// --- 2. Parallakse ---
-// Bildet i hero beveger seg litt saktere enn resten av siden når man scroller.
 
+/* --- 2. Gradvis header-overgang ved scrolling --- */
+(function () {
+    const header = document.querySelector('.site-header--overlay');
+    const hero = document.querySelector('.hero');
+
+    if (!header || !hero) return;
+
+    let ticking = false;
+
+    function updateHeader() {
+        const scrollY = window.scrollY;
+
+        // Finn bunnen av hele hero-seksjonen
+        const heroBottom =
+            hero.getBoundingClientRect().bottom + scrollY;
+
+        // Overgangen varer gjennom hele hero-seksjonen.
+        // Headeren er helt grønn når hero er scrollet forbi.
+        const fadeDistance = Math.max(
+            1,
+            heroBottom - header.offsetHeight
+        );
+
+        // Gjennomsiktighet fra 0 til 1
+        
+        const progress = Math.min(1, Math.max(0, scrollY / fadeDistance));
+
+// Headeren forblir transparent de første 25 %
+        const fade = Math.min(1, Math.max(0, progress / 0.35));
+
+// Myk overgang til mørkegrønn
+        const opacity = fade * fade * (3 - 2 * fade);
+
+        header.style.setProperty(
+            '--header-opacity',
+            opacity.toString()
+        );
+
+        ticking = false;
+    }
+
+    function requestUpdate() {
+        if (!ticking) {
+            requestAnimationFrame(updateHeader);
+            ticking = true;
+        }
+    }
+
+    updateHeader();
+
+    window.addEventListener(
+        'scroll',
+        requestUpdate,
+        { passive: true }
+    );
+
+    window.addEventListener('resize', requestUpdate);
+})();
+
+
+
+// --- 3. Parallakse ---
+// Bildet i hero beveger seg litt saktere enn resten av siden når man scroller.
 (function () {
     // finnes bare på forsiden (data-parallax står i Index.cshtml)
     const heroImg = document.querySelector('.hero [data-parallax]');
@@ -64,6 +119,5 @@
             requestAnimationFrame(updateParallax);
             ticking = true;
         }
-    });
+    }, { passive: true });
 })();
- 

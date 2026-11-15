@@ -1,0 +1,616 @@
+/* home.css - bare forsiden (Sarah)
+   Hero, "Slik kommer du i gang", kartkort, aktive hendelser og CTA-båndet.
+   Lastes fra Index.cshtml via @section Head, så andre sider slipper den. */
+
+
+/* --- 1. Hero ---
+   Tre lag oppå hverandre: bilde (z-index 0), mørkegrønn overlay (1) og tekst (2).
+   Headeren ligger gjennomsiktig over toppen (.site-header--overlay i site.css),
+   derfor er padding-top = headerhøyden + litt luft. */
+.hero {
+    position: relative;
+    overflow: hidden;       /* bildet klippes ved kantene når parallakse flytter det */
+    min-height: clamp(34rem, 45vw, 46rem);
+    padding: calc(var(--header-h) + clamp(2.5rem, 7.5vw, 7rem)) 0 clamp(3rem, 6vw, 5rem);
+    color: #fff;
+    background: var(--green-900);   /* vises mens bildet laster */
+}
+
+/* Bildet starter 40px over hero, så det er plass til parallakse-bevegelsen (site.js).
+   object-position bestemmer hvilken del av bildet som vises. Endre den
+   (f.eks. 70% 45% til 70% 60%) hvis utsnittet ikke ser riktig ut. */
+.hero-bg {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    width: 100%;
+    height: calc(100% + 40px);
+    object-fit: cover;
+    object-position: 70% 45%;
+    z-index: 0;
+}
+
+/* mørkegrønn fade fra venstre (der teksten står) og fra toppen (der menyen ligger) */
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+            linear-gradient(180deg, rgba(9, 55, 50, 0.7) 0%, rgba(9, 55, 50, 0) 30%),
+            linear-gradient(90deg,
+            rgba(9, 55, 50, 0.92) 0%,
+            rgba(9, 55, 50, 0.72) 35%,
+            rgba(9, 55, 50, 0.2) 65%,
+            rgba(9, 55, 50, 0) 85%);
+}
+
+/* På mobil går teksten over hele bredden, så overlayen blir jevn i stedet */
+@media (max-width: 760px) {
+    .hero-overlay {
+        background: linear-gradient(180deg, rgba(9, 55, 50, 0.88) 0%, rgba(9, 55, 50, 0.72) 100%);
+    }
+
+    .hero-bg { object-position: 75% center; }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* "SAMMEN FOR NORGE" med en kort lime strek foran */
+.hero-kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin: 0 0 0.5rem;
+    font-size: clamp(0.95rem, 1.45vw, 1.35rem);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.hero-kicker::before {
+    content: "";
+    width: 2.8rem;
+    height: 2px;
+    background: var(--lime);
+}
+
+.hero h1 {
+    margin: 0 0 1.25rem;
+    font-size: clamp(2.6rem, 4.6vw, 4.5rem);   /* størrelsen følger skjermbredden */
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+}
+
+.hero h1 .accent { color: var(--lime); }
+
+.hero-lead {
+    margin: 0 0 2rem;
+    max-width: 36rem;
+    font-size: clamp(1.05rem, 1.45vw, 1.4rem);
+    line-height: 1.55;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem 2.5rem;
+}
+
+/* tekstlenke med hvit understrek ("Jeg trenger hjelp") */
+.link-underline {
+    padding-bottom: 0.2rem;
+    border-bottom: 2px solid #fff;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #fff;
+    text-decoration: none;
+}
+
+.link-underline:hover { color: var(--lime); border-color: var(--lime); }
+
+
+/* --- 2. Innhold under hero --- */
+/* Felles bredde, luft og rytme */
+.home-content {
+    display: grid;
+    gap: clamp(1.5rem, 2.7vw, 2.25rem);
+    padding-block:
+            clamp(1.75rem, 3vw, 2.5rem)
+            clamp(3.5rem, 5vw, 4.5rem);
+    max-width: 1200px;
+    margin-inline: auto;
+
+}
+
+
+/* 3. Slik kommer du i gang */
+.steps {
+    display: grid;
+    gap: 1.35rem;
+    padding: clamp(1.25rem, 2.5vw, 2rem);
+    background: var(--sage);
+    border-radius: var(--radius-lg);
+}
+
+.steps-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+}
+
+.steps-header h2 {
+    margin: 0;
+    font-size: clamp(1.35rem, 2vw, 1.6rem);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+}
+
+.steps-more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    flex-shrink: 0;
+    min-height: 2.7rem;
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--green-900);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--green-900);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.steps-more:hover {
+    background: rgba(9, 55, 50, 0.07);
+}
+
+.steps-more:focus-visible {
+    outline: 3px solid var(--green-900);
+    outline-offset: 3px;
+}
+
+.steps-more .icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.75rem, 1.6vw, 1.25rem);
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.1rem;
+    min-width: 0;
+    min-height: 9.5rem;
+    padding: clamp(1rem, 1.8vw, 1.4rem);
+    border: 1px solid rgba(9, 55, 50, 0.09);
+    border-radius: var(--radius-md);
+    background: #fff;
+}
+
+.step-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.step-number {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: #235e4d;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.step-symbol {
+    width: 1.7rem;
+    height: 1.7rem;
+    flex-shrink: 0;
+    color: #235e4d;
+}
+
+.step-title {
+    margin: 0 0 0.35rem;
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.step-text {
+    margin: 0;
+    font-size: 0.94rem;
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+
+/* 4. Kartoversikt – høyere og mindre avlangt */
+.home-map {
+    position: relative;
+    height: clamp(17rem, 25vw, 21rem);
+    overflow: hidden;
+    isolation: isolate;
+    border-radius: var(--radius-lg);
+    background: var(--sage);
+}
+
+.home-map__bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #d9e7e3 0%, #e9efe5 100%);
+}
+
+.home-map__live {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: #dfe9e5;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+}
+
+.home-map.is-live .home-map__live {
+    opacity: 1;
+}
+
+.home-map__live .leaflet-tile-pane {
+    filter: saturate(0.6) brightness(1.04);
+}
+
+.home-map__card {
+    position: absolute;
+    top: 50%;
+    left: clamp(1rem, 2.5vw, 2rem);
+    z-index: 2;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    width: min(23rem, calc(100% - 2rem));
+    padding: 1rem 1.3rem;
+    background: #fff;
+    border-radius: var(--radius-md);
+    color: var(--ink);
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(9, 55, 50, 0.12);
+}
+
+.home-map__card:hover {
+    box-shadow: 0 6px 20px rgba(9, 55, 50, 0.22);
+}
+
+.home-map__text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.home-map__text strong {
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.home-map__text span {
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.home-map__legend {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 1rem;
+    z-index: 2;
+    display: flex;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0.55rem 1.1rem;
+    list-style: none;
+    background: #fff;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+}
+
+.home-map__legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dot {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dot--resource {
+    background: var(--green-900);
+}
+
+.dot--need {
+    background: var(--lime);
+    box-shadow: inset 0 0 0 2px var(--green-900);
+}
+
+
+/* 5. Aktive hendelser – mer kompakt */
+.events {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    min-width: 0;
+    padding: 1rem 1.4rem;
+    background: var(--sage);
+    border-radius: var(--radius-lg);
+}
+
+.events-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--lime);
+    color: var(--green-900);
+}
+
+.events-icon .icon {
+    width: 1.35rem;
+    height: 1.35rem;
+}
+
+.events-text {
+    flex: 1;
+    min-width: 0;
+    padding-left: 1.1rem;
+    border-left: 1px solid var(--line-strong);
+}
+
+.events-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0 0 0.25rem;
+    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.count-badge {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.65rem;
+    height: 1.65rem;
+    padding: 0 0.4rem;
+    border-radius: var(--radius-pill);
+    background: var(--lime);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--green-900);
+}
+
+.events-sub {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: var(--muted);
+}
+
+.events > .btn {
+    flex-shrink: 0;
+}
+
+
+/* 6. CTA-bånd – beholdt uendret */
+.cta-band {
+    padding-block: 4rem;
+    background: var(--green-900);
+    color: #fff;
+}
+
+.cta-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.cta-band h2 {
+    margin: 0.5rem 0 0;
+    font-size: clamp(2rem, 3.2vw, 3.2rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+
+/* 7. Responsivitet */
+@media (max-width: 900px) {
+    .steps-grid {
+        gap: 0.75rem;
+    }
+
+    .step {
+        padding: 1rem;
+    }
+
+    .events {
+        flex-wrap: wrap;
+    }
+
+    .events > .btn {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 700px) {
+    .steps {
+        padding: 1.2rem;
+        gap: 1rem;
+    }
+
+    .steps-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .steps-more {
+        align-self: flex-start;
+    }
+
+    .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .step {
+        min-height: 0;
+        gap: 0.8rem;
+    }
+
+    .home-map {
+        height: 19rem;
+    }
+
+    .home-map__card {
+        top: 1rem;
+        left: 1rem;
+        transform: none;
+    }
+
+    .home-map__legend {
+        right: 0.75rem;
+        bottom: 0.75rem;
+    }
+
+    .events {
+        gap: 0.8rem;
+        padding: 1.1rem;
+    }
+
+    .events-text {
+        padding-left: 0.85rem;
+    }
+
+    .events > .btn {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 420px) {
+    .home-map__card {
+        width: calc(100% - 2rem);
+    }
+
+    .home-map__legend {
+        font-size: 0.8rem;
+        gap: 0.8rem;
+        padding: 0.5rem 0.7rem;
+    }
+
+    .events-icon {
+        width: 2.6rem;
+        height: 2.6rem;
+    }
+
+    .events-text {
+        padding-left: 0.7rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .steps-more,
+    .home-map__live {
+        transition: none;
+    }
+}
+
+/* Hover-effekt på kartoversikten */
+.home-map__live {
+    transform: scale(1);
+    transition: transform 0.55s ease, opacity 0.4s;
+    transform-origin: center;
+}
+
+@media (hover: hover) {
+    .home-map:hover .home-map__live {
+        transform: scale(1.06);
+    }
+
+    .home-map:hover .home-map__card {
+        box-shadow: 0 10px 28px rgba(9, 55, 50, 0.22);
+    }
+}
+
+/* Respekter redusert bevegelse */
+@media (prefers-reduced-motion: reduce) {
+    .home-map__live {
+        transition: none;
+    }
+
+    .home-map:hover .home-map__live {
+        transform: none;
+    }
+}
+
+
+/* Hele kartoversikten er klikkbar */
+.home-map__full-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.home-map__card {
+    z-index: 2;
+}
+
+.home-map__legend {
+    pointer-events: none;
+}
+
+/* Hele Aktive hendelser er klikkbar */
+.events {
+    position: relative;
+    cursor: pointer;
+}
+
+.events-full-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.events > .btn {
+    position: relative;
+    z-index: 2;
+}
