@@ -127,11 +127,13 @@
                     Ressurser
                 </a>
 
-                <a asp-controller="Need"
-                   asp-action="Index"
-                   aria-current="@(IsActive("Need") ? "page" : null)">
-                    Behov
-                </a>
+                @if (!User.IsInRole("ResourceProvider"))
+                {
+                    <a asp-controller="Need"
+                       asp-action="Index">
+                        Behov
+                    </a>
+                }
 
                 <a asp-controller="Kart"
                    asp-action="Oversikt"
