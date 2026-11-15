@@ -1,4 +1,5 @@
-
+using System.Security.Claims;
+using _202Oppgave.DataAccess.Repositories;
 using _202Oppgave.Models.Authorization;
 using _202Oppgave.Models.Entities;
 using _202Oppgave.ViewModels;
@@ -13,13 +14,16 @@ public class PublicActorController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly INeedRepository _needRepository;
 
     public PublicActorController(
         UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager)
+        SignInManager<ApplicationUser> signInManager,
+        INeedRepository needRepository)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _needRepository = needRepository;
     }
 
     [HttpGet]
@@ -36,9 +40,20 @@ public class PublicActorController : Controller
     }
 
     [HttpGet]
-    public IActionResult Needs()
+    public async Task<IActionResult> Needs()
     {
-        return View();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrWhiteSpace(userId))
+            return Challenge();
+
+        var allNeeds = await _needRepository.GetAllAsync();
+
+        var myNeeds = allNeeds
+            .Where(need => need.UserId == userId)
+            .ToList();
+
+        return View(myNeeds);
     }
 
     [HttpGet]
