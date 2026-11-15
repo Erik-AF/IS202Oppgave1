@@ -1,34 +1,25 @@
 
-
-/*  * site.css – felles layout og grunnstil
-* Eier: Sarah (Frontend/UI) 
-* 
-* Inneholder grunnleggende farger, typografi, header/meny, footer,
-* forside og responsive grid-klasser. Overlays og effekter.
-* 
-* Fargene er hentet fra designskissen. Felles farger ligger i
-* :root slik at de kan KUN endres ett sted evt.
-*
-* Knapper, kort, skjema og tabeller ligger i components.css.
-*/
-
+/* site.css - felles stil for alle sider (Sarah)
+   Farger, header/meny og footer. Forsiden har sin egen fil: home.css.
+   Knapper, kort, skjema og tabeller ligger i components.css. */
 
 
 /* --- 1. Farger og variabler ---
-   Farger endres bare her i :root. Resten av CSS-en bruker var(--navn). */
+   Fargene er målt fra designet. Endre dem bare her i :root.
+   Resten av CSS-en bruker var(--navn). */
 :root {
-    --navy: #16284a;          /* hovedfarge: tekst, knapper, footer */
-    --navy-dark: #0e1b33;     /* hover på navy */
-    --accent-blue: #3b6ea5;   /* "Trygghet.", aktiv meny, fokus i skjema */
-    --indigo: #3d3f8f;        /* "Registrer ressurser"-kortet */
-    --red: #c1443a;           /* "Registrer behov", slett-knapp */
-    --pink: #d98b84;          /* 2. strek i hero */
-    --ink: #26282c;           /* vanlig tekst */
-    --muted: #5d6066;         /* svakere tekst */
-
-    --line: #dfe3ea;          /* tynne linjer og kortkanter */
-    --line-strong: #b8c0cc;   /* kant på skjemafelt */
-    --surface-soft: #f3f5f9;  /* svak bakgrunn, f.eks. tabelloverskrift */
+    --green-900: #093732;   /* hovedfarge: header, footer, CTA-bånd, mørk tekst på lime */
+    --green-800: #0f4a43;   /* litt lysere, brukes ved hover på mørke flater */
+    --green-600: #1f7366;   /* kantfarge ved fokus og hover */
+    --lime: #e1f18b;        /* aksentfarge: knapper, understreker, merkelapper */
+    --lime-dark: #cfe26f;   /* lime ved hover */
+    --paper: #f9f8f6;       /* sidebakgrunn */
+    --sage: #ecf1eb;        /* svak grønn bakgrunn (steg-boks, tabelloverskrift) */
+    --ink: #10201d;         /* vanlig tekst og overskrifter */
+    --muted: #5a6764;       /* svakere tekst */
+    --line: #dde4e0;        /* tynne linjer og kortkanter */
+    --line-strong: #b7c3be; /* tydeligere kant, f.eks. på skjemafelt */
+    --red: #c1443a;         /* farlige handlinger (slett) */
 
     /* kartfarger fra case-beskrivelsen (brukes i kart og badges) */
     --map-urgent: #d64541;     /* rød = akutt behov */
@@ -36,10 +27,12 @@
     --map-available: #2e9e5b;  /* grønn = tilgjengelig ressurs */
     --map-public: #2f6fbf;     /* blå = offentlig aktør */
 
-    --radius-lg: 16px;
+    --radius-lg: 20px;
     --radius-md: 10px;
     --radius-pill: 999px;
-    --container: 1100px;       /* maks bredde på innholdet */
+    --container: 1390px;         /* innholdet blir 1350px bredt (padding trekkes fra) */
+    --container-header: 1451px;  /* headeren er litt bredere, som i designet */
+    --header-h: 5.5rem;          /* høyden på headeren. Hero bruker den også. */
 
     /* systemfonter, så vi slipper å laste ned noe (virker også uten godt nett) */
     --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -51,9 +44,10 @@
 /* padding og kant regnes med i bredden */
 *, *::before, *::after { box-sizing: border-box; }
 
-/* hindrer at iPhone forstørrer teksten når telefonen snus */
-html { -webkit-text-size-adjust: 100%; }
-
+html {
+    -webkit-text-size-adjust: 100%;   /* hindrer at iPhone forstørrer teksten når den snus */
+    scroll-padding-top: 6rem;         /* ting vi scroller til havner ikke bak headeren */
+}
 
 /* flex-kolonne, så footeren havner nederst selv på sider med lite innhold */
 body {
@@ -63,7 +57,7 @@ body {
     flex-direction: column;
     font-family: var(--font);
     color: var(--ink);
-    background: #fff;
+    background: var(--paper);
     line-height: 1.5;
 }
 
@@ -71,10 +65,17 @@ body {
 img, svg { max-width: 100%; }
 a { color: inherit; }
 
-/* blå ramme rundt det som er valgt med tastaturet (Tab) */
+/* blå ramme rundt det som er valgt med tastaturet (Tab). Lime syns på de mørke flatene. */
 :focus-visible {
-    outline: 3px solid #4a90d9;
+    outline: 3px solid var(--green-600);
     outline-offset: 2px;
+}
+
+.site-header :focus-visible,
+.site-footer :focus-visible,
+.cta-band :focus-visible,
+.hero :focus-visible {
+    outline-color: var(--lime);
 }
 
 /* sentrerer innholdet og gir maks bredde */
@@ -87,97 +88,144 @@ a { color: inherit; }
 
 .site-main {
     flex: 1 0 auto;
-    background: #fff;
+    background: var(--paper);
+}
+
+/* ikoner (inline SVG). Fargen følger teksten rundt (currentColor). */
+.icon {
+    width: 1.25em;
+    height: 1.25em;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 
-/* --- 3. Header og meny --- */
+/* --- 3. Header og meny ---
+   Mørkegrønn og sticky (blir stående øverst når man scroller).
+   På forsiden har den klassen .site-header--overlay: da er den gjennomsiktig
+   og ligger over hero-bildet til man har scrollet (site.js legger på .is-scrolled). */
 .site-header {
-    position: sticky;   /* mobilmenyen legger seg under headeren */
+    position: sticky;
     top: 0;
-    z-index: 1100;
-    background: #fff;
-    color: var(--navy);
-    border-bottom: 1px solid var(--line);
+    z-index: 1100;            /* over hero-lagene og Leaflet-kartet (1000) */
+    height: var(--header-h);
+    background: var(--green-900);
+    color: #fff;
+    transition: background-color 0.25s, box-shadow 0.25s;
 }
+
+/* negativ margin trekker hero opp bak headeren */
+/* Gjennomsiktig header over hero på forsiden */
+.site-header--overlay {
+    margin-bottom: calc(var(--header-h) * -1);
+
+    --header-opacity: 0;
+
+    background: rgba(9, 55, 50, var(--header-opacity));
+
+    box-shadow:
+            0 6px 20px rgba(
+                    0, 0, 0,
+                    calc(var(--header-opacity) * 0.18)
+            );
+}
+
+.site-header .container { max-width: var(--container-header); }
 
 .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    min-height: 72px;
+    height: 100%;
 }
 
+/* logo + navn + slagord */
 .brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 1.6rem;
-    font-weight: 800;
-    letter-spacing: -0.01em;
+    gap: 0.85rem;
+    color: #fff;
     text-decoration: none;
-    color: var(--navy);
 }
 
-/* logoen er kvadratisk, så vi setter bare høyden */
 .brand-logo {
-    height: 48px;
+    height: 56px;
     width: auto;
     flex-shrink: 0;
 }
 
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.brand-name {
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.brand-tagline {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
 @media (max-width: 480px) {
-    .brand { font-size: 1.3rem; }
-    .brand-logo { height: 40px; }
+    .brand-name { font-size: 1.35rem; }
+    .brand-tagline { display: none; }
+    .brand-logo { height: 44px; }
 }
 
 .main-nav {
     display: flex;
     align-items: center;
-    gap: 1.75rem;
+    gap: 2.5rem;
 }
 
 .main-nav a {
-    color: var(--navy);
+    color: #fff;
+    font-size: 1.05rem;
     font-weight: 500;
     text-decoration: none;
 }
 
-.main-nav a:hover { color: var(--accent-blue); }
+.main-nav a:hover { color: var(--lime); }
 
-/* siden vi er på nå får blå understrek (aria-current settes i _Layout) */
+/* siden vi er på nå får lime understrek (aria-current settes i _Layout) */
 .main-nav a[aria-current="page"] {
-    color: var(--navy);
     text-decoration: underline;
-    text-decoration-color: var(--accent-blue);
+    text-decoration-color: var(--lime);
     text-decoration-thickness: 3px;
-    text-underline-offset: 8px;
+    text-underline-offset: 10px;
 }
 
+/* "Logg inn": knapp med hvit kant */
 .main-nav .nav-login {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    background: var(--navy);
-    color: #fff;
-    font-weight: 700;
-    padding: 0.65rem 1.4rem;
-    border-radius: var(--radius-pill);
-    text-decoration: none;
+    gap: 0.5rem;
+    padding: 0.8rem 1.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: var(--radius-md);
 }
 
-.main-nav .nav-login:hover { background: var(--navy-dark); color: #fff; }
+.main-nav .nav-login:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
 
 /* hamburgerknapp, skjult på desktop */
 .nav-toggle {
     display: none;
     min-width: 44px;      /* 44px = minste trykkflate på mobil */
     min-height: 44px;
-    border: 1px solid var(--line-strong);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: var(--radius-md);
     background: transparent;
-    color: var(--navy);
+    color: #fff;
     font-size: 1.4rem;
     cursor: pointer;
 }
@@ -193,14 +241,13 @@ a { color: inherit; }
         top: 100%;
         left: 0;
         right: 0;
-        z-index: 1100;            /* over Leaflet-kartet (bruker 1000) */
         flex-direction: column;
         align-items: stretch;
         gap: 0;
         padding: 0.5rem 1.25rem 1.25rem;
-        background: #fff;
-        border-bottom: 1px solid var(--line);
-        box-shadow: 0 8px 16px rgba(22, 40, 74, 0.08);
+        background: var(--green-900);
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     }
 
     .main-nav.is-open { display: flex; }
@@ -208,209 +255,103 @@ a { color: inherit; }
     .main-nav a { padding: 0.85rem 0; }
 
     .main-nav .nav-login {
+        justify-content: center;
         margin-top: 0.5rem;
         padding: 0.85rem 1.4rem;
-        text-align: center;
     }
 }
 
 
-/* --- 4. Footer --- */
+/* --- 4. Footer ---
+   Samme mørkegrønne som CTA-båndet på forsiden, så de henger sammen. */
 .site-footer {
-    background: var(--navy);
-    color: #d7dbe0;
-    padding-block: 1.25rem;
+    background: var(--green-900);
+    color: #fff;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding-top: 4.5rem;
 }
 
-.footer-inner {
+/* tre kolonner: navn og slagord, "Finn frem", "Vi hjelper deg" */
+.footer-main {
+    display: grid;
+    grid-template-columns: 2.25fr 1.25fr 1fr;
+    gap: 3rem 2rem;
+    padding-bottom: 3.75rem;
+}
+
+.footer-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 2rem;
+    font-weight: 500;
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer-tagline {
+    margin: 1.75rem 0 1.5rem;
+    max-width: 22rem;
+    font-size: 1.25rem;
+    line-height: 1.55;
+    color: #d6e3df;
+}
+
+.footer-small { margin: 0; font-size: 0.85rem; color: #a9c0ba; }
+
+.footer-col ul {
+    list-style: none;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+}
+
+/* padding gir en høyere trykkflate */
+.footer-col a {
+    display: inline-block;
+    padding: 0.2rem 0;
+    font-size: 1.05rem;
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer-col a:hover { color: var(--lime); text-decoration: underline; }
+
+/* nederste linje: copyright, slagord og "Til toppen" */
+.footer-bottom {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-}
-
-.footer-brand { font-weight: 800; color: #fff; }
-
-.footer-links { display: flex; gap: 1.5rem; }
-
-/* padding gir ca. 44px høy trykkflate */
-.footer-links a { display: inline-block; padding: 0.65rem 0; text-decoration: none; }
-.footer-links a:hover { color: #fff; text-decoration: underline; }
-
-
-/* --- 5. Forside ---
-   Hero har tre lag oppå hverandre: bilde (z-index 0), hvit overlay (1) og tekst (2). */
-
-/* overflow: hidden så bildet ikke stikker ut når det flyttes (parallakse) */
-.hero {
-    position: relative;
-    overflow: hidden;
-    min-height: clamp(30rem, 52vw, 52rem);
-    color: var(--navy);
-    text-align: left;
-    padding: clamp(2.5rem, 7vw, 5rem) 1.25rem clamp(7rem, 20vw, 20rem);
-}
-
-/* maks bredde, så teksten holder seg unna fjellet i bildet */
-.hero-content {
-    max-width: 640px;
-}
-
-.hero-kicker {
-    margin: 0 0 0.6rem;
+    gap: 0.75rem 2rem;
+    padding-block: 1.6rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
     font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
 }
 
-/* de tre fargede strekene under "Sammen for Norge" */
-.hero-stripes {
-    display: flex;
-    gap: 0.4rem;
-    margin-bottom: 1.5rem;
-    list-style: none;
-    padding: 0;
+.footer-bottom p { margin: 0; }
+
+.footer-bottom a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 4px;
 }
 
-.hero-stripes li {
-    width: 48px;
-    height: 5px;
-    border-radius: var(--radius-pill);
+@media (max-width: 860px) {
+    .footer-main { grid-template-columns: 1fr 1fr; }
+    .footer-brand-col { grid-column: 1 / -1; }
 }
 
-.hero-stripes .stripe-1 { background: var(--red); }
-.hero-stripes .stripe-2 { background: var(--pink); }
-.hero-stripes .stripe-3 { background: var(--navy); }
-
-/* "Trygghet." har egen farge */
-.hero h1 .accent {
-    color: var(--accent-blue);
-}
-
-/* bildet er litt høyere enn hero, så det er plass til parallakse-bevegelsen */
-.hero-bg {
-    position: absolute;
-    top: -10%;
-    right: 0;
-    bottom: auto;
-    left: auto;
-
-    width: 78%;
-    height: calc(100% + 40px);
-
-    object-fit: cover;
-    object-position: center center;
-
-    z-index: 0;
-    
-    -webkit-mask-image: linear-gradient(
-        to right,
-        transparent 0%,
-        black 12%,
-        black 100%
-);
-
-    mask-image: linear-gradient(
-            to right,
-            transparent 0%,
-            black 12%,
-            black 100%
-    );
-
-}
-
-/* hvit fade fra venstre, så den mørke teksten er lesbar. Bildet vises til høyre. */
-.hero-overlay {
-        position: absolute;
-        inset: 0;
-        z-index: 1;
-        pointer-events: none;
-
-        background: linear-gradient(
-                90deg,
-                rgba(255, 255, 255, 1) 0%,
-                rgba(255, 255, 255, 1) 15%,
-                rgba(255, 255, 255, 0.95) 25%,
-                rgba(255, 255, 255, 0.65) 35%,
-                rgba(255, 255, 255, 0.20) 45%,
-                rgba(255, 255, 255, 0) 60%
-        );
-    
-}
-
-/* På mobil går teksten over hele bredden, så overlayen blir jevn i stedet */
-@media (max-width: 760px) {
-    .hero-overlay {
-        position: absolute;
-        inset: 0;
-        z-index: 1;
-        pointer-events: none;
-
-        background:
-            /* Myk overgang nedenfra */
-                linear-gradient(
-                        0deg,
-                        rgba(255, 255, 255, 0.85) 0%,
-                        rgba(255, 255, 255, 0.40) 25%,
-                        transparent 60%
-                ),
-
-                    /* Sterkere hvit fade fra venstre */
-                linear-gradient(
-                        90deg,
-                        rgba(255, 255, 255, 1) 0%,
-                        rgba(255, 255, 255, 1) 22%,
-                        rgba(255, 255, 255, 0.95) 35%,
-                        rgba(255, 255, 255, 0.75) 48%,
-                        rgba(255, 255, 255, 0.30) 65%,
-                        transparent 82%
-                );
-    }
-
-    .hero-bg { object-position: 75% center; }
-}
-
-.hero-content {
-    position: relative;
-    z-index: 2;
-}
-
-.hero h1 {
-    margin: 0 0 0.75rem;
-    font-size: clamp(2.2rem, 6vw, 3.4rem);   /* størrelsen følger skjermbredden */
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-}
-
-.hero p {
-    margin: 0;
-    font-size: clamp(1rem, 2.4vw, 1.3rem);
-    color: var(--muted);
-}
-
-.home-content { padding-block: 3rem 5rem; }
-
-/* negativ margin trekker kortene opp over nedre kant av hero.
-   Utseendet på kortene ligger i components.css. */
-
-.action-cards {
-    margin-top: clamp(-15rem, -16vw, -5rem);
-    position: relative;
-    z-index: 3;
-}
-
-.section-title {
-    margin: 2.5rem 0 1.25rem;
-    text-align: center;
-    font-size: 1.25rem;
-    font-weight: 700;
+@media (max-width: 520px) {
+    .footer-main { grid-template-columns: 1fr; }
 }
 
 
-/* --- 6. Grid (to og tre kolonner) --- */
+/* --- 5. Grid (to og tre kolonner) ---
+   Enkle hjelpere som kan brukes på alle sider. */
 .grid-2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -430,16 +371,4 @@ a { color: inherit; }
 
 @media (max-width: 640px) {
     .grid-2 { grid-template-columns: 1fr; }
-}
-
-/* Handlingskortene blir for trange i to kolonner under 860px.
-   .grid-2.action-cards er mer spesifikk enn .grid-2, så denne vinner. */
-@media (max-width: 860px) {
-    .grid-2.action-cards { grid-template-columns: 1fr; }
-}
-
-
-/* ting som scrolles til (Tab, #lenker) havner ikke bak headeren. plassert her for å unngå feilmelding */
-html {
-    scroll-padding-top: 80px;
 }

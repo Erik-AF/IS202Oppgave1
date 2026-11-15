@@ -1,46 +1,80 @@
+@* _Layout.cshtml - felles ramme for alle sider (Sarah)
+   Innholdet fra hver view settes inn der @RenderBody() står.
+   Andre views kan legge ting i <head> med @section Head og nederst på siden
+   med @section Scripts. Leaflet er allerede lastet her i layouten. *@
 @{
+    // hvilken controller vi er på nå (brukes til å markere aktiv lenke i menyen)
     var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
-    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
-    bool IsActive(string controller) => string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
-    // Behovsdesignet brukes på Need, Resource og Allocation.
-    var needDesign = (IsActive("Need") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
-        || action.Equals("Create", StringComparison.OrdinalIgnoreCase)
-        || action.Equals("Edit", StringComparison.OrdinalIgnoreCase)))
-        || (IsActive("Resource") && (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
-        || action.Equals("Create", StringComparison.OrdinalIgnoreCase)))
-        || (IsActive("Allocation") && action.Equals("Create", StringComparison.OrdinalIgnoreCase));
 
-    // Informasjonsdesignet brukes på Om, Hjelp og Kontakt.
-    var informationDesign = IsActive("Information") && (action.Equals("Om", StringComparison.OrdinalIgnoreCase)
+    // Sjekker hvilken controller vi er på
+    bool IsActive(string controller) =>
+        string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
+
+    // Brukes for gjennomsiktig header på forsiden
+    bool isHome = IsActive("Home");
+
+    // Henter gjeldende action
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    // Design for behov, ressurser og tildelinger
+    var needDesign =
+        (IsActive("Need") &&
+            (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
+            || action.Equals("Create", StringComparison.OrdinalIgnoreCase)
+            || action.Equals("Edit", StringComparison.OrdinalIgnoreCase)))
+        || (IsActive("Resource") &&
+            (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
+            || action.Equals("Create", StringComparison.OrdinalIgnoreCase)))
+        || (IsActive("Allocation") &&
+            action.Equals("Create", StringComparison.OrdinalIgnoreCase));
+
+    // Design for informasjonssidene
+    var informationDesign =
+        IsActive("Information") &&
+        (action.Equals("Om", StringComparison.OrdinalIgnoreCase)
         || action.Equals("Hjelp", StringComparison.OrdinalIgnoreCase)
         || action.Equals("Kontakt", StringComparison.OrdinalIgnoreCase));
 
-    // Footer vises på begge designene og Kart/Oversikt.
-    var helpInfoFooter = informationDesign || needDesign || (IsActive("Kart") && action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase));
+    // Footer på informasjon, behov, ressurser og kart
+    var helpInfoFooter =
+        informationDesign ||
+        needDesign ||
+        (IsActive("Kart") &&
+            action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase));
+
+    // Merkevareinformasjon fra main
     var brandName = "Ko/ordinert";
     var brandTagline = "Kart. Behov. Ressurser. Sammen.";
     var brandLogo = "~/images/logo-koordinert.svg";
 
-    var isAuthPage = IsActive("Account") && (action.Equals("Login", StringComparison.OrdinalIgnoreCase) || action.Equals("Register", StringComparison.OrdinalIgnoreCase));
-
+    // Eget design for innlogging og registrering
+    var isAuthPage =
+        IsActive("Account") &&
+        (action.Equals("Login", StringComparison.OrdinalIgnoreCase)
+        || action.Equals("Register", StringComparison.OrdinalIgnoreCase));
 
 }
 
 <!DOCTYPE html>
 <html lang="nb">
+
 <head>
+    @* viewport trengs for at siden skal tilpasse seg mobil *@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    @* ===== Metadata ===== *@
     <meta name="theme-color" content="#122b35" />
     <meta name="description"
           content="Ko/ordinert samler lokale ressurser og behov. Finn oversikten, bidra med utstyr og se hvor hjelpen trengs." />
 
-    <title>@ViewData["Title"] – @brandName</title>
+    <title>@ViewData["Title"] - Ko/ordinert</title>
 
     <link rel="icon"
           href="@Url.Content(brandLogo)"
           type="image/svg+xml" />
 
+    @* ===== Felles CSS ===== *@
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
@@ -49,16 +83,17 @@
           href="~/css/components.css"
           asp-append-version="true" />
 
+    @* ===== Kartbiblioteker ===== *@
     <link rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
 
+    @* ===== Ikoner og ekstra styling fra main ===== *@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
-    @* Felles design lastes før sidespesifikke tilpasninger. *@
     <link rel="stylesheet"
           href="~/css/beredskap.css"
           asp-append-version="true" />
@@ -72,18 +107,31 @@
 
     @if (isAuthPage)
     {
-        <link rel="stylesheet" href="~/css/account-auth.css" asp-append-version="true" />
+        <link rel="stylesheet"
+              href="~/css/account-auth.css"
+              asp-append-version="true" />
     }
+
     @if (informationDesign)
     {
-        <link rel="stylesheet" href="~/css/information.css" asp-append-version="true" />
+        <link rel="stylesheet"
+              href="~/css/information.css"
+              asp-append-version="true" />
     }
 
+    @* Ekstra CSS fra individuelle views *@
     @await RenderSectionAsync("Head", required: false)
 </head>
-<body class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant() @(needDesign ? "need-theme" : "")">
-    <a class="skip-link" href="#main-content">Hopp til innhold</a>
 
+@* ===== Body ===== *@
+<body id="top"
+      class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant() @(needDesign ? "need-theme" : "")">
+
+    <a class="skip-link" href="#main-content">
+        Hopp til innhold
+    </a>
+
+    @* Behold utility-bar fra main *@
     @if (!helpInfoFooter)
     {
         <div class="utility-bar">
@@ -97,34 +145,40 @@
         </div>
     }
 
-    <header class="site-header">
+    @* ===== Header: design fra fix_homepage ===== *@
+    <header class="site-header @(isHome ? "site-header--overlay" : "")">
         <div class="container header-inner">
 
+            @* Logo og tekst fra designbranchen *@
             <a class="brand"
                asp-controller="Home"
                asp-action="Index"
-               aria-label="@(brandName + " – til forsiden")">
+               aria-label="Ko/ordinert – til forsiden">
 
                 <img class="brand-logo"
-                     src="@Url.Content(brandLogo)"
+                     src="~/images/mork-logo.svg"
                      alt=""
-                     width="42"
-                     height="42" />
+                     width="56"
+                     height="56" />
 
-                <span>
-                    @brandName
-                    <small>@brandTagline</small>
+                <span class="brand-text">
+                    <span class="brand-name">Ko/ordinert</span>
+                    <span class="brand-tagline">
+                        Ressurser. Mennesker. Trygghet.
+                    </span>
                 </span>
             </a>
 
+            @* Mobilmeny fra designbranchen *@
             <button class="nav-toggle"
                     type="button"
                     aria-label="Åpne meny"
                     aria-expanded="false"
                     aria-controls="main-nav">
-                Meny <span aria-hidden="true">☰</span>
+                <span aria-hidden="true">☰</span>
             </button>
 
+            @* ===== Navigasjon ===== *@
             <nav id="main-nav"
                  class="main-nav"
                  aria-label="Hovedmeny">
@@ -141,14 +195,17 @@
                     Ressurser
                 </a>
 
+                @* Rollebasert visning fra main *@
                 @if (!User.IsInRole("ResourceProvider"))
                 {
                     <a asp-controller="Need"
-                       asp-action="Index">
+                       asp-action="Index"
+                       aria-current="@(IsActive("Need") ? "page" : null)">
                         Behov
                     </a>
                 }
 
+                @* Korrekte controllere fra main *@
                 <a asp-controller="Kart"
                    asp-action="Oversikt"
                    aria-current="@(IsActive("Kart") ? "page" : null)">
@@ -161,7 +218,7 @@
                     Om tjenesten
                 </a>
 
-               
+                @* Min side fra main *@
                 @if (User.Identity?.IsAuthenticated != true ||
                      User.IsInRole("ResourceProvider"))
                 {
@@ -172,6 +229,7 @@
                     </a>
                 }
 
+                @* Innlogging og utlogging fra main *@
                 @if (User.Identity?.IsAuthenticated == true)
                 {
                     <form asp-controller="Account"
@@ -180,7 +238,7 @@
                         <button class="nav-login"
                                 type="submit"
                                 title="@User.Identity.Name">
-                            Logg ut ↗
+                            Logg ut
                         </button>
                     </form>
                 }
@@ -189,18 +247,21 @@
                     <a class="nav-login"
                        asp-controller="Account"
                        asp-action="Login">
-                        Logg inn ↗
+                        Logg inn
                     </a>
                 }
-                
+
             </nav>
         </div>
     </header>
 
+
+    @* ===== Hovedinnhold ===== *@
     <main id="main-content"
           class="site-main"
           tabindex="-1">
 
+        @* Bekreftelse etter registrering *@
         @if (!IsActive("ResourceProvider") &&
              TempData["Success"] is string successMessage)
         {
@@ -211,6 +272,7 @@
             </div>
         }
 
+        @* Behold innloggings- og registreringslayout fra main *@
         @if (isAuthPage)
         {
             <div class="auth-page">
@@ -228,6 +290,7 @@
                 </div>
             </div>
         }
+        @* Behold egen layout for kontosider *@
         else if (IsActive("Account"))
         {
             <div class="container account-shell">
@@ -239,6 +302,7 @@
                     <img src="~/images/forsidelandskap.jpg"
                          alt="Norsk kystsamfunn ved fjell og sjø" />
                 </aside>
+
                 <section class="account-panel">
                     @RenderBody()
                 </section>
@@ -251,89 +315,110 @@
 
     </main>
 
+    @* ===== Footer: nytt design fra fix_homepage ===== *@
     <footer class="site-footer">
-        <div class="container footer-grid">
+        <div class="container footer-main">
 
-            <div>
-                <a class="footer-brand footer-brand-lockup"
+            <div class="footer-brand-col">
+                <a class="footer-brand"
                    asp-controller="Home"
                    asp-action="Index">
-
-                    <img src="@Url.Content(brandLogo)"
-                         alt=""
-                         width="52"
-                         height="52" />
-
-                    <span>
-                        @brandName
-                        <small>@brandTagline</small>
-                    </span>
+                    Ko/ordinert
+                    <svg class="icon"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <path d="M7 17L17 7M8 7h9v9" />
+                    </svg>
                 </a>
 
-                <span class="project-note">
-                    Et studentprosjekt ved Universitetet i Agder.
-                </span>
+                <p class="footer-tagline">
+                    God beredskap begynner med mennesker som finner hverandre.
+                </p>
+
+                <p class="footer-small">
+                    Et studentprosjekt av gruppe 7 ved Universitetet i Agder.
+                </p>
             </div>
 
-            <nav aria-label="Utforsk">
-                <h2>Finn frem</h2>
-
-                <a asp-controller="Resource"
-                   asp-action="Index">
-                    Tilgjengelige ressurser
-                </a>
-
-                <a asp-controller="Need"
-                   asp-action="Index">
-                    Registrerte behov
-                </a>
-
-                <a asp-controller="Kart"
-                   asp-action="Oversikt">
-                    Åpne kartoversikten
-                </a>
+            <nav class="footer-col" aria-label="Finn frem">
+                <p class="eyebrow">Finn frem</p>
+                <ul>
+                    <li>
+                        <a asp-controller="Resource"
+                           asp-action="Index">
+                            Tilgjengelige ressurser
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Need"
+                           asp-action="Index">
+                            Registrerte behov
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Kart"
+                           asp-action="Oversikt">
+                            Åpne kartoversikten
+                        </a>
+                    </li>
+                </ul>
             </nav>
 
-            <nav aria-label="Om tjenesten">
-                <h2>Vi hjelper deg</h2>
-
-                <a asp-controller="Information"
-                   asp-action="Om">
-                    Om @brandName
-                </a>
-
-                <a asp-controller="Information"
-                   asp-action="Hjelp">
-                    @(helpInfoFooter ? "Slik bruker du tjenesten ↗" : "Spørsmål og svar")
-                </a>
-
-                <a asp-controller="Information"
-                   asp-action="Kontakt">
-                    Kontakt oss
-                </a>
+            <nav class="footer-col" aria-label="Vi hjelper deg">
+                <p class="eyebrow">Vi hjelper deg</p>
+                <ul>
+                    <li>
+                        <a asp-controller="Information"
+                           asp-action="Om">
+                            Om Ko/ordinert
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Information"
+                           asp-action="Hjelp">
+                            @(helpInfoFooter ? "Slik bruker du tjenesten ↗" : "Spørsmål og svar")
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Information"
+                           asp-action="Kontakt">
+                            Kontakt oss
+                        </a>
+                    </li>
+                </ul>
             </nav>
-
         </div>
 
         <div class="container footer-bottom">
-            <span>© @DateTime.Now.Year @brandName</span>
-            <span>Sammen for et mer robust lokalsamfunn</span>
-            <a href="#main-content">Til toppen ↑</a>
+            <p>© @DateTime.Now.Year Ko/ordinert</p>
+            <p>Sammen for et mer robust lokalsamfunn</p>
+            <a href="#main-content">
+                Til toppen
+                <svg class="icon"
+                     viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M12 19V5M6 11l6-6 6 6" />
+                </svg>
+            </a>
         </div>
     </footer>
 
+    @* ===== JavaScript ===== *@
+
+    @* jQuery beholdes fra main *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
+    @* Leaflet må lastes før leaflet.draw *@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
+    @* Felles JavaScript *@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
+    @* Beredskapsfunksjonalitet fra main *@
     <script src="~/js/beredskap.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
 </html>
-
