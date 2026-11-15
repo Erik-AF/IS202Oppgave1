@@ -1,0 +1,116 @@
+
+@{
+    ViewData["Title"] = "Min side";
+}
+
+<section class="provider-hero">
+    <div class="container provider-hero-content">
+        <div>
+            <span class="provider-eyebrow">
+                MIN SIDE – OFFENTLIG AKTØR
+            </span>
+
+            <h1>Hei, @ViewBag.FullName!</h1>
+
+            <p>
+                Registrer nye behov, administrer eksisterende behov
+                og få oversikt over tilgjengelige ressurser.
+            </p>
+        </div>
+    </div>
+</section>
+
+<partial name="_PublicActorNavigation" />
+
+<section class="provider-overview">
+    <div class="container">
+
+        <div class="provider-dashboard-grid">
+
+            <div class="provider-register-card">
+                <div class="provider-register-content">
+
+                    <h2>Legg til et behov</h2>
+
+                    <p>
+                        Registrer behov for utstyr, transport eller
+                        andre ressurser ved en hendelse.
+                    </p>
+
+                    <a asp-controller="Need"
+                       asp-action="Create"
+                       class="provider-add-button">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                        <span>Registrer behov</span>
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+
+                </div>
+
+                <div class="provider-register-illustration"
+                     aria-hidden="true">
+                    <i class="bi bi-clipboard2-plus"
+                       style="font-size: 76px; color: #194f43;"></i>
+                </div>
+            </div>
+
+            <div class="provider-actions">
+                <h2>Hurtighandlinger</h2>
+
+                <a asp-controller="PublicActor"
+                   asp-action="Needs"
+                   class="provider-action-link">
+                    <span>
+                        <i class="bi bi-pencil" aria-hidden="true"></i>
+                        Administrer behov
+                    </span>
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </a>
+
+                <a asp-controller="Resource"
+                   asp-action="Index"
+                   class="provider-action-link">
+                    <span>
+                        <i class="bi bi-box-seam" aria-hidden="true"></i>
+                        Se tilgjengelige ressurser
+                    </span>
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </a>
+
+                <a asp-controller="Kart"
+                   asp-action="Oversikt"
+                   class="provider-action-link">
+                    <span>
+                        <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                        Vis på kart
+                    </span>
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="provider-resource-list">
+            <div class="provider-resource-list-header">
+                <h2>Mine behov</h2>
+
+                <a asp-controller="PublicActor"
+                   asp-action="Needs">
+                    Se alle behov →
+                </a>
+            </div>
+
+            <p>
+                Her vil behovene som er knyttet til din brukerkonto,
+                vises når vi kobler oversikten til databasen.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+@section Head {
+    <link rel="stylesheet"
+          href="~/css/resource-provider.css"
+          asp-append-version="true" />
+}
