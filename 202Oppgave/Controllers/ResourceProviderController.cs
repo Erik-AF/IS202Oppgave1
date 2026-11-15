@@ -22,11 +22,20 @@ public class ResourceProviderController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index()
+    
+    [HttpGet]
+    public async Task<IActionResult> Index()
     {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+            return Challenge();
+
+        ViewBag.FullName = user.FullName;
+
         return View();
     }
-
+    
     [HttpGet]
     public IActionResult Resources()
     {

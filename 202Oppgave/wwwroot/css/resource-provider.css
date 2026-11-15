@@ -28,6 +28,9 @@ body.page-resourceprovider main {
 }
 
 .provider-eyebrow {
+    display: inline-block;
+    position: relative;
+    top: -8px;
     font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.3px;
