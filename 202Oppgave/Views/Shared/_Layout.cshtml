@@ -6,55 +6,13 @@
     // hvilken controller vi er på nå (brukes til å markere aktiv lenke i menyen)
     var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
 
-    // Sjekker hvilken controller vi er på
+    // true hvis lenken hører til siden vi er på
     bool IsActive(string controller) =>
         string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
 
-    // Brukes for gjennomsiktig header på forsiden
+    // på forsiden ligger headeren gjennomsiktig over hero-bildet (se site.css)
     bool isHome = IsActive("Home");
-
-    // Henter gjeldende action
-    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
-
-    // Design for behov, ressurser og tildelinger
-    var needDesign =
-        (IsActive("Need") &&
-            (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
-            || action.Equals("Create", StringComparison.OrdinalIgnoreCase)
-            || action.Equals("Edit", StringComparison.OrdinalIgnoreCase)))
-        || (IsActive("Resource") &&
-            (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
-            || action.Equals("Create", StringComparison.OrdinalIgnoreCase)))
-        || (IsActive("Allocation") &&
-            action.Equals("Create", StringComparison.OrdinalIgnoreCase));
-
-    // Design for informasjonssidene
-    var informationDesign =
-        IsActive("Information") &&
-        (action.Equals("Om", StringComparison.OrdinalIgnoreCase)
-        || action.Equals("Hjelp", StringComparison.OrdinalIgnoreCase)
-        || action.Equals("Kontakt", StringComparison.OrdinalIgnoreCase));
-
-    // Footer på informasjon, behov, ressurser og kart
-    var helpInfoFooter =
-        informationDesign ||
-        needDesign ||
-        (IsActive("Kart") &&
-            action.Equals("Oversikt", StringComparison.OrdinalIgnoreCase));
-
-    // Merkevareinformasjon fra main
-    var brandName = "Ko/ordinert";
-    var brandTagline = "Kart. Behov. Ressurser. Sammen.";
-    var brandLogo = "~/images/logo-koordinert.svg";
-
-    // Eget design for innlogging og registrering
-    var isAuthPage =
-        IsActive("Account") &&
-        (action.Equals("Login", StringComparison.OrdinalIgnoreCase)
-        || action.Equals("Register", StringComparison.OrdinalIgnoreCase));
-
 }
-
 <!DOCTYPE html>
 <html lang="nb">
 
@@ -63,328 +21,111 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    @* ===== Metadata ===== *@
-    <meta name="theme-color" content="#122b35" />
-    <meta name="description"
-          content="Ko/ordinert samler lokale ressurser og behov. Finn oversikten, bidra med utstyr og se hvor hjelpen trengs." />
-
+    @* tittel i nettleserfanen, settes i hver view med ViewData["Title"] *@
     <title>@ViewData["Title"] - Ko/ordinert</title>
 
-    <link rel="icon"
-          href="@Url.Content(brandLogo)"
-          type="image/svg+xml" />
+    @* felles CSS (asp-append-version gjør at nettleseren henter ny fil når den er endret) *@
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
 
-    @* ===== Felles CSS ===== *@
-    <link rel="stylesheet"
-          href="~/css/site.css"
-          asp-append-version="true" />
+    @* Leaflet (kartet) og Leaflet.draw (tegneverktøy). Lastes på alle sider siden
+       Map, Resource/Create, Need/Create og forsiden bruker kart. Krever internett (CDN). *@
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
 
-    <link rel="stylesheet"
-          href="~/css/components.css"
-          asp-append-version="true" />
-
-    @* ===== Kartbiblioteker ===== *@
-    <link rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-
-    @* ===== Ikoner og ekstra styling fra main ===== *@
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-
-    <link rel="stylesheet"
-          href="~/css/beredskap.css"
-          asp-append-version="true" />
-
-    @if (needDesign)
-    {
-        <link rel="stylesheet"
-              href="~/css/need.css"
-              asp-append-version="true" />
-    }
-
-    @if (isAuthPage)
-    {
-        <link rel="stylesheet"
-              href="~/css/account-auth.css"
-              asp-append-version="true" />
-    }
-
-    @if (informationDesign)
-    {
-        <link rel="stylesheet"
-              href="~/css/information.css"
-              asp-append-version="true" />
-    }
-
-    @* Ekstra CSS fra individuelle views *@
+    @* ekstra i <head> fra andre views (valgfri), f.eks. home.css på forsiden *@
     @await RenderSectionAsync("Head", required: false)
 </head>
 
-@* ===== Body ===== *@
-<body id="top"
-      class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant() @(needDesign ? "need-theme" : "")">
+@* id="top" gjør at lenken "Til toppen" i footeren virker *@
+<body id="top">
 
-    <a class="skip-link" href="#main-content">
-        Hopp til innhold
-    </a>
-
-    @* Behold utility-bar fra main *@
-    @if (!helpInfoFooter)
-    {
-        <div class="utility-bar">
-            <div class="container">
-                <span>Et felles løft for lokal beredskap</span>
-                <a asp-controller="Information"
-                   asp-action="Hjelp">
-                    Slik bruker du tjenesten ↗
-                </a>
-            </div>
-        </div>
-    }
-
-    @* ===== Header: design fra fix_homepage ===== *@
+    @* ===== Header: logo, meny og logg inn. Vises på alle sider. =====
+       På forsiden får den klassen site-header--overlay (gjennomsiktig over hero-bildet).
+       Ikke det samme som hero-banneret, det ligger i Home/Index.cshtml. *@
     <header class="site-header @(isHome ? "site-header--overlay" : "")">
         <div class="container header-inner">
 
-            @* Logo og tekst fra designbranchen *@
-            <a class="brand"
-               asp-controller="Home"
-               asp-action="Index"
-               aria-label="Ko/ordinert – til forsiden">
-
-                <img class="brand-logo"
-                     src="~/images/mork-logo.svg"
-                     alt=""
-                     width="56"
-                     height="56" />
-
+            @* Logo, navn og slagord. Klikk går til forsiden.
+               alt er tom med vilje fordi teksten "CrisisSystem" står ved siden av.
+               Logoen er laget for mørk bakgrunn (logo-mork.svg). *@
+            <a class="brand" asp-controller="Home" asp-action="Index">
+                <img class="brand-logo" src="~/images/mork-logo.svg" alt="" width="56" height="56" />
                 <span class="brand-text">
                     <span class="brand-name">Ko/ordinert</span>
-                    <span class="brand-tagline">
-                        Ressurser. Mennesker. Trygghet.
-                    </span>
+                    <span class="brand-tagline">Ressurser. Mennesker. Trygghet.</span>
                 </span>
             </a>
 
-            @* Mobilmeny fra designbranchen *@
-            <button class="nav-toggle"
-                    type="button"
-                    aria-label="Åpne meny"
-                    aria-expanded="false"
-                    aria-controls="main-nav">
+            @* Hamburgerknapp, vises bare på mobil og nettbrett (koden ligger i site.js) *@
+            <button class="nav-toggle" type="button" aria-label="Åpne meny"
+                    aria-expanded="false" aria-controls="main-nav">
                 <span aria-hidden="true">☰</span>
             </button>
 
-            @* ===== Navigasjon ===== *@
-            <nav id="main-nav"
-                 class="main-nav"
-                 aria-label="Hovedmeny">
+            @* Hovedmeny. aria-current="page" markerer siden vi er på (se IsActive øverst) *@
+            <nav id="main-nav" class="main-nav" aria-label="Hovedmeny">
+                <a asp-controller="Home" asp-action="Index"
+                   aria-current="@(IsActive("Home") ? "page" : null)">Hjem</a>
+                <a asp-controller="Resource" asp-action="Index"
+                   aria-current="@(IsActive("Resource") ? "page" : null)">Ressurser</a>
+                <a asp-controller="Need" asp-action="Index"
+                   aria-current="@(IsActive("Need") ? "page" : null)">Behov</a>
+                <a asp-controller="Kart" asp-action="Index"
+                   aria-current="@(IsActive("Kart") ? "page" : null)">Kartoversikt</a>
+                <a asp-controller="Information" asp-action="Om"
+                   aria-current="@(IsActive("Information") ? "page" : null)">Om tjenesten</a>
 
-                <a asp-controller="Home"
-                   asp-action="Index"
-                   aria-current="@(IsActive("Home") ? "page" : null)">
-                    Hjem
-                </a>
-
-                <a asp-controller="Resource"
-                   asp-action="Index"
-                   aria-current="@(IsActive("Resource") ? "page" : null)">
-                    Ressurser
-                </a>
-
-                @* Rollebasert visning fra main *@
-                @if (!User.IsInRole("ResourceProvider"))
-                {
-                    <a asp-controller="Need"
-                       asp-action="Index"
-                       aria-current="@(IsActive("Need") ? "page" : null)">
-                        Behov
-                    </a>
-                }
-
-                @* Korrekte controllere fra main *@
-                <a asp-controller="Kart"
-                   asp-action="Oversikt"
-                   aria-current="@(IsActive("Kart") ? "page" : null)">
-                    Kartoversikt
-                </a>
-
-                <a asp-controller="Information"
-                   asp-action="Om"
-                   aria-current="@(IsActive("Information") ? "page" : null)">
-                    Om tjenesten
-                </a>
-
-                @* Min side fra main *@
-                @if (User.Identity?.IsAuthenticated != true ||
-                     User.IsInRole("ResourceProvider"))
-                {
-                    <a asp-controller="ResourceProvider"
-                       asp-action="Index"
-                       aria-current="@(IsActive("ResourceProvider") ? "page" : null)">
-                        Min side
-                    </a>
-                }
-
-                @* Innlogging og utlogging fra main *@
-                @if (User.Identity?.IsAuthenticated == true)
-                {
-                    <form asp-controller="Account"
-                          asp-action="Logout"
-                          method="post">
-                        <button class="nav-login"
-                                type="submit"
-                                title="@User.Identity.Name">
-                            Logg ut
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <a class="nav-login"
-                       asp-controller="Account"
-                       asp-action="Login">
-                        Logg inn
-                    </a>
-                }
-
+                @* TODO: Account/Login finnes ikke ennå, lenken virker først når innlogging er laget *@
+                <a class="nav-login" asp-controller="Account" asp-action="Login">Logg inn</a>
             </nav>
         </div>
     </header>
 
-
     @* ===== Hovedinnhold ===== *@
-    <main id="main-content"
-          class="site-main"
-          tabindex="-1">
+    <main class="site-main">
 
-        @* Bekreftelse etter registrering *@
-        @if (!IsActive("ResourceProvider") &&
-             TempData["Success"] is string successMessage)
+        @* bekreftelse etter registrering, vises hvis en controller har satt TempData["Success"] *@
+        @if (TempData["Success"] is string successMessage)
         {
             <div class="container">
-                <div class="alert alert-success" role="status">
-                    @successMessage
-                </div>
+                <div class="alert alert-success" role="status">@successMessage</div>
             </div>
         }
 
-        @* Behold innloggings- og registreringslayout fra main *@
-        @if (isAuthPage)
-        {
-            <div class="auth-page">
-                <div class="auth-page__overlay">
-                    @RenderBody()
-                </div>
-                <div class="auth-page__waves" aria-hidden="true">
-                    <svg viewBox="0 0 1440 100"
-                         preserveAspectRatio="none">
-                        <path fill="#d9f1f0"
-                              d="M0 35 C180 -15 300 105 480 65 S760 15 950 65 S1230 90 1440 20 L1440 100 L0 100 Z" />
-                        <path fill="#9edbd7" fill-opacity=".8"
-                              d="M0 85 C200 45 310 115 520 80 S820 105 1030 65 S1270 110 1440 55 L1440 100 L0 100 Z" />
-                    </svg>
-                </div>
-            </div>
-        }
-        @* Behold egen layout for kontosider *@
-        else if (IsActive("Account"))
-        {
-            <div class="container account-shell">
-
-                <aside class="account-story">
-                    <p class="eyebrow">En del av fellesskapet</p>
-                    <h2>Små bidrag.<br />Stor forskjell.</h2>
-                    <p>Sammen gjør vi lokale ressurser synlige når noen trenger dem.</p>
-                    <img src="~/images/forsidelandskap.jpg"
-                         alt="Norsk kystsamfunn ved fjell og sjø" />
-                </aside>
-
-                <section class="account-panel">
-                    @RenderBody()
-                </section>
-            </div>
-        }
-        else
-        {
-            @RenderBody()
-        }
-
+        @* innholdet fra viewen settes inn her *@
+        @RenderBody()
     </main>
 
-    @* ===== Footer: nytt design fra fix_homepage ===== *@
+    @* ===== Footer: navn og slagord, to lenkekolonner og nederste linje.
+       Stil: .site-footer i site.css. Overskriftene bruker .eyebrow (components.css). ===== *@
     <footer class="site-footer">
         <div class="container footer-main">
 
             <div class="footer-brand-col">
-                <a class="footer-brand"
-                   asp-controller="Home"
-                   asp-action="Index">
+                <a class="footer-brand" asp-controller="Home" asp-action="Index">
                     Ko/ordinert
-                    <svg class="icon"
-                         viewBox="0 0 24 24"
-                         aria-hidden="true">
-                        <path d="M7 17L17 7M8 7h9v9" />
-                    </svg>
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9" /></svg>
                 </a>
-
-                <p class="footer-tagline">
-                    God beredskap begynner med mennesker som finner hverandre.
-                </p>
-
-                <p class="footer-small">
-                    Et studentprosjekt av gruppe 7 ved Universitetet i Agder.
-                </p>
+                <p class="footer-tagline">God beredskap begynner med mennesker som finner hverandre.</p>
+                <p class="footer-small">et studentprosjekt av gruppe 7 ved Universitetet i Agder.</p>
             </div>
 
             <nav class="footer-col" aria-label="Finn frem">
                 <p class="eyebrow">Finn frem</p>
                 <ul>
-                    <li>
-                        <a asp-controller="Resource"
-                           asp-action="Index">
-                            Tilgjengelige ressurser
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-controller="Need"
-                           asp-action="Index">
-                            Registrerte behov
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-controller="Kart"
-                           asp-action="Oversikt">
-                            Åpne kartoversikten
-                        </a>
-                    </li>
+                    <li><a asp-controller="Resource" asp-action="Index">Tilgjengelige ressurser</a></li>
+                    <li><a asp-controller="Need" asp-action="Index">Registrerte behov</a></li>
+                    <li><a asp-controller="Kart" asp-action="Index">Åpne kartoversikten</a></li>
                 </ul>
             </nav>
 
             <nav class="footer-col" aria-label="Vi hjelper deg">
                 <p class="eyebrow">Vi hjelper deg</p>
                 <ul>
-                    <li>
-                        <a asp-controller="Information"
-                           asp-action="Om">
-                            Om Ko/ordinert
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-controller="Information"
-                           asp-action="Hjelp">
-                            @(helpInfoFooter ? "Slik bruker du tjenesten ↗" : "Spørsmål og svar")
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-controller="Information"
-                           asp-action="Kontakt">
-                            Kontakt oss
-                        </a>
-                    </li>
+                    <li><a asp-controller="Information" asp-action="Om">Om Ko/ordinert</a></li>
+                    <li><a asp-controller="Information" asp-action="Hjelp">Spørsmål og svar</a></li>
+                    <li><a asp-controller="Information" asp-action="Kontakt">Kontakt oss</a></li>
                 </ul>
             </nav>
         </div>
@@ -392,33 +133,25 @@
         <div class="container footer-bottom">
             <p>© @DateTime.Now.Year Ko/ordinert</p>
             <p>Sammen for et mer robust lokalsamfunn</p>
-            <a href="#main-content">
+            <a href="#top">
                 Til toppen
-                <svg class="icon"
-                     viewBox="0 0 24 24"
-                     aria-hidden="true">
-                    <path d="M12 19V5M6 11l6-6 6 6" />
-                </svg>
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
             </a>
         </div>
     </footer>
 
-    @* ===== JavaScript ===== *@
+    @* JavaScript nederst så siden vises først. *@
 
-    @* jQuery beholdes fra main *@
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-
-    @* Leaflet må lastes før leaflet.draw *@
+    @* Leaflet må lastes før kartkoden. leaflet.draw trenger leaflet.js først,
+       så rekkefølgen her må ikke byttes. *@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
-    @* Felles JavaScript *@
+    @* site.js styrer menyen, headeren og parallakse *@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @* Beredskapsfunksjonalitet fra main *@
-    <script src="~/js/beredskap.js" asp-append-version="true"></script>
-
+    @* ekstra script fra andre views (valgfri), f.eks. kartkoden til Marius.
+       Kjører etter Leaflet er lastet. *@
     @await RenderSectionAsync("Scripts", required: false)
-
 </body>
 </html>
