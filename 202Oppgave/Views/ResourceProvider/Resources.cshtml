@@ -1,3 +1,5 @@
+@model List<_202Oppgave.Models.Entities.Resource>
+
 @{
     ViewData["Title"] = "Administrer ressurser";
 }
@@ -7,37 +9,49 @@
 <section class="provider-resources">
     <div class="container">
 
-        <div class="provider-resources-header">
-            <div>
-                <p class="provider-page-eyebrow">RESSURSLEVERANDØR</p>
-                <h1>Administrer ressurser</h1>
-                <p class="provider-page-intro">
-                    Se og administrer ressursene du har registrert.
-                </p>
-            </div>
-        </div>
-
-        <div class="provider-page-card">
-            <div class="provider-page-card-header">
-                <h2>Registrerte ressurser</h2>
-
-                <a asp-controller="Resource"
-                   asp-action="Create"
-                   class="provider-page-button">
-                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                    Registrer ressurs
-                </a>
-            </div>
-
+        @* Tom tilstand når brukeren ikke har registrert noe ennå *@
+        @if (Model.Count == 0)
+        {
             <div class="provider-empty-state">
                 <i class="bi bi-box-seam" aria-hidden="true"></i>
                 <h3>Ingen ressurser å vise ennå</h3>
                 <p>
-                    Ressursene dine vises her når de er
-                    koblet til brukerkontoen din.
+                    Ressursene du registrerer vises her.
                 </p>
             </div>
-        </div>
+        }
+        else
+        {
+            @* Én rad per ressurs, samme stil som listen på Oversikt *@
+            @foreach (var resource in Model)
+            {
+                <div class="provider-resource-row provider-resource-demo">
+                    <div class="provider-resource-info">
+                        <div class="provider-resource-icon">
+                            <i class="bi bi-box-seam" aria-hidden="true"></i>
+                        </div>
+
+                        <div class="provider-resource-text">
+                            <h3>@resource.Type</h3>
+                            <p>@(resource.Category?.Name ?? "Ingen kategori")</p>
+
+                            <span class="provider-resource-status @(resource.Status == "Tilgjengelig" ? "is-available" : "is-loaned")">
+                                <span class="provider-status-dot"></span>
+                                @resource.Status
+                            </span>
+                        </div>
+                    </div>
+
+                    <a asp-controller="Resource"
+                       asp-action="Details"
+                       asp-route-id="@resource.Id"
+                       class="provider-details-button">
+                        Se detaljer
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+            }
+        }
 
     </div>
 </section>
