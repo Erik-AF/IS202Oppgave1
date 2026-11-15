@@ -61,12 +61,12 @@
                             <strong>Frist:</strong>
                             @need.Deadline.ToString("dd.MM.yyyy")
                         </p>
-
                         <a asp-controller="Need"
                            asp-action="Confirmation"
                            asp-route-id="@need.Id"
                            class="provider-page-button">
                             Se behov
+                            <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
                         </a>
                     </div>
                 }
@@ -88,6 +88,7 @@
                 <a asp-controller="Need"
                    asp-action="Create"
                    class="provider-page-button">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
                     Registrer behov
                 </a>
             </div>
