@@ -223,8 +223,7 @@ public class ResourceController : Controller
         await FillCategoryOptionsAsync(model);       
         return View(model);
     }
-
-
+    
     // GET: /Resource/Geo
     // Henter kartdata fra MariaDB
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin + "," + RoleNames.PublicActor)]
@@ -232,6 +231,21 @@ public class ResourceController : Controller
     public async Task<IActionResult> Geo()
     {
         var resources = await _repo.GetAllAsync();
+
+        // Resource Providers skal kun se egne ressurser
+        if (User.IsInRole(RoleNames.ResourceProvider) &&
+            !User.IsInRole(RoleNames.Admin) &&
+            !User.IsInRole(RoleNames.PublicActor))
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Challenge();
+
+            resources = resources
+                .Where(r => r.UserId == userId)
+                .ToList();
+        }
 
         var data = resources
             .Where(r => r.Latitude != null &&
@@ -245,12 +259,12 @@ public class ResourceController : Controller
                 r.Latitude,
                 r.Longitude,
                 r.GeometryJson,
-                CategoryName = r.Category != null ? r.Category.Name : null,
+                CategoryName = r.Category != null ? r.Category.Name : null
             });
 
         return Json(data);
     }
-
+    
     // POST: /Resource/Delete
     // Sletter ressurs fra MariaDB
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
