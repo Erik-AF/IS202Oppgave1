@@ -1,6 +1,9 @@
 
+@model List<_202Oppgave.Models.Entities.Need>
+
 @{
     ViewData["Title"] = "Min side";
+    var totalNeeds = Model?.Count ?? 0;
 }
 
 <section class="provider-hero">
@@ -25,7 +28,6 @@
 <section class="provider-overview">
     <div class="container">
 
-        @* Statistikkort *@
         <div class="public-actor-stats">
 
             <div class="public-actor-stat-card">
@@ -55,16 +57,14 @@
             <div class="public-actor-stat-card">
                 <i class="bi bi-folder2-open" aria-hidden="true"></i>
                 <div>
-                    <strong>–</strong>
-                    <span>Totalt</span>
+                    <strong>@totalNeeds</strong>
+                    <span>Totalt registrert</span>
                 </div>
             </div>
 
         </div>
 
-        @* Registreringsbanner *@
         <div class="public-actor-create-banner">
-
             <div>
                 <h2>Registrer et nytt behov</h2>
                 <p>
@@ -78,36 +78,61 @@
                 <i class="bi bi-plus-lg" aria-hidden="true"></i>
                 Registrer behov
             </a>
-
         </div>
 
-        @* Registreringsoversikt *@
         <div class="public-actor-list-header">
-
             <div>
-                <h2>Behovsoversikt</h2>
-                <p>Følg statusen på forespørslene dine.</p>
+                <h2>Siste registrerte behov</h2>
+                <p>En oversikt over registreringene dine.</p>
             </div>
-        </div>
 
-        @* Tomtilstand frem til databasekoblingen er klar *@
-        <div class="public-actor-empty-state">
-            <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
-
-            <h3>Behovsoversikten er ikke tilgjengelig ennå</h3>
-
-            <p>
-                Her vil du kunne se og følge opp dine registrerte behov
-                når oversikten er koblet til databasen.
-            </p>
-
-            <a asp-controller="Need"
-               asp-action="Create"
+            <a asp-controller="PublicActor"
+               asp-action="Needs"
                class="provider-page-button">
-                <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                Opprett en registrering
+                Se alle behov
             </a>
         </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="public-actor-needs-list">
+                @foreach (var need in Model.OrderByDescending(n => n.Id).Take(3))
+                {
+                    <div class="provider-page-card">
+                        <h3>@need.Type</h3>
+
+                        <p><strong>Sted:</strong> @need.Location</p>
+                        <p><strong>Prioritet:</strong> @need.Priority</p>
+                        <p><strong>Frist:</strong> @need.Deadline.ToString("dd.MM.yyyy")</p>
+
+                        <a asp-controller="PublicActor"
+                           asp-action="Needs"
+                           class="provider-page-button">
+                            Administrer behov
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="public-actor-empty-state">
+                <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
+
+                <h3>Ingen registrerte behov</h3>
+
+                <p>
+                    Du har ikke registrert noen behov ennå.
+                    Når du registrerer et behov, vil det vises her.
+                </p>
+
+                <a asp-controller="Need"
+                   asp-action="Create"
+                   class="provider-page-button">
+                    Registrer behov
+                </a>
+            </div>
+        }
 
     </div>
 </section>
@@ -121,4 +146,3 @@
           href="~/css/public-actor.css"
           asp-append-version="true" />
 }
-

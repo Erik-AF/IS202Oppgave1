@@ -27,6 +27,7 @@ public class PublicActorController : Controller
         _needRepository = needRepository;
     }
 
+   
     [HttpGet]
     public async Task<IActionResult> Index()
     {
@@ -37,8 +38,15 @@ public class PublicActorController : Controller
 
         ViewBag.FullName = user.FullName;
 
-        return View();
+        var allNeeds = await _needRepository.GetAllAsync();
+
+        var myNeeds = allNeeds
+            .Where(need => need.UserId == user.Id)
+            .ToList();
+
+        return View(myNeeds);
     }
+
 
     [HttpGet]
     public async Task<IActionResult> Needs()
@@ -56,7 +64,7 @@ public class PublicActorController : Controller
 
         return View(myNeeds);
     }
-
+    
     [HttpGet]
     public async Task<IActionResult> EditNeed(int id)
     {
@@ -70,7 +78,56 @@ public class PublicActorController : Controller
         if (need == null || need.UserId != userId)
             return NotFound();
 
-        return RedirectToAction("Edit", "Need", new { id });
+        var model = new NeedViewModel
+        {
+            Type = need.Type,
+            Location = need.Location,
+            Priority = need.Priority,
+            Description = need.Description,
+            Deadline = need.Deadline,
+            Latitude = need.Latitude,
+            Longitude = need.Longitude,
+            GeometryJson = need.GeometryJson
+        };
+
+        ViewBag.NeedId = id;
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditNeed(int id, NeedViewModel model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrWhiteSpace(userId))
+            return Challenge();
+
+        var need = await _needRepository.GetByIdAsync(id);
+
+        if (need == null || need.UserId != userId)
+            return NotFound();
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.NeedId = id;
+            return View(model);
+        }
+
+        need.Type = model.Type;
+        need.Location = model.Location;
+        need.Priority = model.Priority!.Value;
+        need.Description = model.Description;
+        need.Deadline = model.Deadline!.Value;
+        need.Latitude = model.Latitude!.Value;
+        need.Longitude = model.Longitude!.Value;
+
+        await _needRepository.UpdateAsync(need);
+
+        TempData["Success"] = "Behovet er oppdatert.";
+
+        return RedirectToAction(nameof(Needs));
     }
 
     [HttpPost]
