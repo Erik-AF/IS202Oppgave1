@@ -122,14 +122,9 @@
     }
 }
 
-<body class="@bodyClass">
+<body id="top" class="@bodyClass">
 
     <a class="skip-link" href="#main-content">Hopp til innhold</a>
-
-@* ===== Body ===== *@
-<body id="top"
-      class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant() @(needDesign ? "need-theme" : "")">
-
 
     @* Behold utility-bar fra main *@
     @if (!isHome && !helpInfoFooter)
