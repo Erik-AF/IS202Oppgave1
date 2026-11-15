@@ -1,0 +1,134 @@
+
+@model List<_202Oppgave.Models.Entities.Need>
+
+@{
+    ViewData["Title"] = "Min side";
+    var totalNeeds = Model?.Count ?? 0;
+}
+
+<section class="provider-hero">
+    <div class="container provider-hero-content">
+        <div>
+            <span class="provider-eyebrow">
+                MIN SIDE – OFFENTLIG AKTØR
+            </span>
+
+            <h1>Hei, @ViewBag.FullName!</h1>
+
+            <p>
+                Få oversikt over registreringene dine,
+                følg opp forespørsler og finn tilgjengelige ressurser.
+            </p>
+        </div>
+    </div>
+</section>
+
+<partial name="_PublicActorNavigation" />
+
+<section class="provider-overview">
+    <div class="container">
+
+        <div class="public-actor-stats">
+            <div class="public-actor-stat-card">
+                <i class="bi bi-folder2-open" aria-hidden="true"></i>
+                <div>
+                    <strong>@totalNeeds</strong>
+                    <span>Registrerte behov</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="public-actor-create-banner">
+            <div>
+                <h2>Registrer et nytt behov</h2>
+                <p>
+                    Søk om utstyr, transport eller annen bistand ved en krisesituasjon.
+                </p>
+            </div>
+
+            <a asp-controller="Need"
+               asp-action="Create"
+               class="provider-add-button">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Registrer behov
+            </a>
+        </div>
+
+        <div class="public-actor-list-header">
+            <div>
+                <h2>Siste registrerte behov</h2>
+                <p>En oversikt over registreringene dine.</p>
+            </div>
+
+            <a asp-controller="PublicActor"
+               asp-action="Needs"
+               class="provider-page-button">
+                Se alle behov
+                <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="public-actor-needs-list">
+                @foreach (var need in Model.OrderByDescending(n => n.Id).Take(3))
+                {
+                    <div class="provider-page-card">
+                        <h3>@need.Type</h3>
+
+                        <p>
+                            <strong>Sted:</strong> @need.Location
+                        </p>
+
+                        <p>
+                            <strong>Prioritet:</strong> @need.Priority
+                        </p>
+
+                        <p>
+                            <strong>Frist:</strong> @need.Deadline.ToString("dd.MM.yyyy")
+                        </p>
+
+                        <a asp-controller="PublicActor"
+                           asp-action="Needs"
+                           class="provider-page-button">
+                            Administrer behov
+                            <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="public-actor-empty-state">
+                <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
+
+                <h3>Ingen registrerte behov</h3>
+
+                <p>
+                    Du har ikke registrert noen behov ennå.
+                    Når du registrerer et behov, vil det vises her.
+                </p>
+
+                <a asp-controller="Need"
+                   asp-action="Create"
+                   class="provider-page-button">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    Registrer behov
+                </a>
+            </div>
+        }
+
+    </div>
+</section>
+
+@section Head {
+    <link rel="stylesheet"
+          href="~/css/resource-provider.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/public-actor.css"
+          asp-append-version="true" />
+}
+

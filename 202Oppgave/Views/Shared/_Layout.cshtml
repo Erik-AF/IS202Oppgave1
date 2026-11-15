@@ -21,13 +21,15 @@
         (IsActive("Need") &&
             (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
             || action.Equals("Create", StringComparison.OrdinalIgnoreCase)
-            || action.Equals("Edit", StringComparison.OrdinalIgnoreCase)))
+            || action.Equals("Edit", StringComparison.OrdinalIgnoreCase)
+            || action.Equals("Confirmation", StringComparison.OrdinalIgnoreCase)))
         || (IsActive("Resource") &&
             (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
             || action.Equals("Create", StringComparison.OrdinalIgnoreCase) 
             || action.Equals("Details", StringComparison.OrdinalIgnoreCase)))
         || (IsActive("Allocation") &&
-            action.Equals("Create", StringComparison.OrdinalIgnoreCase));
+            (action.Equals("Create", StringComparison.OrdinalIgnoreCase)
+            || action.Equals("FromNeed", StringComparison.OrdinalIgnoreCase)));
 
     // Design for informasjonssidene
     var informationDesign =
@@ -54,6 +56,9 @@
         (action.Equals("Login", StringComparison.OrdinalIgnoreCase)
         || action.Equals("Register", StringComparison.OrdinalIgnoreCase));
 
+    // Samme header på forsiden og innloggingssiden
+    var useOverlayHeader = isHome || isAuthPage;
+
 }
 
 <!DOCTYPE html>
@@ -71,68 +76,62 @@
 
     <title>@ViewData["Title"] - Ko/ordinert</title>
 
-    <link rel="icon"
-          href="@Url.Content(brandLogo)"
-          type="image/svg+xml" />
+        <link rel="stylesheet"
+              href="~/css/site.css"
+              asp-append-version="true"/>
 
-    @* ===== Felles CSS ===== *@
-    <link rel="stylesheet"
-          href="~/css/site.css"
-          asp-append-version="true" />
-
-    <link rel="stylesheet"
-          href="~/css/components.css"
-          asp-append-version="true" />
+  
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
 
     @* ===== Kartbiblioteker ===== *@
     <link rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
 
+        @if (needDesign)
+        {
+            <link rel="stylesheet"
+                  href="~/css/need.css"
+                  asp-append-version="true"/>
+        }
     @* ===== Ikoner og ekstra styling fra main ===== *@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    @if (!isHome)
+    @if (!useOverlayHeader)
     {
         <link rel="stylesheet"
               href="~/css/beredskap.css"
               asp-append-version="true" />
     }
 
-    @if (needDesign)
+        @if (isAuthPage)
+        {
+            <link rel="stylesheet" href="~/css/account-auth.css" asp-append-version="true"/>
+        }
+        @if (informationDesign)
+        {
+            <link rel="stylesheet" href="~/css/information.css" asp-append-version="true"/>
+        }
+
+        @await RenderSectionAsync("Head", required: false)
+    </head>
+
+@{
+    var bodyClass = $"design-concept page-{current.ToLowerInvariant()} action-{action.ToLowerInvariant()}";
+
+    if (needDesign)
     {
-        <link rel="stylesheet"
-              href="~/css/need.css"
-              asp-append-version="true" />
+        bodyClass += " need-theme";
     }
+}
 
-    @if (isAuthPage)
-    {
-        <link rel="stylesheet"
-              href="~/css/account-auth.css"
-              asp-append-version="true" />
-    }
+<body id="top" class="@bodyClass">
 
-    @if (informationDesign)
-    {
-        <link rel="stylesheet"
-              href="~/css/information.css"
-              asp-append-version="true" />
-    }
-
-    @* Ekstra CSS fra individuelle views *@
-    @await RenderSectionAsync("Head", required: false)
-</head>
-
-@* ===== Body ===== *@
-<body id="top"
-      class="design-concept page-@current.ToLowerInvariant() action-@action.ToLowerInvariant() @(needDesign ? "need-theme" : "")">
-
+    <a class="skip-link" href="#main-content">Hopp til innhold</a>
 
     @* Behold utility-bar fra main *@
-    @if (!isHome && !helpInfoFooter)
+    @if (!useOverlayHeader && !helpInfoFooter)
     {
         <div class="utility-bar">
             <div class="container">
@@ -146,7 +145,7 @@
     }
 
     @* ===== Header: design fra fix_homepage ===== *@
-    <header class="site-header @(isHome ? "site-header--overlay" : "")">
+    <header class="site-header @(useOverlayHeader ? "site-header--overlay" : "")">
         <div class="container header-inner">
 
             @* Logo og tekst fra designbranchen *@
@@ -158,8 +157,8 @@
                 <img class="brand-logo"
                      src="~/images/mork-logo.svg"
                      alt=""
-                     width="56"
-                     height="56" />
+                     width="42"
+                     height="42"/>
 
                 <span class="brand-text">
                     <span class="brand-name">Ko/ordinert</span>
@@ -218,9 +217,16 @@
                     Om tjenesten
                 </a>
 
-                @* Min side fra main *@
-                @if (User.Identity?.IsAuthenticated != true ||
-                     User.IsInRole("ResourceProvider"))
+                @if (User.IsInRole("PublicActor"))
+                {
+                    <a asp-controller="PublicActor"
+                       asp-action="Index"
+                       aria-current="@(IsActive("PublicActor") ? "page" : null)">
+                        Min side
+                    </a>
+                }
+                else if (User.Identity?.IsAuthenticated != true ||
+                         User.IsInRole("ResourceProvider"))
                 {
                     <a asp-controller="ResourceProvider"
                        asp-action="Index"
@@ -263,6 +269,7 @@
 
         @* Bekreftelse etter registrering *@
         @if (!IsActive("ResourceProvider") &&
+             !IsActive("PublicActor") &&
              TempData["Success"] is string successMessage)
         {
             <div class="container">
@@ -283,9 +290,9 @@
                     <svg viewBox="0 0 1440 100"
                          preserveAspectRatio="none">
                         <path fill="#d9f1f0"
-                              d="M0 35 C180 -15 300 105 480 65 S760 15 950 65 S1230 90 1440 20 L1440 100 L0 100 Z" />
+                              d="M0 35 C180 -15 300 105 480 65 S760 15 950 65 S1230 90 1440 20 L1440 100 L0 100 Z"/>
                         <path fill="#9edbd7" fill-opacity=".8"
-                              d="M0 85 C200 45 310 115 520 80 S820 105 1030 65 S1270 110 1440 55 L1440 100 L0 100 Z" />
+                              d="M0 85 C200 45 310 115 520 80 S820 105 1030 65 S1270 110 1440 55 L1440 100 L0 100 Z"/>
                     </svg>
                 </div>
             </div>
@@ -297,10 +304,10 @@
 
                 <aside class="account-story">
                     <p class="eyebrow">En del av fellesskapet</p>
-                    <h2>Små bidrag.<br />Stor forskjell.</h2>
+                    <h2>Små bidrag.<br/>Stor forskjell.</h2>
                     <p>Sammen gjør vi lokale ressurser synlige når noen trenger dem.</p>
                     <img src="~/images/forsidelandskap.jpg"
-                         alt="Norsk kystsamfunn ved fjell og sjø" />
+                         alt="Norsk kystsamfunn ved fjell og sjø"/>
                 </aside>
 
                 <section class="account-panel">
@@ -420,5 +427,8 @@
 
     @await RenderSectionAsync("Scripts", required: false)
 
-</body>
-</html>
+    </body>
+    </html>
+    
+    
+}

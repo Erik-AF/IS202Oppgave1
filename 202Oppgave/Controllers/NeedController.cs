@@ -81,6 +81,7 @@ public class NeedController : Controller
         return View(ToModel(need));
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
@@ -90,6 +91,8 @@ public class NeedController : Controller
         {
             return NotFound();
         }
+
+        if (!OwnsNeed(need)) return Forbid();
 
         // Fyller redigeringsskjemaet med verdiene som allerede er lagret.
         var model = new NeedViewModel
@@ -107,6 +110,7 @@ public class NeedController : Controller
         return View(model);
     }
 
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, NeedViewModel model)
@@ -117,6 +121,8 @@ public class NeedController : Controller
         {
             return NotFound();
         }
+
+        if (!OwnsNeed(need)) return Forbid();
 
         if (!ModelState.IsValid)
         {
@@ -138,6 +144,7 @@ public class NeedController : Controller
         return RedirectToAction(nameof(Confirmation), new { id });
     }
 
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
@@ -148,6 +155,8 @@ public class NeedController : Controller
         {
             return NotFound();
         }
+
+        if (!OwnsNeed(need)) return Forbid();
 
         // Sletter behovet og sender brukeren tilbake til oversikten.
         await _needRepository.DeleteAsync(id);
@@ -176,12 +185,21 @@ public class NeedController : Controller
 
         return Json(data);
     }
+    private bool OwnsNeed(NeedEntity need)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return User.Identity?.IsAuthenticated == true
+            && !string.IsNullOrWhiteSpace(userId)
+            && userId == need.UserId;
+    }
+
     // Gjør databaseobjektet om til modellen som brukes i visningene.
-    private static Need ToModel(NeedEntity need)
+    private Need ToModel(NeedEntity need)
     {
         return new Need
         {
             Id = need.Id,
+            CanManage = OwnsNeed(need),
             Type = need.Type,
             Location = need.Location,
             Priority = need.Priority,
