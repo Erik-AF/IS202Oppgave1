@@ -1,0 +1,176 @@
+
+@{
+    ViewData["Title"] = "Min side";
+}
+
+<section class="provider-hero">
+    <div class="container provider-hero-content">
+        <div>
+            <span class="provider-eyebrow">
+                MIN SIDE – RESSURSLEVERANDØR
+            </span>
+
+            <h1>Hei, @ViewBag.FullName!</h1>
+            
+            <p>
+                Registrer nye ressurser, administrer eksisterende ressurser
+                og følg med på leveransestatus.
+            </p>
+        </div>
+    </div>
+</section>
+
+<partial name="_ProviderNavigation" />
+
+<section class="provider-overview">
+    <div class="container">
+
+        <div class="provider-dashboard-grid">
+
+            <div class="provider-register-card">
+
+                <div class="provider-register-content">
+                    <h2>Legg til en ressurs</h2>
+
+                    <p>
+                        Registrer nytt utstyr, kjøretøy eller
+                        andre ressurser du kan bidra med.
+                    </p>
+
+                    <a asp-controller="Resource"
+                       asp-action="Create"
+                       class="provider-add-button">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                        <span>Registrer ressurs</span>
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <div class="provider-register-illustration"
+                     aria-hidden="true">
+                    <svg viewBox="0 0 160 100"
+                         width="160"
+                         height="100"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+
+                        <g stroke="#194f43"
+                           stroke-width="3"
+                           stroke-linecap="round"
+                           stroke-linejoin="round">
+
+                            <path d="M80 58 C76 54 59 43 59 32 C59 20 74 17 80 29 C86 17 101 20 101 32 C101 43 84 54 80 58 Z"/>
+
+                            <circle cx="48" cy="66" r="9" />
+                            <circle cx="80" cy="73" r="9" />
+                            <circle cx="112" cy="66" r="9" />
+
+                            <path d="M30 93 C30 80 66 80 66 93" />
+                            <path d="M62 98 C62 85 98 85 98 98" />
+                            <path d="M94 93 C94 80 130 80 130 93" />
+
+                        </g>
+                    </svg>
+                </div>
+
+            </div>
+
+            <div class="provider-actions">
+                <h2>Hurtighandlinger</h2>
+
+                <a asp-controller="ResourceProvider"
+                   asp-action="Resources"
+                   class="provider-action-link">
+                    <span>
+                        <i class="bi bi-pencil" aria-hidden="true"></i>
+                        Rediger ressurser
+                    </span>
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </a>
+
+                <a asp-controller="Kart"
+                   asp-action="Oversikt"
+                   class="provider-action-link">
+                    <span>
+                        <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                        Vis på kart
+                    </span>
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </a>
+
+                <a asp-controller="ResourceProvider"
+                   asp-action="Resources"
+                   class="provider-action-link">
+                    <span>
+                        <i class="bi bi-toggle-on" aria-hidden="true"></i>
+                        Tilgjengelighet
+                    </span>
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="provider-resource-list">
+
+            <div class="provider-resource-list-header">
+                <h2>Mine ressurser</h2>
+
+                <a asp-controller="ResourceProvider"
+                   asp-action="Resources">
+                    Se alle ressurser →
+                </a>
+            </div>
+
+            @{
+                
+                var testResources = new[]
+                {
+                    new { Id = 1, Name = "Aggregat (100 kW)", Category = "Utstyr", Status = "Tilgjengelig", Icon = "bi-lightning-charge" },
+                    new { Id = 2, Name = "Telt (10 stk)", Category = "Utstyr", Status = "Tilgjengelig", Icon = "bi-house" },
+                    new { Id = 3, Name = "Vannpumpe", Category = "Utstyr", Status = "Utlånt", Icon = "bi-droplet" },
+                    new { Id = 4, Name = "Redningsbåt", Category = "Transport", Status = "Tilgjengelig", Icon = "bi-water" }
+                };
+
+            }
+
+            @foreach (var resource in testResources)
+            {
+                <div class="provider-resource-row provider-resource-demo">
+                    <div class="provider-resource-info">
+                        <div class="provider-resource-icon">
+                            <i class="bi @resource.Icon" aria-hidden="true"></i>
+                        </div>
+
+                        <div class="provider-resource-text">
+                            <h3>@resource.Name</h3>
+                            <p>@resource.Category</p>
+
+                            <span class="provider-resource-status @(resource.Status == "Tilgjengelig" ? "is-available" : "is-loaned")">
+                                <span class="provider-status-dot"></span>
+                                @resource.Status
+                            </span>
+                        </div>
+                    </div>
+
+                    <a asp-controller="Resource"
+                       asp-action="Details"
+                       asp-route-id="@resource.Id"
+                       class="provider-details-button">
+                        Se detaljer
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+            }
+
+        </div>
+
+    </div>
+</section>
+
+@section Head {
+    <link rel="stylesheet"
+          href="~/css/resource-provider.css"
+          asp-append-version="true" />
+}
+

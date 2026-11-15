@@ -67,27 +67,29 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.Area)));
     }
 
+    // Kontaktperson er valgfri inntil den hentes fra brukerprofilen
     [Fact]
-    public void MissingContactName_ShouldFailValidation()
+    public void EmptyContactName_ShouldPassValidation()
     {
         var model = CreateValidResource();
         model.ContactName = "";
 
         var results = Validate(model);
 
-        Assert.Contains(results, result =>
+        Assert.DoesNotContain(results, result =>
             result.MemberNames.Contains(nameof(ResourceViewModel.ContactName)));
     }
 
+    // Telefon er valgfri inntil den hentes fra brukerprofilen
     [Fact]
-    public void MissingContactPhone_ShouldFailValidation()
+    public void EmptyContactPhone_ShouldPassValidation()
     {
         var model = CreateValidResource();
         model.ContactPhone = "";
 
         var results = Validate(model);
 
-        Assert.Contains(results, result =>
+        Assert.DoesNotContain(results, result =>
             result.MemberNames.Contains(nameof(ResourceViewModel.ContactPhone)));
     }
 
