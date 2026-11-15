@@ -24,6 +24,7 @@ public class ResourceProviderController : Controller
         _signInManager = signInManager;
         _resourceRepository = resourceRepository;
     }
+   
     
     [HttpGet]
     public async Task<IActionResult> Index()
@@ -35,8 +36,11 @@ public class ResourceProviderController : Controller
 
         ViewBag.FullName = user.FullName;
 
-        return View();
+        var resources = await _resourceRepository.GetByUserIdAsync(user.Id);
+
+        return View(resources);
     }
+
     
     [HttpGet]
     public async Task<IActionResult> Resources()
