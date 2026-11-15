@@ -1,0 +1,109 @@
+
+@{
+    ViewData["Title"] = "Administrer behov";
+}
+
+<section class="provider-hero">
+    <div class="container provider-hero-content">
+        <div>
+            <span class="provider-eyebrow">
+                MIN SIDE – OFFENTLIG AKTØR
+            </span>
+
+            <h1>Administrer behov</h1>
+
+            <p>
+                Få oversikt over registreringene dine og følg
+                statusen på hvert enkelt behov.
+            </p>
+        </div>
+    </div>
+</section>
+
+<partial name="_PublicActorNavigation" />
+
+<section class="provider-overview">
+    <div class="container">
+
+        <div class="public-actor-stats">
+            <div class="public-actor-stat-card">
+                <i class="bi bi-layers" aria-hidden="true"></i>
+                <div>
+                    <strong>–</strong>
+                    <span>Aktive</span>
+                </div>
+            </div>
+
+            <div class="public-actor-stat-card">
+                <i class="bi bi-envelope" aria-hidden="true"></i>
+                <div>
+                    <strong>–</strong>
+                    <span>Under behandling</span>
+                </div>
+            </div>
+
+            <div class="public-actor-stat-card">
+                <i class="bi bi-check-circle" aria-hidden="true"></i>
+                <div>
+                    <strong>–</strong>
+                    <span>Løst</span>
+                </div>
+            </div>
+
+            <div class="public-actor-stat-card">
+                <i class="bi bi-folder2-open" aria-hidden="true"></i>
+                <div>
+                    <strong>–</strong>
+                    <span>Totalt</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="public-actor-create-banner">
+            <div>
+                <h2>Trenger du flere ressurser?</h2>
+                <p>Opprett en ny forespørsel om utstyr, transport eller annen bistand.</p>
+            </div>
+
+            <a asp-controller="Need"
+               asp-action="Create"
+               class="provider-add-button">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Opprett behov
+            </a>
+        </div>
+
+        <div class="public-actor-list-header">
+            <div>
+                <h2>Dine registreringer</h2>
+                <p>Oversikt over behov du har meldt inn.</p>
+            </div>
+        </div>
+
+        <div class="public-actor-empty-state">
+            <i class="bi bi-clipboard2-check" aria-hidden="true"></i>
+            <h3>Ingen registreringer å vise</h3>
+            <p>
+                Registreringene dine vil vises her når
+                oversikten kobles til databasen.
+            </p>
+
+            <a asp-controller="Need"
+               asp-action="Create"
+               class="provider-page-button">
+                Opprett behov
+            </a>
+        </div>
+
+    </div>
+</section>
+
+@section Head {
+    <link rel="stylesheet"
+          href="~/css/resource-provider.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/public-actor.css"
+          asp-append-version="true" />
+}
