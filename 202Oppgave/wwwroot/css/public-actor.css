@@ -1,5 +1,5 @@
 
-/* Statistikk */
+/* Statistikkort */
 .public-actor-stats {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -36,29 +36,57 @@
 
 /* Registreringsbanner */
 .public-actor-create-banner {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 24px;
-    padding: 36px 40px;
-    margin-bottom: 36px;
-    background: #e1ede2;
+    gap: 32px;
+    min-height: 155px;
+    padding: 32px 42px;
+    overflow: hidden;
     border-radius: 14px;
+    margin-bottom: 36px;
+
+    background:
+            radial-gradient(
+                    ellipse 55% 100% at 100% 100%,
+                    rgba(111, 169, 132, 0.12) 0%,
+                    transparent 80%
+            ),
+            linear-gradient(110deg, #e7eee5, #dcebdd);
+}
+
+.public-actor-create-banner > div:first-child {
+    position: relative;
+    z-index: 1;
+    max-width: 650px;
 }
 
 .public-actor-create-banner h2 {
-    color: #102b29;
     margin: 0 0 10px;
+    color: #102b29;
     font-size: 25px;
 }
 
 .public-actor-create-banner p {
     margin: 0;
     color: #405a50;
+    line-height: 1.5;
 }
 
-/* Registreringsoversikt */
+.public-actor-create-banner .provider-add-button {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+/* Behovsoversikt */
 .public-actor-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
     margin-bottom: 20px;
 }
 
@@ -73,6 +101,7 @@
     color: #65706a;
 }
 
+/* Tomtilstand */
 .public-actor-empty-state {
     background: white;
     border: 1px solid #dfe5df;
@@ -96,6 +125,25 @@
     margin-bottom: 24px;
 }
 
+/* Knapp i tomtilstanden */
+.public-actor-empty-state .provider-page-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: #00513d;
+    color: white;
+    border-radius: 9px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.public-actor-empty-state .provider-page-button:hover {
+    background: #093833;
+    color: white;
+}
+
 /* Responsivt oppsett */
 @media (max-width: 900px) {
     .public-actor-stats {
@@ -113,240 +161,14 @@
         align-items: flex-start;
         padding: 28px;
     }
-}
 
-/* Registreringsbanner */
-.public-actor-banner-icon {
-    font-size: 68px;
-    color: #18594e;
-    flex-shrink: 0;
-}
-
-.public-actor-create-banner .provider-add-button {
-    flex-shrink: 0;
-}
-
-/* Oversikt og søkeverktøy */
-.public-actor-list-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.public-actor-list-tools {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.public-actor-search {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    background: white;
-    border: 1px solid #dfe5df;
-    border-radius: 9px;
-}
-
-.public-actor-search input {
-    border: none;
-    outline: none;
-    background: transparent;
-    font: inherit;
-    min-width: 180px;
-}
-
-.public-actor-list-tools select {
-    padding: 12px 16px;
-    border: 1px solid #dfe5df;
-    border-radius: 9px;
-    background: white;
-    font: inherit;
-}
-
-.public-actor-list-tools input:disabled,
-.public-actor-list-tools select:disabled {
-    cursor: not-allowed;
-    opacity: 0.65;
-}
-
-@media (max-width: 900px) {
-    .public-actor-banner-icon {
-        display: none;
-    }
-}
-
-@media (max-width: 600px) {
-    .public-actor-list-tools,
-    .public-actor-search {
-        width: 100%;
-    }
-
-    .public-actor-search input {
-        min-width: 0;
-        width: 100%;
-    }
-}
-
-/* Registreringsbanner */
-.public-actor-create-banner {
-    position: relative;
-    overflow: hidden;
-    min-height: 160px;
-    background: linear-gradient(120deg, #e1ede2 0%, #eaf2e9 55%, #dcebdc 100%);
-}
-
-.public-actor-create-banner > div:first-child {
-    position: relative;
-    z-index: 1;
-    max-width: 520px;
-}
-
-.public-actor-banner-illustration {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 130px;
-    height: 130px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    background: rgba(25, 79, 67, 0.07);
-    color: #18594e;
-}
-
-.public-actor-banner-illustration i {
-    font-size: 64px;
-}
-
-.public-actor-create-banner .provider-add-button {
-    position: relative;
-    z-index: 1;
-}
-
-@media (max-width: 900px) {
-    .public-actor-banner-illustration {
-        display: none;
-    }
-}
-
-/* Kompakt registreringsbanner */
-.public-actor-create-banner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 90px auto;
-    align-items: center;
-    gap: 36px;
-    min-height: 145px;
-    padding: 28px 40px;
-    background: linear-gradient(115deg, #e7eee5 0%, #dcebdd 100%);
-}
-
-.public-actor-create-banner > div:first-child {
-    max-width: none;
-}
-
-.public-actor-create-banner h2 {
-    margin-bottom: 10px;
-}
-
-.public-actor-create-banner p {
-    max-width: 580px;
-    line-height: 1.5;
-}
-
-.public-actor-banner-illustration {
-    width: 90px;
-    height: 90px;
-    background: transparent;
-    border-radius: 0;
-}
-
-.public-actor-banner-illustration i {
-    font-size: 66px;
-}
-
-@media (max-width: 900px) {
-    .public-actor-create-banner {
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 20px;
-    }
-
-    .public-actor-banner-illustration {
-        display: none;
-    }
-}
-
-@media (max-width: 600px) {
-    .public-actor-create-banner {
-        grid-template-columns: 1fr;
-        padding: 24px;
-    }
-}
-
-/* Registreringsbanner med dekorative bølger */
-.public-actor-create-banner {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 32px;
-    min-height: 160px;
-    padding: 32px 42px;
-    overflow: hidden;
-    isolation: isolate;
-    background: linear-gradient(110deg, #e7eee5, #dcebdd);
-    border-radius: 14px;
-}
-
-/* Store, myke former i bakgrunnen */
-.public-actor-create-banner::before {
-    content: "";
-    position: absolute;
-    width: 65%;
-    height: 300px;
-    right: -12%;
-    bottom: -230px;
-    border-radius: 50%;
-    background: rgba(72, 151, 113, 0.13);
-    transform: rotate(-12deg);
-    pointer-events: none;
-    z-index: -1;
-}
-
-.public-actor-create-banner::after {
-    content: "";
-    position: absolute;
-    width: 75%;
-    height: 260px;
-    right: 12%;
-    top: -215px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.32);
-    transform: rotate(-8deg);
-    pointer-events: none;
-    z-index: -1;
-}
-
-/* Holder innholdet over dekorasjonen */
-.public-actor-create-banner > div:first-child {
-    position: relative;
-    z-index: 1;
-    max-width: 650px;
-}
-
-.public-actor-create-banner .provider-add-button {
-    position: relative;
-    z-index: 1;
-    flex-shrink: 0;
-}
-
-@media (max-width: 600px) {
-    .public-actor-create-banner {
-        flex-direction: column;
+    .public-actor-list-header {
         align-items: flex-start;
-        padding: 28px;
+    }
+
+    .public-actor-empty-state {
+        padding: 40px 20px;
     }
 }
+
+
