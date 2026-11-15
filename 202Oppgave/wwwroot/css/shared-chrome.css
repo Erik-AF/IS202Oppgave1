@@ -1,0 +1,13 @@
+/* Felles ramme bruker kartoversiktens farge, også når sidestiler lastes. */
+body.design-concept.shared-chrome .site-header,
+body.design-concept.shared-chrome .site-header .main-nav { background: #093833 !important; }
+body.design-concept.shared-chrome .site-header .nav-login { background: transparent !important; }
+body.design-concept .site-footer.shared-footer { background: #093833; padding-block: 58px 0; color: #d6e0dc; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.65; }
+body.design-concept .shared-footer .container { max-width: 1240px; padding-inline: 32px; }
+body.design-concept .shared-footer .footer-brand { font-size: 1.7rem; letter-spacing: -.04em; font-weight: 650; text-decoration: none; color: white; }
+body.design-concept .shared-footer .footer-brand-lockup { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+body.design-concept .shared-footer .footer-brand-lockup img { flex-shrink: 0; }
+body.design-concept .shared-footer .footer-brand-lockup small { display: block; font-size: .75rem; font-weight: 400; letter-spacing: 0; margin-top: 6px; color: #e0ebe7; }
+body.design-concept .shared-footer .eyebrow { text-transform: uppercase; letter-spacing: .15em; font-size: .72rem; font-weight: 700; margin: 0 0 22px; }
+body.design-concept .shared-footer p { text-wrap: pretty; }
+body.design-concept .shared-footer .footer-bottom { margin-top: 55px; border-top: 1px solid #3c5055; padding-block: 22px; display: flex; justify-content: space-between; gap: 20px; font-size: .72rem; color: #bccbc5; }
