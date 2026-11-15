@@ -191,3 +191,162 @@
         width: 100%;
     }
 }
+
+/* Registreringsbanner */
+.public-actor-create-banner {
+    position: relative;
+    overflow: hidden;
+    min-height: 160px;
+    background: linear-gradient(120deg, #e1ede2 0%, #eaf2e9 55%, #dcebdc 100%);
+}
+
+.public-actor-create-banner > div:first-child {
+    position: relative;
+    z-index: 1;
+    max-width: 520px;
+}
+
+.public-actor-banner-illustration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 130px;
+    height: 130px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(25, 79, 67, 0.07);
+    color: #18594e;
+}
+
+.public-actor-banner-illustration i {
+    font-size: 64px;
+}
+
+.public-actor-create-banner .provider-add-button {
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 900px) {
+    .public-actor-banner-illustration {
+        display: none;
+    }
+}
+
+/* Kompakt registreringsbanner */
+.public-actor-create-banner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 90px auto;
+    align-items: center;
+    gap: 36px;
+    min-height: 145px;
+    padding: 28px 40px;
+    background: linear-gradient(115deg, #e7eee5 0%, #dcebdd 100%);
+}
+
+.public-actor-create-banner > div:first-child {
+    max-width: none;
+}
+
+.public-actor-create-banner h2 {
+    margin-bottom: 10px;
+}
+
+.public-actor-create-banner p {
+    max-width: 580px;
+    line-height: 1.5;
+}
+
+.public-actor-banner-illustration {
+    width: 90px;
+    height: 90px;
+    background: transparent;
+    border-radius: 0;
+}
+
+.public-actor-banner-illustration i {
+    font-size: 66px;
+}
+
+@media (max-width: 900px) {
+    .public-actor-create-banner {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 20px;
+    }
+
+    .public-actor-banner-illustration {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .public-actor-create-banner {
+        grid-template-columns: 1fr;
+        padding: 24px;
+    }
+}
+
+/* Registreringsbanner med dekorative bølger */
+.public-actor-create-banner {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+    min-height: 160px;
+    padding: 32px 42px;
+    overflow: hidden;
+    isolation: isolate;
+    background: linear-gradient(110deg, #e7eee5, #dcebdd);
+    border-radius: 14px;
+}
+
+/* Store, myke former i bakgrunnen */
+.public-actor-create-banner::before {
+    content: "";
+    position: absolute;
+    width: 65%;
+    height: 300px;
+    right: -12%;
+    bottom: -230px;
+    border-radius: 50%;
+    background: rgba(72, 151, 113, 0.13);
+    transform: rotate(-12deg);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.public-actor-create-banner::after {
+    content: "";
+    position: absolute;
+    width: 75%;
+    height: 260px;
+    right: 12%;
+    top: -215px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.32);
+    transform: rotate(-8deg);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Holder innholdet over dekorasjonen */
+.public-actor-create-banner > div:first-child {
+    position: relative;
+    z-index: 1;
+    max-width: 650px;
+}
+
+.public-actor-create-banner .provider-add-button {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .public-actor-create-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 28px;
+    }
+}
