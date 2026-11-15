@@ -123,13 +123,15 @@
             </div>
 
             @{
+                
                 var testResources = new[]
                 {
                     new { Id = 1, Name = "Aggregat (100 kW)", Category = "Utstyr", Status = "Tilgjengelig", Icon = "bi-lightning-charge" },
                     new { Id = 2, Name = "Telt (10 stk)", Category = "Utstyr", Status = "Tilgjengelig", Icon = "bi-house" },
-                    new { Id = 3, Name = "Transport (minibuss)", Category = "Transport", Status = "Utlånt", Icon = "bi-truck" },
-                    new { Id = 4, Name = "Redningsbåt", Category = "Kjøretøy", Status = "Tilgjengelig", Icon = "bi-water" }
+                    new { Id = 3, Name = "Vannpumpe", Category = "Utstyr", Status = "Utlånt", Icon = "bi-droplet" },
+                    new { Id = 4, Name = "Redningsbåt", Category = "Transport", Status = "Tilgjengelig", Icon = "bi-water" }
                 };
+
             }
 
             @foreach (var resource in testResources)
