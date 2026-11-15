@@ -160,10 +160,17 @@
                    aria-current="@(IsActive("Information") ? "page" : null)">
                     Om tjenesten
                 </a>
-
-               
-                @if (User.Identity?.IsAuthenticated != true ||
-                     User.IsInRole("ResourceProvider"))
+                
+                @if (User.IsInRole("PublicActor"))
+                {
+                    <a asp-controller="PublicActor"
+                       asp-action="Index"
+                       aria-current="@(IsActive("PublicActor") ? "page" : null)">
+                        Min side
+                    </a>
+                }
+                else if (User.Identity?.IsAuthenticated != true ||
+                         User.IsInRole("ResourceProvider"))
                 {
                     <a asp-controller="ResourceProvider"
                        asp-action="Index"
