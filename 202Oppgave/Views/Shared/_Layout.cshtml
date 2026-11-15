@@ -209,6 +209,7 @@
           tabindex="-1">
 
         @if (!IsActive("ResourceProvider") &&
+             !IsActive("PublicActor") &&
              TempData["Success"] is string successMessage)
         {
             <div class="container">

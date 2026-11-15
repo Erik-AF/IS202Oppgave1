@@ -19,6 +19,13 @@
             </p>
         </div>
 
+        @if (TempData["Success"] is string successMessage)
+        {
+            <div class="alert alert-success" role="status">
+                @successMessage
+            </div>
+        }
+        
         <div class="provider-profile-layout">
 
             <div class="provider-page-card">
