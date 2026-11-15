@@ -15,6 +15,9 @@ public interface IResourceRepository
 
     // Hent én ressurs basert på ID
     Task<Resource?> GetByIdAsync(int id);
+    
+    // Hent alle ressurser som en bestemt bruker har registrert
+    Task<List<Resource>> GetByUserIdAsync(string userId);
 
     // Slett en ressurs
     Task DeleteAsync(int id);

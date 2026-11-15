@@ -39,6 +39,12 @@ public class ResourceControllerTests
             return Task.FromResult(
                 Resources.FirstOrDefault(r => r.Id == id));
         }
+        
+        public Task<List<Resource>> GetByUserIdAsync(string userId)
+        {
+            return Task.FromResult(
+                Resources.Where(r => r.UserId == userId).ToList());
+        }
 
         public Task DeleteAsync(int id)
         {

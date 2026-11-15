@@ -42,6 +42,16 @@ public class ResourceRepository : IResourceRepository
             .Include(r => r.User)
             .FirstOrDefaultAsync(r => r.Id == id);
     }
+    
+    // Hent ressursene til én bruker, med kategorien, nyeste først
+    public async Task<List<Resource>> GetByUserIdAsync(string userId)
+    {
+        return await _context.Resources
+            .Include(r => r.Category)
+            .Where(r => r.UserId == userId)
+            .OrderByDescending(r => r.Id)
+            .ToListAsync();
+    }
 
     // Slett ressurs
     public async Task DeleteAsync(int id)

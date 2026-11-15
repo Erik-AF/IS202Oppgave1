@@ -4,6 +4,7 @@ using _202Oppgave.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using _202Oppgave.DataAccess.Repositories;
 
 namespace _202Oppgave.Controllers;
 
@@ -12,16 +13,17 @@ public class ResourceProviderController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IResourceRepository _resourceRepository;
 
     public ResourceProviderController(
         UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager)
+        SignInManager<ApplicationUser> signInManager,
+        IResourceRepository resourceRepository)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _resourceRepository = resourceRepository;
     }
-
-    [HttpGet]
     
     [HttpGet]
     public async Task<IActionResult> Index()
@@ -37,9 +39,18 @@ public class ResourceProviderController : Controller
     }
     
     [HttpGet]
-    public IActionResult Resources()
+    public async Task<IActionResult> Resources()
     {
-        return View();
+        // Henter ID-en til den innloggede brukeren
+        var userId = _userManager.GetUserId(User);
+
+        if (userId == null)
+            return Challenge();
+
+        // Viser bare ressursene denne brukeren har registrert
+        var resources = await _resourceRepository.GetByUserIdAsync(userId);
+
+        return View(resources);
     }
 
     [HttpGet]
