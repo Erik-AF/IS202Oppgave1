@@ -12,68 +12,17 @@
 }
 
 @section Head {
-    <style>
-        /* Skjema til venstre og kart til høyre, samme som Registrer ressurs */
-        #resource-layout {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 2rem;
-            align-items: start;
-        }
-
-        /* Sørger for at kartet passer i kolonnen */
-        #resource-layout .resource-map-panel {
-            min-width: 0;
-        }
-
-        /* Kartets størrelse */
-        #resource-map {
-            height: 550px;
-            width: 100%;
-            border-radius: 12px;
-        }
-
-        /* Små koordinatfelt ved siden av hverandre under kartet */
-        .resource-coords {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 0.75rem;
-        }
-
-        /* Mindre tekst, så feltene ikke tar fokus fra skjemaet */
-        .resource-coords label,
-        .resource-coords input {
-            font-size: 0.85rem;
-        }
-
-        /* Grå bakgrunn viser at feltene ikke kan redigeres.
-           Må være mer spesifikk enn .form-control[readonly] i components.css */
-        .resource-coords .form-control[readonly] {
-            background-color: #edeeec;
-            color: var(--muted);
-            cursor: default;
-        }
-
-        /* Ingen blå fokusramme når man klikker i feltene */
-        .resource-coords .form-control[readonly]:focus {
-            border-color: var(--line-strong);
-            box-shadow: none;
-        }
-
-        /* På mobil legges kartet under skjemaet */
-        @@media (max-width: 800px) {
-            #resource-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/need.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/resource-edit.css" asp-append-version="true" />
 }
 
-<div class="container home-content">
-    <a class="back-link" asp-action="Index">← Til ressursoversikten</a>
-    <p class="eyebrow">Bidra til beredskapen</p>
+<div class="container home-content need-design">
+    <nav class="need-breadcrumb" aria-label="Brødsmuler">
+        <a asp-action="Index">Ressurser</a><span aria-hidden="true">/</span>
+        <span aria-current="page">Rediger ressurs</span>
+    </nav>
     <h1>Rediger ressurs</h1>
+    <p class="page-intro">Oppdater opplysningene og plasseringen for ressursen.</p>
 
     @* Skjemaet omslutter både feltene og kartet, slik at koordinatene under kartet sendes med *@
     <form id="resource-layout"
@@ -85,6 +34,7 @@
 
         @* Venstre kolonne: skjemafeltene *@
         <div class="card" style="padding:2rem; min-width:0;">
+            <h2 class="need-section-title"><span class="need-step" aria-hidden="true">1</span>Om ressursen</h2>
 
             @* Sender kartformen sammen med ressursen. *@
             <input asp-for="GeometryJson" type="hidden" />
@@ -128,22 +78,8 @@
                 <span asp-validation-for="AvailableTo" style="color:var(--brick);"></span>
             </div>
 
-            <div style="margin-bottom:1rem;">
-                <label asp-for="ContactName"></label>
-                <input asp-for="ContactName" class="form-control"/>
-                <span asp-validation-for="ContactName" style="color:var(--brick);"></span>
-            </div>
 
-            <div style="margin-bottom:1rem;">
-                <label asp-for="ContactPhone"></label>
-                <input asp-for="ContactPhone" class="form-control"/>
-                <span asp-validation-for="ContactPhone" style="color:var(--brick);"></span>
-            </div>
 
-            <div style="margin-bottom:1rem;">
-                <label asp-for="ContactEmail"></label>
-                <input asp-for="ContactEmail" class="form-control"/>
-            </div>
 
             <div style="margin-bottom:1rem;">
                 <label asp-for="Status"></label>
@@ -154,10 +90,6 @@
                 </select>
             </div>
 
-            <div style="margin-bottom:1.5rem;">
-                <label asp-for="OwnerName"></label>
-                <input asp-for="OwnerName" class="form-control"/>
-            </div>
 
             @* Bilde av ressursen. Velg et nytt for å bytte, ellers beholdes dagens. *@
             <div style="margin-bottom:1.5rem;">
@@ -185,6 +117,7 @@
 
         @* Høyre kolonne: kartet og koordinatene *@
         <div class="resource-map-panel">
+            <h2 class="need-section-title"><span class="need-step" aria-hidden="true">2</span>Plassering</h2>
             <p>
                 Flytt markeringen med redigeringsknappen (blyanten) i kartet,
                 eller tegn en ny markering for å erstatte den gamle.

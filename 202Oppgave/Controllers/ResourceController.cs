@@ -371,11 +371,7 @@ public class ResourceController : Controller
         entity.GeometryJson = model.GeometryJson;
         entity.AvailableFrom = model.AvailableFrom;
         entity.AvailableTo = model.AvailableTo;
-        entity.ContactName = model.ContactName;
-        entity.ContactPhone = model.ContactPhone;
-        entity.ContactEmail = model.ContactEmail;
         entity.Status = model.Status;
-        entity.OwnerName = model.OwnerName;
         entity.CategoryId = model.CategoryId;
 
         // Lagre i MariaDB
