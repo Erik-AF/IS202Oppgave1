@@ -231,7 +231,7 @@ public class ResourceController : Controller
             ContactPhone = entity.ContactPhone,
             ContactEmail = entity.ContactEmail,
             Status = entity.Status,
-            OwnerName = entity.OwnerName,
+            OwnerName = entity.User?.FullName ?? entity.OwnerName,
             ImagePath = entity.ImagePath,
             CategoryId = entity.CategoryId
 
@@ -324,7 +324,7 @@ public class ResourceController : Controller
             ContactPhone = entity.User?.PhoneNumber ?? entity.ContactPhone,
             ContactEmail = entity.User?.Email ?? entity.ContactEmail,
             Status = entity.Status,
-            OwnerName = entity.OwnerName,
+            OwnerName = entity.User?.FullName ?? entity.OwnerName,
             ImagePath = entity.ImagePath,
             GeometryJson = entity.GeometryJson,
             CategoryName = entity.Category?.Name
