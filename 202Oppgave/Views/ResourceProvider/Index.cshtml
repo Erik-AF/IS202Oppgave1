@@ -1,24 +1,8 @@
+@model List<_202Oppgave.Models.Entities.Resource>
 
 @{
     ViewData["Title"] = "Min side";
 }
-
-<section class="provider-hero">
-    <div class="container provider-hero-content">
-        <div>
-            <span class="provider-eyebrow">
-                MIN SIDE – RESSURSLEVERANDØR
-            </span>
-
-            <h1>Hei, @ViewBag.FullName!</h1>
-            
-            <p>
-                Registrer nye ressurser, administrer eksisterende ressurser
-                og følg med på leveransestatus.
-            </p>
-        </div>
-    </div>
-</section>
 
 <partial name="_ProviderNavigation" />
 
@@ -122,29 +106,26 @@
                 </a>
             </div>
 
-            @{
-                
-                var testResources = new[]
-                {
-                    new { Id = 1, Name = "Aggregat (100 kW)", Category = "Utstyr", Status = "Tilgjengelig", Icon = "bi-lightning-charge" },
-                    new { Id = 2, Name = "Telt (10 stk)", Category = "Utstyr", Status = "Tilgjengelig", Icon = "bi-house" },
-                    new { Id = 3, Name = "Vannpumpe", Category = "Utstyr", Status = "Utlånt", Icon = "bi-droplet" },
-                    new { Id = 4, Name = "Redningsbåt", Category = "Transport", Status = "Tilgjengelig", Icon = "bi-water" }
-                };
-
+            @if (Model.Count == 0)
+            {
+                <div class="provider-empty-state">
+                    <i class="bi bi-box-seam" aria-hidden="true"></i>
+                    <h3>Ingen ressurser å vise ennå</h3>
+                    <p>Ressursene du registrerer vises her.</p>
+                </div>
             }
 
-            @foreach (var resource in testResources)
+            @foreach (var resource in Model)
             {
                 <div class="provider-resource-row provider-resource-demo">
                     <div class="provider-resource-info">
                         <div class="provider-resource-icon">
-                            <i class="bi @resource.Icon" aria-hidden="true"></i>
+                            <i class="bi bi-box-seam" aria-hidden="true"></i>
                         </div>
 
                         <div class="provider-resource-text">
-                            <h3>@resource.Name</h3>
-                            <p>@resource.Category</p>
+                            <h3>@resource.Type</h3>
+                            <p>@(resource.Category?.Name ?? "Ingen kategori")</p>
 
                             <span class="provider-resource-status @(resource.Status == "Tilgjengelig" ? "is-available" : "is-loaned")">
                                 <span class="provider-status-dot"></span>
