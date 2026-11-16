@@ -33,9 +33,8 @@ public class ResourceProviderController : Controller
         if (user == null)
             return Challenge();
 
-        ViewBag.FullName = user.FullName;
-
-        return View();
+        var resources = await _resourceRepository.GetByUserIdAsync(user.Id);
+        return View(resources.Take(4).ToList());
     }
     
     [HttpGet]
