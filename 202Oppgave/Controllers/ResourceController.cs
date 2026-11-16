@@ -61,6 +61,26 @@ public class ResourceController : Controller
             AreaOptions = all.Select(r => r.Area).Distinct().OrderBy(a => a).ToList()
         };
 
+        model.Resources = FilterResources(all, q, category, status, area, sort).ToList();
+        return View(model);
+    }
+
+    [HttpGet]
+    [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
+    public async Task<IActionResult> ExportExcel(string? q, string? category, string? status, string? area, string? sort)
+    {
+        var all = (await _repo.GetAllAsync()).Select(ToModel);
+        var resources = FilterResources(all, q, category, status, area, sort)
+            .Where(r => r.Status == "Tilgjengelig").ToList();
+        var exportedAt = DateTimeOffset.UtcNow;
+        var bytes = _202Oppgave.Services.ResourceExcelExport.Create(resources, exportedAt);
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"ressurser-{exportedAt:yyyyMMdd-HHmmss}.xlsx");
+    }
+
+    private static IEnumerable<ResourceModel> FilterResources(IEnumerable<ResourceModel> all,
+        string? q, string? category, string? status, string? area, string? sort)
+    {
         // Starter med alle, og fjerner det som ikke passer for hvert filter
         IEnumerable<Models.Resource> result = all;
 
@@ -98,10 +118,8 @@ public class ResourceController : Controller
             _ => result.OrderByDescending(r => r.Id)
         };
 
-        model.Resources = result.ToList();
-        return View(model);
+        return result;
     }
-
     // GET: /Resource/Create
     // Viser et tomt registreringsskjema.
     // ResourceProvider og Admin kan åpne Create
