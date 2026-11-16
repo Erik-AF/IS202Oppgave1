@@ -231,7 +231,7 @@ public class ResourceController : Controller
             ContactPhone = entity.ContactPhone,
             ContactEmail = entity.ContactEmail,
             Status = entity.Status,
-            OwnerName = entity.OwnerName,
+            OwnerName = entity.User?.FullName ?? entity.OwnerName,
             ImagePath = entity.ImagePath,
             CategoryId = entity.CategoryId
 
@@ -324,7 +324,7 @@ public class ResourceController : Controller
             ContactPhone = entity.User?.PhoneNumber ?? entity.ContactPhone,
             ContactEmail = entity.User?.Email ?? entity.ContactEmail,
             Status = entity.Status,
-            OwnerName = entity.OwnerName,
+            OwnerName = entity.User?.FullName ?? entity.OwnerName,
             ImagePath = entity.ImagePath,
             GeometryJson = entity.GeometryJson,
             CategoryName = entity.Category?.Name
@@ -371,11 +371,7 @@ public class ResourceController : Controller
         entity.GeometryJson = model.GeometryJson;
         entity.AvailableFrom = model.AvailableFrom;
         entity.AvailableTo = model.AvailableTo;
-        entity.ContactName = model.ContactName;
-        entity.ContactPhone = model.ContactPhone;
-        entity.ContactEmail = model.ContactEmail;
         entity.Status = model.Status;
-        entity.OwnerName = model.OwnerName;
         entity.CategoryId = model.CategoryId;
 
         // Lagre i MariaDB
