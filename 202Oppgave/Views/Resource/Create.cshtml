@@ -340,6 +340,21 @@ ViewData["Title"] = "Registrer ressurs";
                 <input asp-for="Area" class="form-control"/>
                 <span asp-validation-for="Area" class="text-danger"></span>
             </div>
+            
+            @* Tidsrom ressursen er tilgjengelig. Begge er valgfrie.
+               Viewmodellen sjekker at "til" ikke er før "fra". *@
+            <div class="rr-row">
+                <div>
+                    <label asp-for="AvailableFrom" class="rr-label">Tilgjengelig fra <em>valgfritt</em></label>
+                    <input asp-for="AvailableFrom" class="form-control" type="date"/>
+                    <span asp-validation-for="AvailableFrom" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="AvailableTo" class="rr-label">Tilgjengelig til <em>valgfritt</em></label>
+                    <input asp-for="AvailableTo" class="form-control" type="date"/>
+                    <span asp-validation-for="AvailableTo" class="text-danger"></span>
+                </div>
+            </div>
 
             @* Valgfritt ressursbilde.
                Hele den stiplede boksen er en <label> for filfeltet,
