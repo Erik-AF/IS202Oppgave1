@@ -24,6 +24,7 @@ public class ResourceProviderController : Controller
         _signInManager = signInManager;
         _resourceRepository = resourceRepository;
     }
+   
     
     [HttpGet]
     public async Task<IActionResult> Index()
@@ -33,9 +34,12 @@ public class ResourceProviderController : Controller
         if (user == null)
             return Challenge();
 
+        ViewBag.FullName = user.FullName;
+
         var resources = await _resourceRepository.GetByUserIdAsync(user.Id);
         return View(resources.Take(4).ToList());
     }
+
     
     [HttpGet]
     public async Task<IActionResult> Resources()
