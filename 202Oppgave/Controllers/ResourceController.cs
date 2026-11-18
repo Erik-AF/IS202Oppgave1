@@ -61,6 +61,26 @@ public class ResourceController : Controller
             AreaOptions = all.Select(r => r.Area).Distinct().OrderBy(a => a).ToList()
         };
 
+        model.Resources = FilterResources(all, q, category, status, area, sort).ToList();
+        return View(model);
+    }
+
+    [HttpGet]
+    [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
+    public async Task<IActionResult> ExportExcel(string? q, string? category, string? status, string? area, string? sort)
+    {
+        var all = (await _repo.GetAllAsync()).Select(ToModel);
+        var resources = FilterResources(all, q, category, status, area, sort)
+            .Where(r => r.Status == "Tilgjengelig").ToList();
+        var exportedAt = DateTimeOffset.UtcNow;
+        var bytes = _202Oppgave.Services.ResourceExcelExport.Create(resources, exportedAt);
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"ressurser-{exportedAt:yyyyMMdd-HHmmss}.xlsx");
+    }
+
+    private static IEnumerable<ResourceModel> FilterResources(IEnumerable<ResourceModel> all,
+        string? q, string? category, string? status, string? area, string? sort)
+    {
         // Starter med alle, og fjerner det som ikke passer for hvert filter
         IEnumerable<Models.Resource> result = all;
 
@@ -98,10 +118,8 @@ public class ResourceController : Controller
             _ => result.OrderByDescending(r => r.Id)
         };
 
-        model.Resources = result.ToList();
-        return View(model);
+        return result;
     }
-
     // GET: /Resource/Create
     // Viser et tomt registreringsskjema.
     // ResourceProvider og Admin kan åpne Create
@@ -213,7 +231,7 @@ public class ResourceController : Controller
             ContactPhone = entity.ContactPhone,
             ContactEmail = entity.ContactEmail,
             Status = entity.Status,
-            OwnerName = entity.OwnerName,
+            OwnerName = entity.User?.FullName ?? entity.OwnerName,
             ImagePath = entity.ImagePath,
             CategoryId = entity.CategoryId
 
@@ -306,7 +324,7 @@ public class ResourceController : Controller
             ContactPhone = entity.User?.PhoneNumber ?? entity.ContactPhone,
             ContactEmail = entity.User?.Email ?? entity.ContactEmail,
             Status = entity.Status,
-            OwnerName = entity.OwnerName,
+            OwnerName = entity.User?.FullName ?? entity.OwnerName,
             ImagePath = entity.ImagePath,
             GeometryJson = entity.GeometryJson,
             CategoryName = entity.Category?.Name
@@ -353,11 +371,7 @@ public class ResourceController : Controller
         entity.GeometryJson = model.GeometryJson;
         entity.AvailableFrom = model.AvailableFrom;
         entity.AvailableTo = model.AvailableTo;
-        entity.ContactName = model.ContactName;
-        entity.ContactPhone = model.ContactPhone;
-        entity.ContactEmail = model.ContactEmail;
         entity.Status = model.Status;
-        entity.OwnerName = model.OwnerName;
         entity.CategoryId = model.CategoryId;
 
         // Lagre i MariaDB

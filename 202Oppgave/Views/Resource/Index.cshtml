@@ -33,6 +33,7 @@
 }
 
 @section Head {
+    <link rel="stylesheet" href="~/css/resource-export.css" asp-append-version="true" />
     <style>
         /* --- Allokering: avkrysningsboks per rad og knapp under listen --- */
 
@@ -130,7 +131,10 @@
             </select>
 
             <button type="submit" class="rl-btn rl-btn--full">Filtrer</button>
-            <a asp-action="Index" class="rl-reset">Nullstill filter</a>
+            <div class="resource-filter-actions">
+                <a asp-action="Index" class="rl-reset">Nullstill filter</a>
+                <button type="submit" asp-action="ExportExcel" class="rl-btn" title="Last ned tilgjengelige ressurser som matcher filtrene">Last ned Excel</button>
+            </div>
         </form>
 
         @* ===== Listen =====

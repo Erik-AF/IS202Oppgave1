@@ -37,8 +37,7 @@ public class ResourceProviderController : Controller
         ViewBag.FullName = user.FullName;
 
         var resources = await _resourceRepository.GetByUserIdAsync(user.Id);
-
-        return View(resources);
+        return View(resources.Take(4).ToList());
     }
 
     
