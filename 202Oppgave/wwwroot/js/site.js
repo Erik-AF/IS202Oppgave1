@@ -121,3 +121,21 @@
         }
     }, { passive: true });
 })();
+// Profilmenyen lukkes ved klikk utenfor, tabbing ut eller Escape.
+(function () {
+    const menu = document.querySelector('.profile-menu');
+    if (!menu) return;
+    document.addEventListener('click', function (event) {
+        if (!menu.contains(event.target)) menu.open = false;
+    });
+    menu.addEventListener('focusout', function (event) {
+        if (!menu.contains(event.relatedTarget)) menu.open = false;
+    });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && menu.open) {
+            menu.open = false;
+            menu.querySelector('summary').focus();
+            event.stopImmediatePropagation();
+        }
+    }, true);
+})();

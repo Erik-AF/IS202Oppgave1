@@ -99,7 +99,17 @@
 
         @* Knappene får samme stil som på behovssiden (fra need.css) *@
         <div class="detail-actions">
-            <p><a asp-action="Index" class="btn btn-primary">Se alle ressurser</a></p>
+            @* Providere går til sine egne ressurser på Min side.
+               Offentlige aktører og admin går til ressurslisten. *@
+            @if (User.IsInRole("ResourceProvider"))
+            {
+                <p><a asp-controller="ResourceProvider" asp-action="Resources" class="btn btn-primary">Se alle ressurser</a></p>
+            }
+            else
+            {
+                <p><a asp-action="Index" class="btn btn-primary">Se alle ressurser</a></p>
+            }
+
             @* Rediger og Slett vises bare for eieren og admin *@
             @if (Model.CanManage)
             {
