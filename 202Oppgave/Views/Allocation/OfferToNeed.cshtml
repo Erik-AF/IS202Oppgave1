@@ -1,0 +1,38 @@
+@model _202Oppgave.ViewModels.AllocateViewModel
+@{
+    ViewData["Title"] = "Alloker ressurs";
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/need.css" asp-append-version="true" />
+}
+<div class="container home-content need-design need-details">
+    <div class="card detail-card">
+        <h1>Alloker ressurs</h1>
+        <p>Velg en av dine tilgjengelige ressurser til <strong>@Model.NeedOptions.Single().Text</strong>.</p>
+        <p>Tilbudet sendes til behovets eier for godkjenning på neste side.</p>
+        <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+        @if (Model.Resources.Count > 0)
+        {
+            <form asp-action="Create" method="get">
+                <input asp-for="NeedId" type="hidden" />
+                <label for="offer-resource">Din ressurs</label>
+                <select id="offer-resource" name="resourceIds" class="form-select" required>
+                    <option value="">Velg ressurs</option>
+                    @foreach (var resource in Model.Resources)
+                    {
+                        <option value="@resource.Id">@resource.Type – @resource.Area</option>
+                    }
+                </select>
+                <div class="detail-actions">
+                    <button type="submit" class="btn btn-primary">Fortsett</button>
+                    <a asp-controller="Need" asp-action="Confirmation" asp-route-id="@Model.NeedId" class="btn btn-primary">Tilbake til behovet</a>
+                </div>
+            </form>
+        }
+        else
+        {
+            <p>Ingen tilgjengelige ressurser å tilby.</p>
+            <a asp-controller="Need" asp-action="Confirmation" asp-route-id="@Model.NeedId" class="btn btn-primary">Tilbake til behovet</a>
+        }
+    </div>
+</div>

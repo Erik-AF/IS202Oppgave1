@@ -38,6 +38,11 @@
         @* Ressursene som er allokert til dette behovet *@
         @await Component.InvokeAsync("AllocatedResources", new { needId = Model.Id })
         <div class="detail-actions"><p><a asp-action="Index" class="btn btn-primary">Se alle behov</a></p>
+        @if (User.Identity?.IsAuthenticated == true && User.IsInRole(RoleNames.ResourceProvider))
+        {
+            <p><a asp-controller="Allocation" asp-action="OfferToNeed" asp-route-needId="@Model.Id"
+                  class="btn btn-primary">Alloker ressurs</a></p>
+        }
         @if (User.IsInRole(RoleNames.PublicActor) ||User.IsInRole(RoleNames.Admin))
         {
             <a class="rl-btn" asp-action="Create">

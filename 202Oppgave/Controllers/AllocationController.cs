@@ -40,9 +40,35 @@ public class AllocationController : Controller
             && !string.IsNullOrEmpty(need.UserId)
             && need.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
 
+    // Fra et behov velger leverandøren en egen ressurs før den vanlige tilbudssiden.
+    [Authorize(Roles = RoleNames.ResourceProvider)]
+    [HttpGet]
+    public async Task<IActionResult> OfferToNeed(int needId)
+    {
+        if (!IsProvider) return Forbid();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId)) return Challenge();
+        var need = await _needRepo.GetByIdAsync(needId);
+        if (need == null) return NotFound();
+        var resources = await _resourceRepo.GetByUserIdAsync(userId);
+        var model = new AllocateViewModel
+        {
+            NeedId = needId,
+            IsOffer = true,
+            Resources = resources.Where(r => r.Status == "Tilgjengelig").Select(ToModel).ToList(),
+            NeedOptions = new() { new SelectListItem { Value = needId.ToString(), Text = need.Type } }
+        };
+        if (string.IsNullOrWhiteSpace(need.UserId))
+        {
+            ModelState.AddModelError("", "Dette behovet mangler en oppretter som kan godkjenne.");
+            model.Resources.Clear();
+        }
+        return View(model);
+    }
+
     // GET: /Allocation/Create?resourceIds=3&resourceIds=7
     // Viser de valgte ressursene og lar brukeren velge et behov.
-    public async Task<IActionResult> Create(List<int> resourceIds)
+    public async Task<IActionResult> Create(List<int> resourceIds, int? needId = null)
     {
         // Ingen ressurser valgt: tilbake til listen med en melding
         if (resourceIds.Count == 0)
@@ -52,7 +78,8 @@ public class AllocationController : Controller
         }
 
         if (IsProvider && !await OwnsResourcesAsync(resourceIds)) return Forbid();
-        var model = new AllocateViewModel { ResourceIds = resourceIds };
+        if (needId.HasValue && await _needRepo.GetByIdAsync(needId.Value) == null) return NotFound();
+        var model = new AllocateViewModel { ResourceIds = resourceIds, NeedId = needId };
         await FillAsync(model);
         return View(model);
     }
