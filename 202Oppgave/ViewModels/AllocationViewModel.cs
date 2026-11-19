@@ -11,6 +11,9 @@ namespace _202Oppgave.ViewModels;
  */
 public class AllocateViewModel
 {
+    [Microsoft.AspNetCore.Mvc.ModelBinding.BindNever, ValidateNever]
+    public bool IsOffer { get; set; }
+
     // Id-ene til ressursene som ble krysset av i ressurslisten.
     // Sendes med skjemaet som skjulte felt.
     public List<int> ResourceIds { get; set; } = new();

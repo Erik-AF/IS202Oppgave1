@@ -137,13 +137,19 @@
                 </div>
             </div>
 
-            <a asp-controller="Resource"
-               asp-action="Details"
-               asp-route-id="@resource.Id"
-               class="provider-details-button">
-                Se detaljer
-                <i class="bi bi-arrow-right" aria-hidden="true"></i>
-            </a>
+            <div class="provider-resource-actions">
+                <a asp-controller="Resource" asp-action="Details" asp-route-id="@resource.Id"
+                   class="provider-details-button">
+                    Se detaljer <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </a>
+                @if (resource.Status == "Tilgjengelig")
+                {
+                    <a asp-controller="Allocation" asp-action="Create" asp-route-resourceIds="@resource.Id"
+                       class="provider-details-button">
+                        Tilby ressurs <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+                }
+            </div>
         </div>
     }
 }
