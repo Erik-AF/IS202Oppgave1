@@ -1,7 +1,10 @@
+@using System.Security.Claims
+@inject _202Oppgave.DataAccess.Repositories.IAllocationRepository AllocationRepo
 
 @model List<_202Oppgave.Models.Entities.Need>
 
 @{
+    var pending = await AllocationRepo.GetPendingCountsByNeedAsync(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "");
     ViewData["Title"] = "Administrer behov";
 }
 
@@ -44,6 +47,8 @@
                             <strong>Frist:</strong>
                             @need.Deadline.ToString("dd.MM.yyyy")
                         </p>
+<div class="need-notification-actions">
+    <partial name="_ApprovalBadge" model="pending.GetValueOrDefault(need.Id)" />
                         <a asp-controller="Need"
                            asp-action="Confirmation"
                            asp-route-id="@need.Id"
@@ -51,6 +56,7 @@
                             Se behov
                             <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
                         </a>
+</div>
                     </div>
                 }
             </div>

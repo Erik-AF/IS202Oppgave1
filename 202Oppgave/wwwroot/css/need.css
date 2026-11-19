@@ -39,3 +39,20 @@ body.design-concept.shared-chrome .need-design { padding-top: 20px; }
 .design-concept .need-details .detail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 24px; }
 .need-details .detail-actions p, .need-details .detail-actions form { margin: 0; }
 .design-concept .need-details .need-delete-button { background: var(--brick); color: #fff; border: 0; border-radius: 8px; cursor: pointer; }
+
+/* Antall tilbud som venter på godkjenning på dette behovet. */
+.need-design .need-approval-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: #b63832;
+    color: #fff;
+    font-size: .85rem;
+    font-weight: 700;
+    line-height: 1;
+    align-self: flex-end;
+}
