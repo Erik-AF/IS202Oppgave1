@@ -1,286 +1,166 @@
-# System Architecture – CrisisSystem
+# System Architecture – CrisisSystem / Ko/ordinert
 
-## Overview
+## Scope and overview
 
-CrisisSystem is an ASP.NET Core MVC web application developed by Group 7.
+This document describes the implementation in this checkout, reviewed on 19 November 2026. The application is branded **Ko/ordinert** in the interface; the project and solution still use the CrisisSystem/IS202Oppgave1 names.
 
-The application follows the **Model-View-Controller (MVC)** architectural pattern and uses **.NET Aspire** for orchestration and **Docker** for containerization.
+The system is a single **ASP.NET Core MVC application targeting .NET 10**, with server-rendered Razor views and JavaScript for maps and interface interactions. It uses **Entity Framework Core 9**, the **Pomelo MySQL provider**, **ASP.NET Core Identity** and **MariaDB 11**. It is not a set of separate business microservices: the controllers, repositories, authentication and views run in the same web application.
 
-The system supports coordination between public actors and resource providers during crises by providing functionality for registering needs, managing resources and displaying geographical information.
+## Runtime architecture
 
-## Architecture Diagram
-
-The following diagram illustrates the application architecture.
-
-```text
-Browser
-   |
-   | HTTP (GET / POST) and fetch (JSON)
-   v
-+--------------------------------------------+
-| Oppgave202 (Docker container)              |
-|                                            |
-| Controllers --> Models / ViewModels        |
-|      |                    |                |
-|      v                    v                |
-| Views (Razor)      In-memory data          |
-| + Bootstrap        (temporary, until       |
-| + Leaflet map       MariaDB is added)      |
-+--------------------------------------------+
-   ^
-   | Built from 202Oppgave/Dockerfile
-   | Started and monitored by
-   |
-IS202Oppgave11.AppHost (.NET Aspire)
+```mermaid
+flowchart TD
+    Browser["Browser: HTML, CSS, JavaScript and Leaflet"]
+    Host[".NET Aspire AppHost"]
+    Web["Oppgave202: ASP.NET Core MVC Docker container"]
+    Db["MariaDB 11 Docker container: resourcesdb"]
+    Files["Docker volume: ressursbilder"]
+    Tiles["External map tile providers"]
+    Addresses["Kartverket address API"]
+    Host -->|"Builds and starts"| Web
+    Host -->|"Starts"| Db
+    Browser -->|"HTTP GET/POST and JSON fetch"| Web
+    Web -->|"EF Core / Pomelo, SQL on port 3306"| Db
+    Web -->|"Uploaded image files"| Files
+    Browser -->|"Map tiles"| Tiles
+    Web -->|"Reverse geocoding"| Addresses
 ```
 
-The AppHost builds the web application from `202Oppgave/Dockerfile` and runs it as a Docker container named `Oppgave202`.
+[AppHost.cs](IS202Oppgave11.AppHost/AppHost.cs) defines the MariaDB container and builds the web container from [202Oppgave/Dockerfile](202Oppgave/Dockerfile). The web endpoint is exposed at `http://localhost:5027` with container target port `8080`. The Dockerfile uses separate build, publish and runtime stages and runs the application as a non-root user.
 
-The application is accessible at:
+The web application reads `ConnectionStrings:DefaultConnection` from its configuration. The checked-in configuration targets database `resourcesdb` at `mariadb:3306`. AppHost currently does not inject this connection string through an Aspire database reference and does not declare a database-readiness dependency. The application needs a reachable database during startup.
 
-```text
-http://localhost:5027
+## Application layers
+
+```mermaid
+flowchart LR
+    Request["HTTP request"] --> Controller["Controller: routing, authorization and validation"]
+    Controller --> Repository["Resource, Need or Allocation repository"]
+    Repository --> Context["ApplicationDbContext"]
+    Context --> Database["MariaDB"]
+    Controller --> Identity["UserManager / SignInManager"]
+    Identity --> Context
+    Controller --> Presentation["Models / ViewModels"]
+    Presentation --> View["Razor view / partial / ViewComponent"]
+    View --> Response["HTML response"]
+    Controller --> Json["JSON response for maps"]
 ```
 
-Port `5027` on the host is mapped to port `8080` inside the Docker container.
+| Part | Current responsibility |
+|---|---|
+| `Controllers/` | Receive requests, validate forms, check access, coordinate persistence and return views, redirects, files or JSON. |
+| `Models/Entities/` | Database entities: `Resource`, `Need`, `Category` and `Allocation`. |
+| `ApplicationUser` | Identity user extended with application-specific profile data. |
+| `Models/` and `ViewModels/` | Presentation data and form data, including validation attributes. These are distinct from the database entities. |
+| `DataAccess/Repositories/` | EF Core queries and updates for resources, needs and allocations. Interfaces are registered as scoped dependencies in `Program.cs`. |
+| `ApplicationDbContext` | Shared EF Core context for domain tables and Identity tables, including relationships and delete behavior. |
+| `Services/` | Nearby resource suggestions, Excel export, Identity seeding and development email logging. |
+| `Views/` and `ViewComponents/` | Server-rendered pages and reusable UI. `AllocatedResourcesViewComponent` loads allocations for a need. Some views also inject the allocation repository directly. |
+| `wwwroot/` | Styles, scripts, images and uploaded resource photos. Leaflet and Leaflet.draw provide map display and drawing. |
 
----
-
-## Architecture Components
+The interface uses custom CSS, responsive layouts, Razor Tag Helpers and client-side validation. It is not a separate frontend application or a general-purpose REST API.
 
 ### Controllers
 
-Controllers receive HTTP requests from the browser, process user input and determine which views or data should be returned.
-
 | Controller | Responsibility |
 |---|---|
-| `HomeController` | Handles the front page, privacy page and error page |
-| `ResourceController` | Handles resource registration, input validation and confirmation |
-| `NeedController` | Handles registration of needs, input validation and confirmation |
-| `KartController` | Handles geographical map functionality and JSON data for registered map points |
-| `InformationController` | Handles about, help and contact pages, including the contact form |
+| `HomeController` | Landing page, database-derived need summary, privacy and error pages. |
+| `ResourceController` | Resource registration, details, editing, deletion, filtering, Excel export, image uploads and geographic JSON. |
+| `NeedController` | Need registration, list, details/confirmation, editing, deletion and geographic JSON. |
+| `AllocationController` | Direct allocation, nearby suggestions, provider offers, approval and removal. |
+| `AccountController` | Registration, cookie login/logout, access-denied page and password reset. |
+| `ResourceProviderController` | The provider's overview, own resources and profile settings. |
+| `PublicActorController` | The public actor's overview, own needs and profile settings. In this checkout the controller is restricted to the PublicActor role. |
+| `KartController` | Map pages, reverse geocoding and the separate legacy in-memory map-point demo. |
+| `InformationController` | About, help and contact pages. The contact form returns a confirmation view; it does not store or email submissions. |
 
-### Models and ViewModels
+## Database and file storage
 
-Models and ViewModels are used to represent and transfer data between controllers and views.
+[ApplicationDbContext.cs](202Oppgave/DataAccess/ApplicationDbContext.cs) inherits from `IdentityDbContext<ApplicationUser, IdentityRole, string>`. Identity accounts and the application's domain data therefore use the same database.
 
-| Class | Responsibility |
+| Relationship | Implementation |
 |---|---|
-| `ResourceViewModel` | Handles resource registration data, including resource information and geographical location |
-| `RegistrerPunktViewModel` | Handles geographical coordinates, category, type and description |
-| `KartPunktViewModel` | Represents registered map points |
-| `NeedViewModel` | Handles registration of needs, including validation and priority |
-| `KontaktFormModel` | Handles input from the contact form |
-| `ErrorViewModel` | Contains the request ID displayed on the error page |
+| User → resources | `Resource.UserId` identifies the creator. Nullable for older records; deleting a referenced user is restricted. |
+| User → needs | `Need.UserId` identifies the creator. Nullable for older records; deleting a referenced user is restricted. |
+| Category → resources | Optional `Resource.CategoryId`. Deleting a category sets the reference to null. Eleven categories are seeded through EF Core. |
+| Need → allocations | One-to-many: each need can have multiple allocations. Each allocation references exactly one need through `NeedId`. |
+| Resource → allocations | One-to-many: each resource can have multiple allocations. Each allocation references exactly one resource through `ResourceId` and stores state, date and an optional note. There is no direct foreign key between Need and Resource. |
+| Resource/need → allocations | Deleting a resource or need cascades to its allocation rows. Need deletion also releases resources that are not attached to another need. |
 
-### Views
+Resources and needs store latitude, longitude and optional `GeometryJson` for drawn geometry. Resource images are stored as files, with only `ImagePath` stored in the database.
 
-The application uses Razor Views (`.cshtml`) to render dynamic HTML pages.
+Schema changes are versioned in `202Oppgave/Migrations/`. The model snapshot is EF Core's reference for generating later migrations; it does not create tables by itself. At startup, `Program.cs` calls `Database.Migrate()` to apply migrations, then seeds roles and example users. Startup fails if migration/database access fails. `ApplicationDbContextFactory` supplies the context to EF tooling at design time.
 
-The user interface uses:
+### Storage lifetime
 
-- **HTML** for page structure.
-- **CSS** for styling.
-- **Bootstrap** for responsive layouts.
-- **components.css** for custom component styling.
-- **Leaflet** for interactive maps and geographical visualization.
+- **Database records:** resources, needs, categories, allocations and Identity data are stored in MariaDB, not in application-memory lists.
+- **Database container:** AppHost uses `ContainerLifetime.Persistent`, but does not explicitly configure a named database volume or bind mount. Keeping a container alive is not the same as defining durable storage for container replacement; this configuration does not guarantee preservation when MariaDB is removed/recreated.
+- **Uploaded images:** AppHost explicitly mounts the named volume `ressursbilder` at `/app/wwwroot/uploads`. Resource photos are saved under `uploads/ressurser`.
+- **Legacy map demo:** `KartController._punkter` remains a static in-memory list used by `/Kart/Index` and `/Kart/Data`. Those points are temporary and separate from the persisted resources and needs.
 
-The interface is designed to adapt to both desktop and mobile devices.
+## Identity and access control
 
----
+ASP.NET Core Identity stores users, password hashes, roles and related Identity data in MariaDB. Authentication uses cookies through `SignInManager`; this is not JWT authentication.
 
-## Data Storage
+- Self-registration allows `ResourceProvider` and `PublicActor`. It does not allow users to select `Admin`.
+- Resource creation is restricted to providers and admins; need creation to public actors and admins.
+- Controllers perform role and/or ownership checks for protected operations. Rules differ by action: for example, `NeedController` editing/deletion requires the actual creator, while allocation approval/removal allows the need's creator in the PublicActor role or an admin.
+- Providers can offer only resources they own. Ownership is checked again on submission, rather than trusting hidden resource IDs.
+- Form validation uses model validation. State-changing resource, need and allocation forms use POST and antiforgery validation.
+- Login enables lockout after five failed attempts for five minutes. Email confirmation is not required in the current configuration.
+- Password-reset emails use `ConsoleEmailSender`, which writes the message to application logs. No external email delivery service is configured.
 
-The application currently uses temporary in-memory storage for registered map points.
+## Main request flows
 
-### Current Implementation
+### Registration and editing
 
-- Registered map points are stored in a static list inside `KartController`.
-- Registered needs are validated and displayed on a confirmation page but are not permanently stored.
-- Map points are made available through a JSON endpoint.
-- Data stored in memory is not persistent across application restarts.
+1. A GET request renders a form with a ViewModel.
+2. The browser submits fields and map coordinates/geometry in a POST.
+3. The controller validates the model and checks the user's access. Invalid data returns the form with errors.
+4. Valid input is mapped to an entity and saved through a repository and `ApplicationDbContext`.
+5. The controller redirects to the details/confirmation page, which reloads the saved data.
 
-### Planned Database Integration
+Image files are handled by `ResourceController`; their paths are saved with the resource.
 
-MariaDB is planned for persistent data storage.
+### Allocation and provider offers
 
-The database integration is intended to replace temporary in-memory storage and allow registered information to be retained between application restarts.
+**Direct allocation:** PublicActor/Admin selects available resources and a need. `AllocateAsync` creates `Bekreftet` allocations and sets the resources to `Utilgjengelig`. The need-based suggestion page searches available resources within 5 km using Haversine distance, applies search/category filters and shows at most the three nearest matches.
 
-**Note:** MariaDB is not yet connected in the architecture described here.
+**Provider offer:**
 
----
+1. “Tilby ressurs” opens `/Allocation/Create` with the selected resource.
+2. “Send til godkjenning” creates a `Forespurt` allocation and sets the resource to `Reservert`.
+3. The offer appears under the need as awaiting approval.
+4. The need's authorized owner or admin can approve it: state becomes `Bekreftet`, resource status becomes `Utilgjengelig`.
+5. Removing the offer/allocation releases the resource if no other allocation references it.
 
-## Request Flows
+Offer reservation and approval use database transactions and conditional updates to avoid processing the same offer/reservation twice. The existing allocation state is reused; there is no separate offer table.
 
-### 1. Resource Registration
+### Map display
 
-The resource registration functionality allows resource providers to register available resources, including their details and geographical location.
+The main overview at `/Kart/Oversikt` fetches JSON from `/Resource/Geo` and `/Need/Geo`. Those endpoints read repository data and expose coordinates/geometry for Leaflet. Resource geographic data is role-protected; provider-only users receive their own resources.
 
-```text
-1. GET /Resource/Create
-   |
-   v
-ResourceController.Create()
-   |
-   v
-Display resource registration form
-   |
-   v
-User enters resource information
-   |
-   v
-2. POST /Resource/Create
-   |
-   v
-ResourceController.Create(model)
-   |
-   v
-Validate submitted data
-   |
-   +-- Invalid --> Return form with validation messages
-   |
-   +-- Valid --> Display confirmation page
-```
+Map backgrounds are loaded directly by the browser: OpenStreetMap standard tiles, OpenTopoMap topographic tiles and Esri World Imagery satellite tiles. `wwwroot/js/map-layers.js` supplies the shared layer selector. Changing the background does not change the stored markers or drawings.
 
-The resource registration follows the same structure as the need registration functionality, using a controller, view model and Razor view to handle user input and validation.
+Address suggestions for selected coordinates go through `/Kart/ReverseGeocode`, which calls Kartverket's address API from the web application. Failed lookups return an error response so the user can enter the location manually.
 
-### 2. Need Registration
+These are HTTP request/response flows. There is no SignalR hub, message queue or background notification worker in this checkout.
 
-The need registration functionality allows public actors to submit information about resources or assistance they require.
+## Startup and observability
 
-```text
-1. GET /Need/Create
-   |
-   v
-NeedController.Create()
-   |
-   v
-Display need registration form
-   |
-   v
-User enters need information
-   |
-   v
-2. POST /Need/Create
-   |
-   v
-NeedController.Create(model)
-   |
-   v
-Validate submitted data
-   |
-   +-- Invalid --> Return form with validation messages
-   |
-   +-- Valid --> Display confirmation page
-```
+`Program.cs` registers MVC, repositories, EF Core and Identity, applies migrations and seeds Identity data. It then configures static files, routing, authentication, authorization and the default `{controller=Home}/{action=Index}/{id?}` route.
 
-The need registration uses a controller, view model and Razor view to handle user input and validation.
+`IS202Oppgave11.ServiceDefaults` configures service discovery, HTTP client resilience, health checks and OpenTelemetry. OTLP export is conditional on `OTEL_EXPORTER_OTLP_ENDPOINT` being configured. The default `/health` and `/alive` endpoints are mapped only in Development. The Aspire dashboard shows orchestration state, endpoints and container output; telemetry export should not be assumed merely because AppHost is running.
 
-Currently, registered needs are displayed on a confirmation page but are not permanently stored.
+## Architecture source files
 
-### 3. Contact Form
-
-The contact functionality allows users to submit information through a contact form.
-
-```text
-1. GET /Information/Kontakt
-   |
-   v
-InformationController.Kontakt()
-   |
-   v
-Display contact form
-   |
-   v
-User fills in required fields
-   |
-   v
-2. POST /Information/Kontakt
-   |
-   v
-InformationController.Kontakt(model)
-   |
-   v
-Validate submitted information
-   |
-   +-- Invalid --> Display validation messages
-   |
-   +-- Valid --> Display KontaktBekreftelse view
-```
-
----
-
-## Containerization and Orchestration
-
-CrisisSystem uses Docker and .NET Aspire to run and manage the application.
-
-### Docker
-
-The Docker configuration is defined in:
-
-```text
-202Oppgave/Dockerfile
-```
-
-Docker provides a containerized environment for running the web application.
-
-### .NET Aspire
-
-The Aspire AppHost project is responsible for building, starting and monitoring the application container.
-
-```text
-IS202Oppgave11.AppHost/
-```
-
-The application can be started using:
-
-```bash
-dotnet run --project IS202Oppgave11.AppHost
-```
-
-Alternatively, the AppHost project can be started directly from JetBrains Rider.
-
-The Aspire dashboard provides access to the application endpoint.
-
----
-
-## Project Structure
-
-```text
-IS202Oppgave1/
-├── 202Oppgave/
-│   ├── Controllers/
-│   ├── Models/
-│   ├── ViewModels/
-│   ├── Views/
-│   ├── wwwroot/
-│   └── Dockerfile
-│
-├── IS202Oppgave11.AppHost/
-│
-├── IS202Oppgave11.ServiceDefaults/
-│
-├── docs/
-│   └── SYSTEM_ARCHITECTURE.md
-│
-├── README.md
-└── Testscenarioer.md
-```
-
-### Directory Responsibilities
-
-| Directory | Responsibility |
-|---|---|
-| `202Oppgave/` | Main ASP.NET Core MVC application |
-| `Controllers/` | Handles HTTP requests and application logic |
-| `Models/` | Defines application data models |
-| `ViewModels/` | Transfers data between controllers and views |
-| `Views/` | Contains Razor pages |
-| `wwwroot/` | Contains static files such as CSS and JavaScript |
-| `IS202Oppgave11.AppHost/` | Handles .NET Aspire orchestration |
-| `IS202Oppgave11.ServiceDefaults/` | Contains shared Aspire configuration |
-
-
-
+- [Application startup](202Oppgave/Program.cs)
+- [Aspire orchestration](IS202Oppgave11.AppHost/AppHost.cs)
+- [Container build](202Oppgave/Dockerfile)
+- [Database mapping](202Oppgave/DataAccess/ApplicationDbContext.cs)
+- [Repositories](202Oppgave/DataAccess/Repositories)
+- [Schema migrations](202Oppgave/Migrations)
+- [Shared service configuration](IS202Oppgave11.ServiceDefaults/Extensions.cs)
+- [Automated test project](CrisisSystem.Tests/CrisisSystem.Tests.csproj)
 
 [Back to README](README.md)
