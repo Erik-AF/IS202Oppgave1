@@ -9,11 +9,11 @@
     <div class="card detail-card">
         <h1>Alloker ressurs</h1>
         <p>Velg en av dine tilgjengelige ressurser til <strong>@Model.NeedOptions.Single().Text</strong>.</p>
-        <p>Tilbudet sendes til behovets eier for godkjenning på neste side.</p>
+        <p>Ressursen sendes til behovets eier for godkjenning.</p>
         <div asp-validation-summary="All" class="text-danger" role="alert"></div>
         @if (Model.Resources.Count > 0)
         {
-            <form asp-action="Create" method="get">
+            <form asp-action="Create" method="post">
                 <input asp-for="NeedId" type="hidden" />
                 <label for="offer-resource">Din ressurs</label>
                 <select id="offer-resource" name="resourceIds" class="form-select" required>
@@ -24,8 +24,8 @@
                     }
                 </select>
                 <div class="detail-actions">
-                    <button type="submit" class="btn btn-primary">Fortsett</button>
                     <a asp-controller="Need" asp-action="Confirmation" asp-route-id="@Model.NeedId" class="btn btn-primary">Tilbake til behovet</a>
+                    <button type="submit" class="btn btn-primary">Send til godkjenning</button>
                 </div>
             </form>
         }
