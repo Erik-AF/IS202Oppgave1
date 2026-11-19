@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace _202Oppgave.Controllers;
 
-[Authorize(Roles = RoleNames.PublicActor)]
+[Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
 public class PublicActorController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;

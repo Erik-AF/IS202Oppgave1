@@ -10,6 +10,7 @@ namespace _202Oppgave.DataAccess.Repositories
         Task<int> OfferAsync(int needId, List<int> resourceIds, string userId, string? note);
         Task<Allocation?> GetByIdAsync(int id);
         Task<bool> ApproveAsync(int id);
+        Task<Dictionary<int, int>> GetPendingCountsByNeedAsync(string userId);
 
         Task<int> AllocateAsync(int needId, List<int> resourceIds, string? note);
 

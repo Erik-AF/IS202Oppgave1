@@ -130,6 +130,17 @@ namespace _202Oppgave.DataAccess.Repositories
 
             return needId;
         }
+        // Teller bare ubehandlede tilbud på innlogget brukers egne behov.
+        public async Task<Dictionary<int, int>> GetPendingCountsByNeedAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId)) return new();
+            return await _context.Allocations
+                .Where(a => a.State == "Forespurt" && a.Need.UserId == userId)
+                .GroupBy(a => a.NeedId)
+                .Select(g => new { NeedId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(g => g.NeedId, g => g.Count);
+        }
+
         public async Task<Dictionary<int, List<string>>> GetResourceNamesByNeedAsync()
         {
             // Én spørring: henter bare feltene vi trenger fra Allocations,

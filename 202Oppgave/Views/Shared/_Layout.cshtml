@@ -1,8 +1,16 @@
+@using System.Security.Claims
+@inject _202Oppgave.DataAccess.Repositories.IAllocationRepository HeaderAllocationRepo
 @* _Layout.cshtml - felles ramme for alle sider (Sarah)
    Innholdet fra hver view settes inn der @RenderBody() står.
    Andre views kan legge ting i <head> med @section Head og nederst på siden
    med @section Scripts. Leaflet er allerede lastet her i layouten. *@
 @{
+    var notificationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var canApproveOwnNeeds = User.IsInRole("PublicActor") || User.IsInRole("Admin");
+    var pendingApprovalCount = canApproveOwnNeeds && !string.IsNullOrWhiteSpace(notificationUserId)
+        ? (await HeaderAllocationRepo.GetPendingCountsByNeedAsync(notificationUserId)).Values.Sum()
+        : 0;
+
     // hvilken controller vi er på nå (brukes til å markere aktiv lenke i menyen)
     var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
 
@@ -208,18 +216,21 @@
                 </a>
 
                 @if (User.Identity?.IsAuthenticated == true
-                    && (User.IsInRole("PublicActor") || User.IsInRole("ResourceProvider")))
+                    && (canApproveOwnNeeds || User.IsInRole("ResourceProvider")))
                 {
-                    var profileController = User.IsInRole("PublicActor") ? "PublicActor" : "ResourceProvider";
+                    var profileController = canApproveOwnNeeds ? "PublicActor" : "ResourceProvider";
                     <details class="profile-menu">
                         <summary class="profile-menu-toggle" aria-label="Åpne profilmeny" title="Profilmeny">
                             <svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false">
                                 <circle cx="32" cy="19" r="12" fill="currentColor" />
                                 <path d="M9 58c1-15 10-23 23-23s22 8 23 23Z" fill="currentColor" />
                             </svg>
+                            <partial name="_ApprovalBadge" model="pendingApprovalCount" />
                         </summary>
                         <div class="profile-menu-panel">
-                            <a asp-controller="@profileController" asp-action="Index">Min side</a>
+                            <a class="profile-menu-home" asp-controller="@profileController" asp-action="Index">
+                                Min side <partial name="_ApprovalBadge" model="pendingApprovalCount" />
+                            </a>
                             <a asp-controller="@profileController" asp-action="Profile">Innstillinger</a>
                             <form asp-controller="Account" asp-action="Logout" method="post">
                                 <button type="submit">Logg ut</button>

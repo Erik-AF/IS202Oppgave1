@@ -1,6 +1,7 @@
 @model List<_202Oppgave.Models.Need>
 @using _202Oppgave.DataAccess.Repositories
 @inject IAllocationRepository AllocationRepo
+@using System.Security.Claims
 @using _202Oppgave.Models.Authorization
 
 @{
@@ -9,6 +10,10 @@
     // Allokerte ressurser for alle behov, hentet i én spørring.
     // Nøkkel = behovets Id, verdi = navnene på ressursene.
     var allocated = await AllocationRepo.GetResourceNamesByNeedAsync();
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var pending = (User.IsInRole(RoleNames.PublicActor) || User.IsInRole(RoleNames.Admin)) && !string.IsNullOrWhiteSpace(userId)
+        ? await AllocationRepo.GetPendingCountsByNeedAsync(userId)
+        : new Dictionary<int, int>();
 }
 
 
@@ -77,6 +82,12 @@
                             }
                         </div>
                         <div class="rl-side">
+                            @if (pending.TryGetValue(need.Id, out var pendingCount) && pendingCount > 0)
+                            {
+                                <span class="need-approval-badge" role="img"
+                                      aria-label="@($"{pendingCount} tilbud venter på godkjenning")"
+                                      title="@($"{pendingCount} tilbud venter på godkjenning")">@pendingCount</span>
+                            }
                             <span class="rl-status">
                                 <span class="rl-dot @(isUrgent ? "rl-dot--red" : "rl-dot--yellow")" aria-hidden="true"></span>
                                 @(isUrgent ? "Akutt" : "Ikke akutt")
