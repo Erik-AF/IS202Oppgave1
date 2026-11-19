@@ -554,10 +554,11 @@
         
         
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        const standardLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+        addMapLayers(map, standardLayer);
 
         // Kartdataene skal fortsatt vises om terrengtillegget ikke lastes.
         if (typeof L.gridLayer.relief === 'function') {

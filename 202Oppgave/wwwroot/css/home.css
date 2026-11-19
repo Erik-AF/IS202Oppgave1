@@ -265,7 +265,7 @@
 .home-map__live {
     position: absolute;
     inset: 0;
-    z-index: 0;
+    z-index: 2;
     background: #dfe9e5;
     opacity: 0;
     pointer-events: none;
@@ -634,4 +634,10 @@ body.page-home.action-index .skip-link {
 }
 body.page-home.action-index .skip-link:focus {
     transform: translateY(0);
+}
+
+/* Kartvelgeren kan brukes uten å aktivere panorering i forhåndsvisningen. */
+.home-map__live .leaflet-control-layers,
+.home-map__live .leaflet-control-attribution {
+    pointer-events: auto;
 }

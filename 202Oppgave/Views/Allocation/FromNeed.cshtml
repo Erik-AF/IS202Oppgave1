@@ -5,7 +5,7 @@
 @section Head {
     <link rel="stylesheet" href="~/css/allocation-suggestions.css" asp-append-version="true" />
 }
-<div class="container home-content need-design allocation-suggestions">
+<div class="container home-content rl need-design allocation-suggestions">
     <nav class="need-breadcrumb" aria-label="Brødsmuler">
         <a asp-controller="Need" asp-action="Index">Behov</a><span aria-hidden="true">/</span>
         <a asp-controller="Need" asp-action="Confirmation" asp-route-id="@Model.NeedId">@Model.NeedTitle</a>
@@ -13,15 +13,35 @@
     </nav>
     <h1>Alloker ressurser</h1>
     <p class="page-intro">Til behovet <strong>@Model.NeedTitle</strong> – @Model.Location</p>
+    <div class="rl-layout">
+        <form class="rl-filter" asp-action="FromNeed" method="get">
+            <input asp-for="NeedId" type="hidden" />
+            <h2>Filtrer</h2>
+            <label asp-for="Q" class="rl-label">Søk</label>
+            <input asp-for="Q" class="rl-input" placeholder="Søk i ressurser" />
+            <label asp-for="Category" class="rl-label">Kategori</label>
+            <select asp-for="Category" class="rl-input">
+                <option value="">Alle kategorier</option>
+                @foreach (var category in Model.CategoryOptions)
+                {
+                    <option value="@category">@category</option>
+                }
+            </select>
+            <button type="submit" class="rl-btn rl-btn--full">Filtrer</button>
+            <a asp-action="FromNeed" asp-route-needId="@Model.NeedId" class="rl-reset">Nullstill filter</a>
+        </form>
     <section class="suggestions-card">
         <h2>Foreslåtte ressurser</h2>
+        <p>Tilgjengelige ressurser innenfor 5 km, nærmeste først.</p>
 
         <form asp-action="FromNeed" method="post">
-            <input asp-for="NeedId" type="hidden" />
+            <input name="NeedId" value="@Model.NeedId" type="hidden" />
+            <input name="Q" value="@Model.Q" type="hidden" />
+            <input name="Category" value="@Model.Category" type="hidden" />
             <div asp-validation-summary="All" class="text-danger" role="alert"></div>
             @if (Model.Suggestions.Count == 0)
             {
-                <p class="suggestions-empty" role="status">Ingen tilgjengelige ressurser i nærheten</p>
+                <p class="suggestions-empty" role="status">Ingen tilgjengelige ressurser innenfor 5 km matcher søket og kategorien.</p>
             }
             else
             {
@@ -49,6 +69,7 @@
             </div>
         </form>
     </section>
+    </div>
 </div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
