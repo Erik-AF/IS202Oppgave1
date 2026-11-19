@@ -79,7 +79,19 @@ A proposed sample dataset is provided in [Testdata — Available Resources](Test
 
 ## System Architecture
 
-See [System Architecture](SystemArchitecture.md) for the architecture overview, components and request flows.
+The application is a single **ASP.NET Core MVC application (.NET 10)** with server-rendered Razor views. Controllers use repositories and **Entity Framework Core 9 / Pomelo** to store resources, needs, categories and allocations in **MariaDB 11**. **ASP.NET Core Identity** stores accounts and roles in the same database and provides cookie authentication.
+
+```text
+Browser (Razor HTML, CSS, JavaScript and Leaflet)
+    -> MVC controllers -> repositories / Identity
+    -> ApplicationDbContext -> MariaDB
+```
+
+**.NET Aspire AppHost** starts the web application and MariaDB in Docker. Resource photos are stored in the named Docker volume `ressursbilder`; the database stores their paths. EF Core migrations are applied when the application starts.
+
+The system supports direct allocation and provider offers that must be approved by the need's authorized owner or an admin. The main map reads persisted resources and needs through JSON endpoints. A separate legacy map demo still uses an in-memory list. AppHost does not explicitly define a named MariaDB data volume.
+
+See [System Architecture](SystemArchitecture.md) for the component diagram, data relationships, access control, request flows and current storage limitations.
 
 ## Project Structure
 
