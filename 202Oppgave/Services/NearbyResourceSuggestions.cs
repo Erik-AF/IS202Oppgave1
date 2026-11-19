@@ -22,7 +22,6 @@ public static class NearbyResourceSuggestions
             .Where(r => r.DistanceKm <= 5)
             .OrderBy(r => r.DistanceKm)
             .ThenBy(r => r.Id)
-            .Take(3)
             .ToList();
     }
 

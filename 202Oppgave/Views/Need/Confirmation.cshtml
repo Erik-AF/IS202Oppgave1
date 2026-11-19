@@ -65,10 +65,11 @@
         // JSON sørger for at koordinatene får punktum som desimalskille i JavaScript.
         const position = [@Json.Serialize(Model.Latitude), @Json.Serialize(Model.Longitude)];
         const map = L.map('details-map').setView(position, 15);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        const standardLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+        addMapLayers(map, standardLayer);
         L.marker(position).addTo(map);
     </script>
 }

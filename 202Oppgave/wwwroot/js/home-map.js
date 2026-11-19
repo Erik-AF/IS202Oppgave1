@@ -1,6 +1,6 @@
 /* home-map.js - kartet på forsiden (Sarah)
    Viser et lite Leaflet-kart bak kortet "Kartoversikt". Det er bare en
-   forhåndsvisning, så all interaksjon er slått av (kortet er lenken til hele kartet).
+   forhåndsvisning, så bare kartlag kan byttes (kortet er lenken til hele kartet).
 
    Kartet vises alltid. Registrerte ressurser og behov kommer som markører så snart
    MapController.Markers() finnes. Mangler Leaflet (f.eks. uten nett), blir den lyse
@@ -59,13 +59,13 @@
 
     // kildehenvisning nede til venstre (tegnforklaringen ligger til høyre)
     L.control.attribution({ position: 'bottomleft', prefix: false })
-        .addAttribution(TILE_ATTRIBUTION)
         .addTo(map);
 
     // vis kartet først når kartflisene er lastet
-    L.tileLayer(TILE_URL, { maxZoom: 12 })
+    const standardLayer = L.tileLayer(TILE_URL, { maxZoom: 12, attribution: TILE_ATTRIBUTION })
         .on('load', function () { wrap.classList.add('is-live'); })
         .addTo(map);
+    addMapLayers(map, standardLayer);
 
     // Ingen adresse = Marius har ikke laget Markers() ennå. Kartet vises uten markører.
     const url = el.dataset.markersUrl;
