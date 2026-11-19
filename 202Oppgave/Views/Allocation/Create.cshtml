@@ -11,7 +11,10 @@
 *@
 
 @{
-    ViewData["Title"] = "Alloker ressurser";
+    var title = Model.IsOffer ? "Tilby ressurs" : "Alloker ressurser";
+    var backController = Model.IsOffer ? "ResourceProvider" : "Resource";
+    var backAction = Model.IsOffer ? "Resources" : "Index";
+    ViewData["Title"] = title;
 }
 
 @section Head {
@@ -140,18 +143,18 @@
     <nav class="need-breadcrumb" aria-label="Brødsmuler">
         <a asp-controller="Home" asp-action="Index">Hjem</a>
         <span aria-hidden="true">/</span>
-        <a asp-controller="Resource" asp-action="Index">Ressurser</a>
+        <a asp-controller="@backController" asp-action="@backAction">Ressurser</a>
         <span aria-hidden="true">/</span>
-        <span aria-current="page">Alloker ressurser</span>
+        <span aria-current="page">@title</span>
     </nav>
 
     @* Tittel til venstre og tilbake-knapp til høyre *@
     <header class="rl-head">
         <div>
-            <h1>Alloker ressurser</h1>
-            <p>Velg hvilket behov ressursene skal allokeres til.</p>
+            <h1>@title</h1>
+            <p>@(Model.IsOffer ? "Velg behovet du vil tilby ressursen til. Oppretteren må godkjenne tilbudet." : "Velg hvilket behov ressursene skal allokeres til.")</p>
         </div>
-        <a class="al-back" asp-controller="Resource" asp-action="Index">← Til alle ressurser</a>
+        <a class="al-back" asp-controller="@backController" asp-action="@backAction">← Til alle ressurser</a>
     </header>
 
     @if (!Model.Resources.Any())
@@ -159,7 +162,7 @@
         @* Alle valgte ressurser er allerede tatt av noen andre *@
         <div class="card al-card">
             <p>Ingen av de valgte ressursene er tilgjengelige lenger.</p>
-            <a class="al-back" asp-controller="Resource" asp-action="Index">Velg andre ressurser</a>
+            <a class="al-back" asp-controller="@backController" asp-action="@backAction">Velg andre ressurser</a>
         </div>
     }
     else
@@ -184,6 +187,7 @@
 
             @* --- Kort 2: skjemaet --- *@
             <form class="card al-card" asp-action="Create" method="post">
+                <div asp-validation-summary="All" class="text-danger" role="alert"></div>
                 <h2 class="need-section-title">
                     <span class="need-step" aria-hidden="true">2</span>Velg behov
                 </h2>
@@ -210,9 +214,9 @@
                 </div>
 
                 <div class="al-actions">
-                    <a class="al-cancel" asp-controller="Resource" asp-action="Index">Avbryt</a>
+                    <a class="al-cancel" asp-controller="@backController" asp-action="@backAction">Avbryt</a>
                     <button type="submit" class="btn btn-primary">
-                        Alloker @Model.Resources.Count ressurs(er) →
+                        @(Model.IsOffer ? "Send til godkjenning →" : $"Alloker {Model.Resources.Count} ressurs(er) →")
                     </button>
                 </div>
             </form>

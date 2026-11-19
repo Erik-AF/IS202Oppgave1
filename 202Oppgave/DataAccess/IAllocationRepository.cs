@@ -7,6 +7,10 @@ namespace _202Oppgave.DataAccess.Repositories
     {
         // Allokerer flere ressurser til ett behov i én operasjon.
         // Returnerer hvor mange ressurser som faktisk ble allokert.
+        Task<int> OfferAsync(int needId, List<int> resourceIds, string userId, string? note);
+        Task<Allocation?> GetByIdAsync(int id);
+        Task<bool> ApproveAsync(int id);
+
         Task<int> AllocateAsync(int needId, List<int> resourceIds, string? note);
 
         // Henter alle allokeringer for ett behov, med ressursen og kategorien

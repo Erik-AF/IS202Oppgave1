@@ -836,3 +836,5 @@ body.page-publicactor .utility-bar {
 body.page-publicactor main {
     background: var(--provider-bg);
 }
+/* Handlingene hører til samme ressurs og står under hverandre. */
+.provider-resource-actions { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }

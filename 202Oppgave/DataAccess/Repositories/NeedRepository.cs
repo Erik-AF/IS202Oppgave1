@@ -35,6 +35,13 @@ namespace _202Oppgave.DataAccess.Repositories
 
             if (need != null)
             {
+                // Tilbud og allokeringer forsvinner med behovet; frigjør ressursene samtidig.
+                var resources = await _context.Resources
+                    .Where(r => r.Allocations.Any(a => a.NeedId == id)
+                        && !r.Allocations.Any(a => a.NeedId != id))
+                    .ToListAsync();
+                foreach (var resource in resources)
+                    resource.Status = "Tilgjengelig";
                 _context.Needs.Remove(need);
                 await _context.SaveChangesAsync();
             }
