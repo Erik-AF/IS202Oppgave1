@@ -99,7 +99,8 @@
 
         @* Knappene får samme stil som på behovssiden (fra need.css) *@
         <div class="detail-actions">
-            <p><a asp-action="Index" class="btn btn-primary">Se alle ressurser</a></p>
+            <p>
+                <a asp-controller="ResourceProvider" asp-action="Resources" class="btn btn-primary">Se alle ressurser</a></p>
             <p><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Rediger</a></p>
 
             @* Ber om bekreftelse for å unngå at en ressurs slettes ved et uhell *@
