@@ -84,9 +84,9 @@ public class AllocationController : Controller
     }
     
     [HttpGet]
-    public async Task<IActionResult> FromNeed(int needId)
+    public async Task<IActionResult> FromNeed(int needId, string? q = null, string? category = null)
     {
-        var model = new NeedAllocationViewModel { NeedId = needId };
+        var model = new NeedAllocationViewModel { NeedId = needId, Q = q, Category = category };
         if (!await FillSuggestionsAsync(model)) return NotFound();
         return View(model);
     }
@@ -119,7 +119,25 @@ public class AllocationController : Controller
         if (need is null) return false;
         model.NeedTitle = need.Type;
         model.Location = need.Location;
-        model.Suggestions = NearbyResourceSuggestions.Find(need, await _resourceRepo.GetAllAsync());
+        var nearby = NearbyResourceSuggestions.Find(need, await _resourceRepo.GetAllAsync());
+        model.CategoryOptions = nearby
+            .Select(r => r.Category)
+            .Where(c => !string.IsNullOrWhiteSpace(c))
+            .Select(c => c!)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList();
+
+        // Filtreringen gjelder bare tilgjengelige ressurser innenfor 5 km.
+        var query = model.Q?.Trim();
+        model.Suggestions = nearby
+            .Where(r => string.IsNullOrWhiteSpace(model.Category) || r.Category == model.Category)
+            .Where(r => string.IsNullOrWhiteSpace(query)
+                || r.Title.Contains(query, StringComparison.OrdinalIgnoreCase)
+                || r.Location.Contains(query, StringComparison.OrdinalIgnoreCase)
+                || (r.Category?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false))
+            .Take(3)
+            .ToList();
         return true;
     }
 

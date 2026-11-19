@@ -21,14 +21,14 @@ public class NearbyAllocationTests
     private static Need Need() => new() { Id = 7, Type = "Hjelp", Latitude = 0, Longitude = 0 };
 
     [Fact]
-    public void Suggestions_ShouldReturnOnlyThreeNearestAvailableResources()
+    public void Suggestions_ShouldReturnAllNearbyAvailableResourcesNearestFirst()
     {
         var resources = new[] { At(1,4), At(2,1), At(3,3), At(4,2), At(5,0.5,"Utilgjengelig"), At(6,6) };
-        Assert.Equal(new[] { 2,4,3 }, NearbyResourceSuggestions.Find(Need(), resources).Select(r => r.Id));
+        Assert.Equal(new[] { 2,4,3,1 }, NearbyResourceSuggestions.Find(Need(), resources).Select(r => r.Id));
     }
 
     [Fact]
-    public void Suggestions_ShouldRespectFiveKilometreBoundaryAndAllowFewerThanThree()
+    public void Suggestions_ShouldRespectFiveKilometreBoundary()
     {
         var result = NearbyResourceSuggestions.Find(Need(), new[] { At(1,4.9999), At(2,5.0001), At(3,0) });
         Assert.Equal(new[] { 3,1 }, result.Select(r => r.Id));
@@ -119,5 +119,58 @@ public class NearbyAllocationTests
         var view = Assert.IsType<ViewResult>(await controller.FromNeed(new NeedAllocationViewModel { NeedId=7, ResourceIds=new() {1} }));
         Assert.Single(Assert.IsType<NeedAllocationViewModel>(view.Model).Suggestions);
         allocations.Verify(a => a.AllocateAsync(It.IsAny<int>(),It.IsAny<List<int>>(),It.IsAny<string>()),Times.Never);
+    }
+
+    [Fact]
+    public async Task Get_ShouldFilterAllNearbyResourcesBySearchAndCategory()
+    {
+        var resources = Enumerable.Range(1, 5).Select(id => At(id, id * 0.8)).ToList();
+        resources[3].Type = "Mobilt aggregat";
+        resources[3].Category = new Category { Name = "Aggregat" };
+        resources[4].Category = new Category { Name = "Bil" };
+        var (controller, _) = Setup(resources);
+        var view = Assert.IsType<ViewResult>(await controller.FromNeed(7, "  MOBILT  ", "Aggregat"));
+        var model = Assert.IsType<NeedAllocationViewModel>(view.Model);
+        Assert.Equal(4, Assert.Single(model.Suggestions).Id);
+        Assert.Equal(new[] { "Aggregat", "Bil" }, model.CategoryOptions);
+    }
+
+    [Fact]
+    public async Task Get_UnmatchedFilter_ShouldShowEmptyList()
+    {
+        var (controller, _) = Setup(new() { At(1, 1) });
+        var view = Assert.IsType<ViewResult>(await controller.FromNeed(7, "finnes ikke"));
+        Assert.Empty(Assert.IsType<NeedAllocationViewModel>(view.Model).Suggestions);
+    }
+
+    [Fact]
+    public async Task Post_InvalidForm_ShouldKeepFiltersAndMatchingSuggestions()
+    {
+        var resource = At(1, 1);
+        resource.Category = new Category { Name = "Bil" };
+        var (controller, allocations) = Setup(new() { resource, At(2, 2) });
+        controller.ModelState.AddModelError("Note", "Maks 500 tegn");
+        var view = Assert.IsType<ViewResult>(await controller.FromNeed(new NeedAllocationViewModel
+        { NeedId = 7, Q = "Ressurs", Category = "Bil", ResourceIds = new() { 1 } }));
+        var model = Assert.IsType<NeedAllocationViewModel>(view.Model);
+        Assert.Equal("Bil", model.Category);
+        Assert.Equal(1, Assert.Single(model.Suggestions).Id);
+        allocations.Verify(a => a.AllocateAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Get_ShouldShowThreeNearestBeforeAndAfterFiltering()
+    {
+        var resources = Enumerable.Range(1, 6).Select(id => At(id, id * 0.7)).ToList();
+        foreach (var resource in resources.Skip(2))
+        {
+            resource.Type = "Mobilt aggregat";
+            resource.Category = new Category { Name = "Aggregat" };
+        }
+        var (controller, _) = Setup(resources);
+        var initial = Assert.IsType<ViewResult>(await controller.FromNeed(7));
+        Assert.Equal(new[] { 1, 2, 3 }, Assert.IsType<NeedAllocationViewModel>(initial.Model).Suggestions.Select(r => r.Id));
+        var filtered = Assert.IsType<ViewResult>(await controller.FromNeed(7, "mobilt", "Aggregat"));
+        Assert.Equal(new[] { 3, 4, 5 }, Assert.IsType<NeedAllocationViewModel>(filtered.Model).Suggestions.Select(r => r.Id));
     }
 }

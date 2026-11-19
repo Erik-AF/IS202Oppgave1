@@ -6,6 +6,10 @@ namespace _202Oppgave.ViewModels;
 
 public class NeedAllocationViewModel
 {
+    public string? Q { get; set; }
+    public string? Category { get; set; }
+    [BindNever, ValidateNever]
+    public List<string> CategoryOptions { get; set; } = new();
     public int NeedId { get; set; }
     public List<int> ResourceIds { get; set; } = new();
     [StringLength(500, ErrorMessage = "Maks 500 tegn")]
