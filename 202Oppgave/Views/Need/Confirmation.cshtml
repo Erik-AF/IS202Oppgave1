@@ -1,4 +1,5 @@
 @model _202Oppgave.Models.Need
+@using _202Oppgave.Models.Authorization
 
 @* Gjenbruker bekreftelsessiden når et behov åpnes fra oversikten. *@
 
@@ -37,7 +38,12 @@
         @* Ressursene som er allokert til dette behovet *@
         @await Component.InvokeAsync("AllocatedResources", new { needId = Model.Id })
         <div class="detail-actions"><p><a asp-action="Index" class="btn btn-primary">Se alle behov</a></p>
-        <a asp-action="Create" class="btn btn-primary">Registrer et nytt behov</a>
+        @if (User.IsInRole(RoleNames.PublicActor) ||User.IsInRole(RoleNames.Admin))
+        {
+            <a class="rl-btn" asp-action="Create">
+                Registrer et nytt behov
+            </a>
+        }
         @if (Model.CanManage)
         {
         <p>

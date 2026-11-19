@@ -1,6 +1,7 @@
 @model List<_202Oppgave.Models.Need>
 @using _202Oppgave.DataAccess.Repositories
 @inject IAllocationRepository AllocationRepo
+@using _202Oppgave.Models.Authorization
 
 @{
     ViewData["Title"] = "Registrerte behov";
@@ -16,8 +17,18 @@
 <div class="container rl need-design">
     <nav class="need-breadcrumb" aria-label="Brødsmuler"><a asp-controller="Home" asp-action="Index">Hjem</a><span aria-hidden="true">/</span><span aria-current="page">Behov</span></nav>
     <header class="rl-head">
-        <div><h1>Registrerte behov</h1><p>Finn lokale behov og se hvordan du kan bidra.</p></div>
-        <a class="rl-btn" asp-action="Create">Registrer nytt behov</a>
+        <div>
+            <h1>Registrerte behov</h1>
+            <p>Finn lokale behov og se hvordan du kan bidra.</p>
+        </div>
+
+        @if (User.IsInRole(RoleNames.PublicActor) ||
+             User.IsInRole(RoleNames.Admin))
+        {
+            <a class="rl-btn" asp-action="Create">
+                Registrer nytt behov
+            </a>
+        }
     </header>
 
     <div class="rl-layout">
