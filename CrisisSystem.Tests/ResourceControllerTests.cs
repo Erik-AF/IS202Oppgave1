@@ -246,11 +246,13 @@ public async Task Edit_ExistingResource_ShouldUpdateResource()
     repository.Resources.Add(new Resource
     {
         Id = 1,
+        UserId = "user-123",
         Type = "Generator",
         Name = "Kristiansand"
     });
 
-    var controller = new ResourceController(repository, null!);
+    // Eieren redigerer sin egen ressurs
+    var controller = CreateLoggedInController(repository);
     var model = new ResourceViewModel
     {
         Type = "Drikkevann",
@@ -302,10 +304,12 @@ public async Task Delete_ExistingResource_ShouldRemoveResource()
     {
         Id = 1,
         Type = "Generator",
-        Name = "Kristiansand"
+        Name = "Kristiansand",
+        UserId = "user-123"
     });
 
-    var controller = new ResourceController(repository, null!);
+    // Eieren sletter sin egen ressurs
+    var controller = CreateLoggedInController(repository);
 
     var result = await controller.Delete(1);
 

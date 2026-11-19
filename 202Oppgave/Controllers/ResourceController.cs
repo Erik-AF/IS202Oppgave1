@@ -201,7 +201,12 @@ public class ResourceController : Controller
             return NotFound();
         }
 
-        return View(ToModel(entity));
+        var model = ToModel(entity);
+
+        // Rediger og Slett vises bare for eieren og admin
+        model.CanManage = CanManageResource(entity);
+
+        return View(model);
     }
 
     //GET: /Resource/Edit/5
@@ -212,10 +217,14 @@ public class ResourceController : Controller
         var entity = await _repo.GetByIdAsync(id);
         
         if (entity == null)
-            {
+        {
             return NotFound();
-            }
+        }
+
+        // Eieren og admin kan redigere ressursen
+        if (!CanManageResource(entity)) return Forbid();
         //Kopierer verdier fra databsen over i skjemaet
+        
         var model = new ResourceViewModel
         {
             Type = entity.Type,
@@ -296,14 +305,35 @@ public class ResourceController : Controller
         {
             return NotFound();
         }
-        
+
+        // Eieren og admin kan slette ressursen
+        if (!CanManageResource(resource)) return Forbid();
+
         // Sletter bildefilen også, så den ikke blir liggende igjen
+        
         DeleteImage(resource.ImagePath);
 
         await _repo.DeleteAsync(id);
 
         return RedirectToAction(nameof(Index));
     }
+    // Sjekker om innlogget bruker er den som registrerte ressursen
+    private bool OwnsResource(ResourceEntity resource)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        return User.Identity?.IsAuthenticated == true
+               && !string.IsNullOrWhiteSpace(userId)
+               && userId == resource.UserId;
+    }
+
+    // Eieren og admin kan redigere og slette ressursen.
+    // Admin kan det for alle ressurser, også eldre ressurser uten eier.
+    private bool CanManageResource(ResourceEntity resource)
+    {
+        return OwnsResource(resource) || User.IsInRole(RoleNames.Admin);
+    }
+    
     // Konverterer database-entity til modellen
     // som MVC Views allerede bruker
     private static ResourceModel ToModel(ResourceEntity entity)
@@ -337,23 +367,25 @@ public class ResourceController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, ResourceViewModel model)
     {
-        // Ugyldig skjema: vis det på nytt med feilmeldinger
-        if (!ModelState.IsValid)
-        {
-            ViewBag.ResourceId = id;
-            // Viser dagens bilde igjen, siden det ikke sendes med skjemaet
-            model.ImagePath = (await _repo.GetByIdAsync(id))?.ImagePath;
-            await FillCategoryOptionsAsync(model);   //
-            return View(model);
-        }
-
         // Hent den ekte ressursen fra databasen
         var entity = await _repo.GetByIdAsync(id);
         if (entity == null)
         {
             return NotFound();
         }
-        
+
+        // Eieren og admin kan redigere ressursen
+        if (!CanManageResource(entity)) return Forbid();
+
+        // Ugyldig skjema: vis det på nytt med feilmeldinger
+        if (!ModelState.IsValid)
+        {
+            ViewBag.ResourceId = id;
+            // Viser dagens bilde igjen, siden det ikke sendes med skjemaet
+            model.ImagePath = entity.ImagePath;
+            await FillCategoryOptionsAsync(model);
+            return View(model);
+        }
         // Nytt bilde valgt: lagre det nye og slett det gamle.
         // Ikke valgt: behold bildet som allerede er lagret.
         if (model.Image != null)
