@@ -32,6 +32,11 @@ public class ResourceOfferTests
         {
             new() { Id = 1, UserId = resourceOwner, Type = "Aggregat", Status = "Tilgjengelig" }
         });
+        resources.Setup(r => r.GetByUserIdAsync("provider")).ReturnsAsync(new List<Resource>
+        {
+            new() { Id = 1, UserId = "provider", Type = "Aggregat", Status = "Tilgjengelig" },
+            new() { Id = 2, UserId = "provider", Type = "Bil", Status = "Reservert" }
+        });
         var needs = new Mock<INeedRepository>();
         var need = new Need { Id = 7, UserId = "actor", Type = "Strøm" };
         needs.Setup(r => r.GetByIdAsync(7)).ReturnsAsync(need);
@@ -122,5 +127,27 @@ public class ResourceOfferTests
         await controller.Create(new AllocateViewModel { NeedId = 7, ResourceIds = new() { 1 }, IsOffer = true });
         repo.Verify(r => r.AllocateAsync(7, It.IsAny<List<int>>(), null), Times.Once);
         repo.Verify(r => r.OfferAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task FromMap_ShouldShowAvailableOwnResourcesAndKeepNeed()
+    {
+        var (controller, repo) = Setup();
+        var view = Assert.IsType<ViewResult>(await controller.OfferToNeed(7));
+        var model = Assert.IsType<AllocateViewModel>(view.Model);
+        Assert.Equal(7, model.NeedId);
+        Assert.Equal(1, Assert.Single(model.Resources).Id);
+        var next = Assert.IsType<ViewResult>(await controller.Create(new List<int> { 1 }, 7));
+        Assert.Equal(7, Assert.IsType<AllocateViewModel>(next.Model).NeedId);
+        repo.Verify(r => r.OfferAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task FromMap_ShouldRejectNonProviderAndMissingNeed()
+    {
+        var (actor, _) = Setup(RoleNames.PublicActor, "actor");
+        Assert.IsType<ForbidResult>(await actor.OfferToNeed(7));
+        var (provider, _) = Setup();
+        Assert.IsType<NotFoundResult>(await provider.OfferToNeed(999));
     }
 }
