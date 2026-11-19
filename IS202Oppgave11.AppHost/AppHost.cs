@@ -12,6 +12,7 @@ var mariadb = builder.AddContainer(
     .WithEndpoint(
         targetPort: 3306,
         name: "mysql")
+    .WithVolume("mariadb-data", "/var/lib/mysql")
     .WithLifetime(ContainerLifetime.Persistent);
 
 // MVC-applikasjon
@@ -26,6 +27,6 @@ builder.AddDockerfile(
     // så de ikke slettes når appen bygges og startes på nytt
     .WithVolume("ressursbilder", "/app/wwwroot/uploads");
 
-    
+
 
 builder.Build().Run();
