@@ -100,13 +100,21 @@
         @* Knappene får samme stil som på behovssiden (fra need.css) *@
         <div class="detail-actions">
             <p><a asp-action="Index" class="btn btn-primary">Se alle ressurser</a></p>
-            <p><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Rediger</a></p>
+            @* Bare den som registrerte ressursen kan redigere den *@
+            @if (Model.CanEdit)
+            {
+                <p><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Rediger</a></p>
+            }
 
-            @* Ber om bekreftelse for å unngå at en ressurs slettes ved et uhell *@
-            <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
-                  onsubmit="return confirm('Er du sikker på at du vil slette denne ressursen?');">
-                <button type="submit" class="btn need-delete-button">Slett</button>
-            </form>
+            @* Eieren og admin kan slette.
+               Ber om bekreftelse for å unngå at en ressurs slettes ved et uhell *@
+            @if (Model.CanDelete)
+            {
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+                      onsubmit="return confirm('Er du sikker på at du vil slette denne ressursen?');">
+                    <button type="submit" class="btn need-delete-button">Slett</button>
+                </form>
+            }
         </div>
     </div>
 </div>

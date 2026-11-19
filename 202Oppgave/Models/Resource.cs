@@ -55,4 +55,9 @@ public class Resource
     public int? CategoryId { get; set; }
     public string? CategoryName { get; set; }
     
+    
+    // Styrer knappene på detaljsiden. Settes av controlleren og lagres ikke i databasen.
+    public bool CanEdit { get; set; }
+    public bool CanDelete { get; set; }
+    
 }
