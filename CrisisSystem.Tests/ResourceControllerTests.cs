@@ -2,6 +2,7 @@
 using _202Oppgave.Controllers;
 using _202Oppgave.DataAccess.Repositories;
 using _202Oppgave.Models.Entities;
+using _202Oppgave.Models.Authorization;
 using _202Oppgave.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
@@ -47,7 +48,7 @@ public class ResourceControllerTests
         }
         
         
-        // Bildene lagres i en liste i stedet for i databasen
+      
         public List<ResourceImage> Images { get; } = new();
 
         public Task<ResourceImage?> GetImageAsync(int resourceId)
@@ -58,7 +59,7 @@ public class ResourceControllerTests
 
         public Task SaveImageAsync(int resourceId, byte[] data, string contentType)
         {
-            // Samme regel som i databasen: én ressurs, ett bilde
+            /// Samme regel som i databasen: én ressurs, ett bilde
             Images.RemoveAll(i => i.ResourceId == resourceId);
             Images.Add(new ResourceImage
             {
@@ -81,7 +82,7 @@ public class ResourceControllerTests
         }
     }
     
-    // Lager controlleren med en innlogget testbruker, som på NeedControllerTests
+    /// Lager controlleren med en innlogget testbruker, som på NeedControllerTests
     private static ResourceController CreateLoggedInController(FakeResourceRepository repository)
     {
         return new ResourceController(repository, null!)
@@ -274,7 +275,7 @@ public async Task Edit_ExistingResource_ShouldUpdateResource()
         Name = "Kristiansand"
     });
 
-    // Eieren redigerer sin egen ressurs
+    
     var controller = CreateLoggedInController(repository);
     var model = new ResourceViewModel
     {
@@ -331,7 +332,7 @@ public async Task Delete_ExistingResource_ShouldRemoveResource()
         UserId = "user-123"
     });
 
-    // Eieren sletter sin egen ressurs
+
     var controller = CreateLoggedInController(repository);
 
     var result = await controller.Delete(1);
@@ -354,9 +355,9 @@ public async Task Delete_NonExistingResource_ShouldReturnNotFound()
 }
 
 
-    // ---------- Bilder i databasen ----------
 
-    // Lager et testbilde som om brukeren hadde lastet det opp
+
+    /// Lager et testbilde som om brukeren hadde lastet det opp
     private static IFormFile CreateTestImage()
     {
         var bytes = new byte[] { 1, 2, 3, 4 };
@@ -390,12 +391,12 @@ public async Task Delete_NonExistingResource_ShouldReturnNotFound()
         var saved = Assert.Single(repository.Resources);
         var image = Assert.Single(repository.Images);
 
-        // Bildet hører til ressursen, og har riktig innhold og type
+        /// Bildet hører til ressursen, og har riktig innhold og type
         Assert.Equal(saved.Id, image.ResourceId);
         Assert.Equal(new byte[] { 1, 2, 3, 4 }, image.Data);
         Assert.Equal("image/jpeg", image.ContentType);
 
-        // Ressursen viser til adressen som henter bildet fra databasen
+        /// Ressursen viser til adressen som henter bildet fra databasen
         Assert.Equal($"/Resource/Image/{saved.Id}", saved.ImagePath);
     }
 
@@ -422,6 +423,102 @@ public async Task Delete_NonExistingResource_ShouldReturnNotFound()
         var result = await controller.Image(999);
 
         Assert.IsType<NotFoundResult>(result);
+    }
+
+
+    /// Lager controlleren med en innlogget bruker med valgt ID.
+    private static ResourceController CreateControllerAs(
+        FakeResourceRepository repository, string userId, bool isAdmin = false)
+    {
+        var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
+
+        if (isAdmin)
+            claims.Add(new Claim(ClaimTypes.Role, RoleNames.Admin));
+
+        return new ResourceController(repository, null!)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Test"))
+                }
+            }
+        };
+    }
+
+
+    private static FakeResourceRepository CreateRepositoryWithOwnedResource()
+    {
+        var repository = new FakeResourceRepository();
+        repository.Resources.Add(new Resource
+        {
+            Id = 1,
+            UserId = "user-123",
+            Type = "Generator",
+            Name = "Kristiansand"
+        });
+        return repository;
+    }
+
+    [Fact]
+    public async Task EditGet_OtherUsersResource_ShouldReturnForbid()
+    {
+        var repository = CreateRepositoryWithOwnedResource();
+        var controller = CreateControllerAs(repository, "user-999");
+
+        var result = await controller.Edit(1);
+
+        Assert.IsType<ForbidResult>(result);
+    }
+
+    [Fact]
+    public async Task EditPost_OtherUsersResource_ShouldReturnForbid_AndNotChange()
+    {
+        var repository = CreateRepositoryWithOwnedResource();
+        var controller = CreateControllerAs(repository, "user-999");
+
+        var model = new ResourceViewModel
+        {
+            Type = "Endret",
+            Area = "Grimstad",
+            Latitude = 58.3405,
+            Longitude = 8.5934,
+            ContactName = "Testperson",
+            ContactPhone = "12345678",
+            CategoryId = 1
+        };
+
+        var result = await controller.Edit(1, model);
+
+        Assert.IsType<ForbidResult>(result);
+        /// Ressursen er uendret
+        Assert.Equal("Generator", repository.Resources.Single().Type);
+    }
+
+    [Fact]
+    public async Task Delete_OtherUsersResource_ShouldReturnForbid_AndKeepResource()
+    {
+        var repository = CreateRepositoryWithOwnedResource();
+        var controller = CreateControllerAs(repository, "user-999");
+
+        var result = await controller.Delete(1);
+
+        Assert.IsType<ForbidResult>(result);
+        /// Ressursen ble ikke slettet
+        Assert.Single(repository.Resources);
+    }
+
+    [Fact]
+    public async Task Delete_AsAdmin_ShouldRemoveOtherUsersResource()
+    {
+        var repository = CreateRepositoryWithOwnedResource();
+        var controller = CreateControllerAs(repository, "admin-1", isAdmin: true);
+
+        var result = await controller.Delete(1);
+
+        Assert.IsType<RedirectToActionResult>(result);
+        Assert.Empty(repository.Resources);
     }
 
 }
