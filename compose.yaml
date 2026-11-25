@@ -1,0 +1,49 @@
+
+services:
+  init-permissions:
+    image: alpine:3.22
+    user: "0:0"
+    command: ["sh", "-c", "chown -R 1654:1654 /keys"]
+    volumes:
+      - dataprotection-keys:/keys
+    restart: "no"
+  mariadb:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpassord
+      MARIADB_DATABASE: resourcesdb
+      MARIADB_USER: appuser
+      MARIADB_PASSWORD: erikerkul
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh --connect --innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  oppgave202:
+    build:
+      context: .
+      dockerfile: 202Oppgave/Dockerfile
+    ports:
+      - "5027:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ConnectionStrings__DefaultConnection: "Server=mariadb;Port=3306;Database=resourcesdb;User=appuser;Password=erikerkul"
+    volumes:
+      - ressursbilder:/app/wwwroot/uploads
+      - dataprotection-keys:/home/app/.aspnet/DataProtection-Keys
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      init-permissions:
+        condition: service_completed_successfully
+
+volumes:
+  mariadb-data:
+  ressursbilder:
+  dataprotection-keys:
