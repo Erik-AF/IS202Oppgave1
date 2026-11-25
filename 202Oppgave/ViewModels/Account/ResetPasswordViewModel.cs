@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace _202Oppgave.ViewModels.Account;
+/// <summary>Samler og validerer nytt passord, e-post og tilbakestillingskode.</summary>
 public sealed class ResetPasswordViewModel
 {
     [Required]

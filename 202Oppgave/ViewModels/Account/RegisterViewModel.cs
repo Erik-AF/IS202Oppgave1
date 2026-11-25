@@ -2,6 +2,7 @@
 
 namespace _202Oppgave.ViewModels.Account;
 
+/// <summary>Validerer kontoinformasjon, passord og valgt brukertype ved registrering.</summary>
 public sealed class RegisterViewModel
 {
     [Required(ErrorMessage = "Du må oppgi fullt navn.")]

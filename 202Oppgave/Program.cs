@@ -9,20 +9,17 @@ using _202Oppgave.Models.Authorization;
 using _202Oppgave.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
+// Registrerer webtjenester og databaseavhengigheter.
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Register repository
 builder.Services.AddScoped<_202Oppgave.DataAccess.Repositories.IResourceRepository, _202Oppgave.DataAccess.Repositories.ResourceRepository>();
 
-// Gjør NeedRepository tilgjengelig for controlleren gjennom INeedRepository.
 builder.Services.AddScoped<INeedRepository, NeedRepository>();
 
-// Gjør AllocationRepository tilgjengelig for controllere og ViewComponents.
 builder.Services.AddScoped<IAllocationRepository, AllocationRepository>();
 
 var connectionString = builder.Configuration
@@ -30,14 +27,11 @@ var connectionString = builder.Configuration
     ?? throw new InvalidOperationException(
         "DefaultConnection mangler.");
 
-
 builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseMySql(
         connectionString,
         ServerVersion.AutoDetect(connectionString)));
 
-
-///Registrere Identity
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
@@ -58,15 +52,12 @@ builder.Services.AddScoped<IEmailSender, ConsoleEmailSender>();
 
 var app = builder.Build();
 
-// Apply EF Core migrations at startup so the database schema is created/updated.
-// This runs once during application startup and will throw if migrations cannot be applied.
+// Oppdaterer databaseskjema og startbrukere før forespørsler behandles.
+// Oppstarten avbrytes dersom migreringen feiler.
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-
-    // Apply EF Core migrations at startup so the database schema is created/updated.
-    // This runs once during application startup and will throw if migrations cannot be applied.
     try
     {
         var db = services.GetRequiredService<ApplicationDbContext>();
@@ -86,12 +77,9 @@ using (var scope = app.Services.CreateScope())
         throw;
     }
 
-    ///Oppretter Resource Provider, Public Actor og Admin rollene 
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     await IdentitySeeder.SeedRolesAsync(roleManager);
 
-
-    
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
     var adminPassword = "!blueSideGromp1";
@@ -105,19 +93,16 @@ using (var scope = app.Services.CreateScope())
 
 app.MapDefaultEndpoints();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 
-// Viser filer som lastes opp mens appen kjører, f.eks. bilder i wwwroot/uploads.
-// MapStaticAssets viser bare filer som fantes da appen ble bygget.
-
+// Opplastede bilder må også være tilgjengelige etter at appen er bygget.
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -126,13 +111,11 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-
 app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

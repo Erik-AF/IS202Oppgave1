@@ -1,4 +1,5 @@
-/* Felles ramme bruker kartoversiktens farge, også når sidestiler lastes. */
+/* Felles grønn header og footer på innholdssidene. */
+
 body.design-concept.shared-chrome .site-header,
 body.design-concept.shared-chrome .site-header .main-nav { background: #093833 !important; }
 body.design-concept.shared-chrome .site-header .nav-login { background: transparent !important; }

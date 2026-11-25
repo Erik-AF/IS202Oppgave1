@@ -1,4 +1,5 @@
-/* Lastes kun på Om oss, Hjelp og Kontakt oss. */
+/* Informasjonssider, hjelpetekster og kontaktskjema. */
+
 .design-concept .information-hero { padding-block: 28px 36px; border-bottom: 0; }
 .information-breadcrumb { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; font-size: .92rem; color: #65706a; }
 .information-breadcrumb a { color: inherit; text-decoration: none; }

@@ -2,14 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace _202Oppgave.ViewModels
 {
-    // Jeg bruker nullable typer for valg og koordinater, slik at manglende verdier
-    // oppdages av Required i stedet for å få en standardverdi.
+
+    /// <summary>Validerer feltene som sendes ved registrering eller redigering av behov.</summary>
     public class NeedViewModel
     {
 
         [Required(ErrorMessage = "Oppgi hvilken type ressurs det er behov for.")]
         public string Type { get; set; } = string.Empty;
-
 
         [Required(ErrorMessage = "Oppgi hvor hjelpen trengs.")]
         public string Location { get; set; } = string.Empty;
@@ -21,10 +20,8 @@ namespace _202Oppgave.ViewModels
         [Required(ErrorMessage = "Beskriv hva det er behov for.")]
         public string Description { get; set; } = string.Empty;
 
-
         [Required(ErrorMessage = "Oppgi når hjelpen trengs.")]
         public DateTime? Deadline { get; set; }
-
 
         [Required(ErrorMessage = "Velg et punkt på kartet.")]
         [Range(-90, 90, ErrorMessage = "Ugyldig breddegrad.")]
@@ -33,14 +30,14 @@ namespace _202Oppgave.ViewModels
         [Required(ErrorMessage = "Velg et punkt på kartet.")]
         [Range(-180, 180, ErrorMessage = "Ugyldig lengdegrad.")]
         public double? Longitude { get; set; }
-        
+
         public string? GeometryJson { get; set; }
     }
+    /// <summary>Angir om behovet er akutt eller ikke akutt.</summary>
     public enum NeedPriority
     {
         IkkeAkutt = 1,
         Akutt = 2
     }
 }
-
 

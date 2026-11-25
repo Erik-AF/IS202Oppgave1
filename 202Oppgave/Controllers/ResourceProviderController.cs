@@ -8,6 +8,7 @@ using _202Oppgave.DataAccess.Repositories;
 
 namespace _202Oppgave.Controllers;
 
+/// <summary>Viser leverandørens egne ressurser og lar brukeren oppdatere profilen.</summary>
 [Authorize(Roles = RoleNames.ResourceProvider)]
 public class ResourceProviderController : Controller
 {
@@ -15,6 +16,7 @@ public class ResourceProviderController : Controller
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IResourceRepository _resourceRepository;
 
+    /// <summary>Mottar avhengighetene som ResourceProviderController bruker.</summary>
     public ResourceProviderController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
@@ -24,8 +26,8 @@ public class ResourceProviderController : Controller
         _signInManager = signInManager;
         _resourceRepository = resourceRepository;
     }
-   
-    
+
+    /// <summary>Viser de fire første ressursene fra leverandørens egen ressursliste.</summary>
     [HttpGet]
     public async Task<IActionResult> Index()
     {
@@ -40,22 +42,22 @@ public class ResourceProviderController : Controller
         return View(resources.Take(4).ToList());
     }
 
-    
+    /// <summary>Viser alle ressurser registrert av innlogget leverandør.</summary>
     [HttpGet]
     public async Task<IActionResult> Resources()
     {
-        // Henter ID-en til den innloggede brukeren
+
         var userId = _userManager.GetUserId(User);
 
         if (userId == null)
             return Challenge();
 
-        // Viser bare ressursene denne brukeren har registrert
         var resources = await _resourceRepository.GetByUserIdAsync(userId);
 
         return View(resources);
     }
 
+    /// <summary>Viser profilfeltene til innlogget bruker.</summary>
     [HttpGet]
     public async Task<IActionResult> Profile()
     {
@@ -74,6 +76,7 @@ public class ResourceProviderController : Controller
         return View(model);
     }
 
+    /// <summary>Validerer profilendringer, holder e-post og brukernavn like og fornyer innloggingen etter lagring.</summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Profile(ProfileViewModel model)
@@ -102,7 +105,6 @@ public class ResourceProviderController : Controller
         user.FullName = model.FullName.Trim();
         user.PhoneNumber = model.PhoneNumber.Trim();
 
-        // Innloggingen bruker e-postadresse som brukernavn.
         user.Email = email;
         user.UserName = email;
 
@@ -127,5 +129,4 @@ public class ResourceProviderController : Controller
         return RedirectToAction(nameof(Profile));
     }
 }
-
 

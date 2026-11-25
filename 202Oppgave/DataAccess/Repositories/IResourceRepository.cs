@@ -2,26 +2,28 @@ using _202Oppgave.Models.Entities;
 
 namespace _202Oppgave.DataAccess.Repositories;
 
+/// <summary>Definerer uthenting og lagring av ressurser og kategorier.</summary>
 public interface IResourceRepository
 {
-    // Legg til en ressurs
+
+    /// <summary>Lagrer et nytt ressurs.</summary>
     Task AddAsync(Resource resource);
-    
-    // Oppdaterer en eksisterende ressurs i MariaDB
+
+    /// <summary>Lagrer endringer i et eksisterende ressurs.</summary>
     Task UpdateAsync(Resource resource);
-    
-    // Hent alle ressurser
+
+    /// <summary>Henter alle ressurser med kategori og eierdata.</summary>
     Task<List<Resource>> GetAllAsync();
 
-    // Hent én ressurs basert på ID
+    /// <summary>Henter ett ressurs etter ID, eller null hvis det ikke finnes.</summary>
     Task<Resource?> GetByIdAsync(int id);
-    
-    // Hent alle ressurser som en bestemt bruker har registrert
+
+    /// <summary>Henter brukerens ressurser med kategori, sortert etter synkende ID.</summary>
     Task<List<Resource>> GetByUserIdAsync(string userId);
 
-    // Slett en ressurs
+    /// <summary>Sletter ressursen hvis den finnes; tilhørende allokeringer slettes av databasens slettingsregel.</summary>
     Task DeleteAsync(int id);
-    
-    //henter kategorier fra databasen
+
+    /// <summary>Henter kategorier sortert etter navn til skjemavalg.</summary>
     Task<List<Category>> GetCategoriesAsync();
 }

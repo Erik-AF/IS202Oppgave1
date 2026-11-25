@@ -1,18 +1,10 @@
+@* Viser filtrerte ressurser med eksport og valg for allokering. *@
 @model _202Oppgave.ViewModels.ResourceIndexViewModel
-
-@*
-    Index.cshtml – oversikt over alle registrerte ressurser.
-    Filtreringen skjer i ResourceController.Index (GET).
-    Skjemaet sender valgene i adressen, f.eks. /Resource?category=Drone
-
-    Tilgjengelige ressurser kan krysses av og allokeres til et behov.
-    De valgte sendes til AllocationController.Create (GET).
-*@
 
 @{
     ViewData["Title"] = "Ressurser";
 
-    // Standardbilde ut fra typen, når ressursen ikke har eget bilde
+    /// Velger et standardbilde fra ressurstypen når eget bilde mangler.
     string ImageFor(string? type)
     {
         var t = (type ?? "").ToLowerInvariant();
@@ -23,7 +15,7 @@
         return "~/images/ressurser/standard.jpg";
     }
 
-    // Klasse for fargeprikken. Samme farger som kartet til Marius.
+    /// Oversetter ressursstatus til CSS-klassen for statusprikken.
     string DotClass(string? status) => status switch
     {
         "Tilgjengelig" => "rl-dot--green",
@@ -35,9 +27,7 @@
 @section Head {
     <link rel="stylesheet" href="~/css/resource-export.css" asp-append-version="true" />
     <style>
-        /* --- Allokering: avkrysningsboks per rad og knapp under listen --- */
 
-        /* rad: avkrysningsboks til venstre, resten av raden til høyre */
         .rl-list > li { display: flex; align-items: center; }
         .rl-row { flex: 1; }
 
@@ -50,7 +40,6 @@
 
         .rl-pick input { width: 20px; height: 20px; cursor: pointer; }
 
-        /* knappen ligger fast nederst i vinduet mens man blar i listen */
         .rl-allocate {
             position: sticky;
             bottom: 0;
@@ -60,23 +49,18 @@
             text-align: right;
         }
 
-        /* melding fra AllocationController */
         .rl-msg { padding: 0.9rem 1rem; background: #edeeec; margin: 0 0 1rem; }
     </style>
 }
 
-@* need-design gir samme stil som behovslisten (fra need.css):
-   grønt filterpanel, hvite kort med runde hjørner og grønne knapper *@
 <div class="container rl need-design">
 
-    @* Brødsmulesti, som på behovslisten *@
     <nav class="need-breadcrumb" aria-label="Brødsmuler">
         <a asp-controller="Home" asp-action="Index">Hjem</a>
         <span aria-hidden="true">/</span>
         <span aria-current="page">Ressurser</span>
     </nav>
 
-    @* ===== Topp: tittel og knapp ===== *@
     <header class="rl-head">
         <div>
             <h1>Tilgjengelige ressurser</h1>
@@ -87,9 +71,6 @@
 
     <div class="rl-layout">
 
-        @* ===== Filter =====
-           method="get": valgene sendes i adressen til Index i controlleren.
-           Ingen antiforgery-token trengs, fordi GET ikke endrer noe. *@
         <form class="rl-filter" asp-action="Index" method="get">
             <h2>Filtrer</h2>
 
@@ -137,14 +118,9 @@
             </div>
         </form>
 
-        @* ===== Listen =====
-           Én rad per ressurs: avkrysningsboks, bilde, tekst, status og lenke til Details.
-
-           Skjemaet sender de avkryssede ressursene til AllocationController.Create (GET),
-           f.eks. /Allocation/Create?resourceIds=3&resourceIds=7 *@
         <form asp-controller="Allocation" asp-action="Create" method="get">
         <section>
-            @* Melding fra AllocationController, f.eks. "Velg minst én ressurs" *@
+
             @if (TempData["Message"] is string message)
             {
                 <p class="rl-msg">@message</p>
@@ -154,7 +130,7 @@
 
             @if (!Model.Resources.Any())
             {
-                @* Ingen treff, eller ingen ressurser i det hele tatt *@
+
                 <div class="rl-empty">
                     <h3>Ingen ressurser funnet</h3>
                     <p>Prøv et annet filter, eller registrer en ny ressurs.</p>
@@ -166,10 +142,7 @@
                     @foreach (var r in Model.Resources)
                     {
                         <li>
-                            @* Avkrysningsboks bare for tilgjengelige ressurser.
-                               Alle heter "resourceIds", så de valgte havner i én liste.
-                               Står ved siden av lenken, ikke inni, så et klikk på boksen
-                               ikke åpner detaljsiden. *@
+
                             <span class="rl-pick">
                                 @if (r.Status == "Tilgjengelig")
                                 {
@@ -178,10 +151,8 @@
                                 }
                             </span>
 
-                            @* hele raden er en lenke til detaljsiden *@
                             <a class="rl-row" asp-action="Details" asp-route-id="@r.Id">
 
-                                @* eget bilde hvis det finnes, ellers standardbilde ut fra typen *@
                                 <img class="rl-img" src="@Url.Content(r.ImagePath ?? ImageFor($"{r.CategoryName} {r.Type}"))" alt="" loading="lazy" />
 
                                 <div>
@@ -215,7 +186,6 @@
                 </ul>
             }
 
-            @* Knappen vises bare når minst én ressurs kan allokeres *@
             @if (Model.Resources.Any(r => r.Status == "Tilgjengelig"))
             {
                 <div class="rl-allocate">

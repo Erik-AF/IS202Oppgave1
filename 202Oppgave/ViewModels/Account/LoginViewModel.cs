@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace _202Oppgave.ViewModels.Account;
+/// <summary>Validerer innloggingsdata og bevarer ønsket returadresse.</summary>
 public sealed class LoginViewModel
 {
     [Required]

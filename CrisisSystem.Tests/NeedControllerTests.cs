@@ -10,12 +10,15 @@ using Xunit;
 
 namespace CrisisSystem.Tests;
 
+/// <summary>Tester NeedController med kontrollerte testdata uten å starte hele applikasjonen.</summary>
 public class NeedControllerTests
 {
+    /// <summary>Etterligner behovslagring i minnet slik at controlleren kan testes uten database.</summary>
     private class FakeNeedRepository : INeedRepository
     {
         public List<Need> Needs { get; } = new();
 
+        /// <inheritdoc />
         public Task AddAsync(Need need)
         {
             need.Id = Needs.Count + 1;
@@ -23,22 +26,26 @@ public class NeedControllerTests
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         public Task<List<Need>> GetAllAsync()
         {
             return Task.FromResult(Needs.ToList());
         }
 
+        /// <inheritdoc />
         public Task<Need?> GetByIdAsync(int id)
         {
             return Task.FromResult(
                 Needs.FirstOrDefault(n => n.Id == id));
         }
 
+        /// <inheritdoc />
         public Task UpdateAsync(Need need)
         {
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         public Task DeleteAsync(int id)
         {
             Needs.RemoveAll(n => n.Id == id);
@@ -46,6 +53,7 @@ public class NeedControllerTests
         }
     }
 
+    /// <summary>Registreringssiden starter med et tomt behovsskjema.</summary>
     [Fact]
     public void Create_Get_ShouldReturnEmptyForm()
     {
@@ -58,6 +66,7 @@ public class NeedControllerTests
         Assert.IsType<NeedViewModel>(view.Model);
     }
 
+    /// <summary>Ugyldige behovsdata viser skjemaet igjen.</summary>
     [Fact]
     public async Task Create_InvalidModel_ShouldReturnView()
     {
@@ -74,7 +83,8 @@ public class NeedControllerTests
         Assert.Same(model, view.Model);
         Assert.Empty(repository.Needs);
     }
-    
+
+    /// <summary>Gyldige behovsdata lagres med innlogget oppretter.</summary>
     [Fact]
     public async Task Create_ValidModel_ShouldSaveNeed()
     {
@@ -106,6 +116,7 @@ public class NeedControllerTests
         Assert.Equal(model.Longitude, savedNeed.Longitude);
     }
 
+    /// <summary>Lagring av behov sender brukeren til bekreftelsen.</summary>
     [Fact]
     public async Task Create_ValidModel_ShouldRedirectToConfirmation()
     {
@@ -131,6 +142,7 @@ public class NeedControllerTests
         Assert.Equal(repository.Needs[0].Id, redirect.RouteValues!["id"]);
     }
 
+/// <summary>Et eksisterende behov oppdateres ved gyldig redigering.</summary>
 [Fact]
 public async Task Edit_ExistingNeed_ShouldUpdateNeed()
 {
@@ -172,6 +184,7 @@ public async Task Edit_ExistingNeed_ShouldUpdateNeed()
     Assert.Equal("Confirmation", redirect.ActionName);
 }
 
+/// <summary>Redigering av et ukjent behov gir 404.</summary>
 [Fact]
 public async Task Edit_NonExistingNeed_ShouldReturnNotFound()
 {
@@ -182,6 +195,7 @@ public async Task Edit_NonExistingNeed_ShouldReturnNotFound()
     Assert.IsType<NotFoundResult>(result);
 }
 
+/// <summary>Et eksisterende behov fjernes ved sletting.</summary>
 [Fact]
 public async Task Delete_ExistingNeed_ShouldRemoveNeed()
 {
@@ -198,6 +212,7 @@ public async Task Delete_ExistingNeed_ShouldRemoveNeed()
     Assert.Equal("Index", redirect.ActionName);
 }
 
+/// <summary>Sletting av et ukjent behov gir 404.</summary>
 [Fact]
 public async Task Delete_NonExistingNeed_ShouldReturnNotFound()
 {
@@ -208,7 +223,7 @@ public async Task Delete_NonExistingNeed_ShouldReturnNotFound()
     Assert.IsType<NotFoundResult>(result);
 }
 
-
+    /// <summary>Oppretter controlleren med repository og innlogget testidentitet.</summary>
     private static NeedController CreateController(INeedRepository repository)
     {
         return new NeedController(repository)
@@ -224,6 +239,7 @@ public async Task Delete_NonExistingNeed_ShouldReturnNotFound()
         };
     }
 
+    /// <summary>Behov lagres ikke uten en gyldig innlogget identitet.</summary>
     [Theory]
     [InlineData(false, "user-123")]
     [InlineData(true, null)]
@@ -241,6 +257,7 @@ public async Task Delete_NonExistingNeed_ShouldReturnNotFound()
         Assert.Empty(repository.Needs);
     }
 
+    /// <summary>Begge registreringsendepunktene krever autorisasjon.</summary>
     [Fact]
     public void Create_Endpoints_ShouldRequireAuthorization()
     {

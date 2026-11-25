@@ -3,29 +3,32 @@ using _202Oppgave.Models.Entities;
 
 namespace _202Oppgave.DataAccess.Repositories;
 
+/// <summary>Lagrer ressurser gjennom EF Core og laster tilhørende kategori- og brukerdata.</summary>
 public class ResourceRepository : IResourceRepository
 {
     private readonly ApplicationDbContext _context;
 
+    /// <summary>Mottar avhengighetene som ResourceRepository bruker.</summary>
     public ResourceRepository(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    // Legg til ressurs
+    /// <inheritdoc />
     public async Task AddAsync(Resource resource)
     {
         await _context.Resources.AddAsync(resource);
         await _context.SaveChangesAsync();
     }
 
+    /// <inheritdoc />
     public async Task UpdateAsync(Resource resource)
     {
         _context.Resources.Update(resource);
         await _context.SaveChangesAsync();
     }
 
-    // Hent alle ressurser, med kategorien
+    /// <inheritdoc />
     public async Task<List<Resource>> GetAllAsync()
     {
         return await _context.Resources
@@ -34,7 +37,7 @@ public class ResourceRepository : IResourceRepository
             .ToListAsync();
     }
 
-    // Hent ressurs med ID, med kategorien
+    /// <inheritdoc />
     public async Task<Resource?> GetByIdAsync(int id)
     {
         return await _context.Resources
@@ -42,8 +45,8 @@ public class ResourceRepository : IResourceRepository
             .Include(r => r.User)
             .FirstOrDefaultAsync(r => r.Id == id);
     }
-    
-    // Hent ressursene til én bruker, med kategorien, nyeste først
+
+    /// <inheritdoc />
     public async Task<List<Resource>> GetByUserIdAsync(string userId)
     {
         return await _context.Resources
@@ -53,7 +56,7 @@ public class ResourceRepository : IResourceRepository
             .ToListAsync();
     }
 
-    // Slett ressurs
+    /// <inheritdoc />
     public async Task DeleteAsync(int id)
     {
         var resource = await GetByIdAsync(id);
@@ -64,8 +67,8 @@ public class ResourceRepository : IResourceRepository
             await _context.SaveChangesAsync();
         }
     }
-    
-    // Hent alle kategorier, sortert etter navn. Brukes i nedtrekkslisten i skjemaet.
+
+    /// <inheritdoc />
     public async Task<List<Category>> GetCategoriesAsync()
     {
         return await _context.Categories

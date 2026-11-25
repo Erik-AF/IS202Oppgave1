@@ -1,4 +1,6 @@
-// Delte hjelpefunksjoner for kartvisningene.
+/// Felles kartfarger, symboler og gjenoppretting av lagrede kartformer.
+
+/// Velger kartfarge fra behovets prioritet eller ressursens tilgjengelighet.
 function getMarkerColor(punkt) {
     if (punkt.kategori === 'behov') {
         const priority = String(punkt.prioritet ?? punkt.priority ?? '')
@@ -16,10 +18,11 @@ function getMarkerColor(punkt) {
     return '#65737d';
 }
 
-// Kun faste SVG-symboler brukes i HTML; brukerens tekst settes ikke inn her.
+/// Velger et fast symbol; eksplisitt traktortype går foran kategori, ellers prioriteres kategorien.
 function getMapSymbol(punkt) {
     if (punkt.kategori === 'behov') return 'warning';
 
+    /// Gjenkjenner kategorier og vanlige skrivemåter i type- og kategoritekst.
     function identify(value) {
         if (typeof value !== 'string' || !value.trim()) return null;
         const text = value.toLocaleLowerCase('nb-NO')
@@ -41,10 +44,8 @@ function getMapSymbol(punkt) {
         return null;
     }
 
-    // En konkret traktor i Type skal få traktorikon, også i en generell kategori.
     if (/traktor|tractor/i.test(String(punkt.type ?? ''))) return 'tractor';
 
-    // Kategorien har ellers prioritet, også når Type inneholder andre nøkkelord.
     const categoryNames = [
         punkt.categoryName,
         punkt.kategoriNavn,
@@ -57,12 +58,13 @@ function getMapSymbol(punkt) {
     return identify(punkt.type) ?? 'other';
 }
 
+/// Bygger markør av faste SVG-symboler; brukerinnhold settes ikke inn som HTML.
 function createMapIcon(punkt) {
     const paths = {
         warning: '<path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5m0 3v.1"/>',
-        // Menneske i samme hvite strekstil som de andre symbolene.
+
         personnel: '<circle cx="12" cy="4.5" r="2.5"/><path d="M8 21v-6H6v-4a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v4h-2v6M12 15v6M9 11v4h6v-4"/>',
-        // Tre stablede planker med korte linjer som viser trestruktur.
+
         materials: '<rect x="2" y="3" width="20" height="5" rx="1"/><rect x="2" y="9.5" width="20" height="5" rx="1"/><rect x="2" y="16" width="20" height="5" rx="1"/><path d="M5 5.5h5m5 0h4M6 12h8m3 0h2M5 18.5h4m4 0h6"/>',
         drone: '<rect x="9" y="9" width="6" height="6" rx="2"/><path d="m9 9-3-3m9 3 3-3m-9 9-3 3m9-3 3 3"/><ellipse cx="5" cy="5" rx="4" ry="2.5"/><ellipse cx="19" cy="5" rx="4" ry="2.5"/><ellipse cx="5" cy="19" rx="4" ry="2.5"/><ellipse cx="19" cy="19" rx="4" ry="2.5"/>',
         construction: '<rect x="2" y="17" width="12" height="4" rx="2"/><path d="M4 17V9h6l2 8M5 12h5M11 13l5-9 3 2 2 9M18 15h4v4h-6l2-4ZM5 19h6"/>',
@@ -91,7 +93,7 @@ function createMapIcon(punkt) {
     });
 }
 
-// Samme tydelige områdestil i registreringen og kartoversikten.
+/// Bruker samme statusfarge og områdestil i kart og registreringsskjema.
 function getMapAreaStyle(punkt) {
     const color = getMarkerColor(punkt);
     return {
@@ -101,7 +103,7 @@ function getMapAreaStyle(punkt) {
     };
 }
 
-// Gamle lukkede linjer vises som fylte områder uten å endre lagrede data.
+/// Tolker eldre lukkede linjer som polygoner uten å endre lagrede kartdata.
 function prepareMapGeometry(geometry) {
     if (!geometry || typeof geometry !== 'object') return geometry;
     if (geometry.type === 'Feature') {
@@ -123,7 +125,7 @@ function prepareMapGeometry(geometry) {
     return geometry;
 }
 
-// Beholder kartformen. Sirkler har radius i GeoJSON-egenskapene.
+/// Gjenoppretter GeoJSON og eventuell sirkelradius, eller bruker gyldige koordinater som reserve.
 function createMapFeature(punkt) {
     const color = getMarkerColor(punkt);
     const style = getMapAreaStyle(punkt);
@@ -133,6 +135,7 @@ function createMapFeature(punkt) {
                 ? JSON.parse(punkt.geometryJson) : punkt.geometryJson;
             return L.geoJSON(prepareMapGeometry(geometry), {
                 style,
+                /// Gjenoppretter sirkler med lagret radius; andre punkter blir markører.
                 pointToLayer: function (feature, latlng) {
                     const radius = feature.properties?.radius;
                     if (typeof radius === 'number' && radius > 0) {

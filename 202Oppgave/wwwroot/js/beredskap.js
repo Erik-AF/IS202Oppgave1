@@ -1,4 +1,5 @@
-// Filtrerer behovene som allerede er hentet fra serveren.
+/// Filtrering av behovskort som allerede er hentet fra serveren.
+
 (() => {
     const filter = document.querySelector('[data-need-filter]');
     if (!filter) return;
@@ -7,6 +8,7 @@
     const items = [...document.querySelectorAll('[data-need-item]')];
     const count = document.getElementById('need-count');
     const empty = document.getElementById('need-no-matches');
+    /// Filtrerer de innlastede behovskortene uten nye forespørsler til serveren.
     function update() {
         const query = search.value.trim().toLocaleLowerCase('nb-NO');
         let visible = 0;

@@ -2,7 +2,7 @@ using _202Oppgave.ViewModels;
 
 namespace _202Oppgave.Models;
 
-// Need representerer et registrert behov, mens NeedViewModel tar imot skjemadata.
+/// <summary>Visningsmodell for behovsdata; lagring håndteres av Models.Entities.Need.</summary>
 public class Need
 {
     public int Id { get; set; }
@@ -15,6 +15,5 @@ public class Need
     public double Latitude { get; set; }
     public double Longitude { get; set; }
 
-    //Muliggjør at former som blir tegnet på kart dukker opp
     public string? GeometryJson { get; set; }
 }

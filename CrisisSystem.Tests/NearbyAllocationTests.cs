@@ -11,15 +11,19 @@ using Xunit;
 
 namespace CrisisSystem.Tests;
 
+/// <summary>Tester NearbyAllocation med kontrollerte testdata uten å starte hele applikasjonen.</summary>
 public class NearbyAllocationTests
 {
+    /// <summary>Plasserer en testressurs på oppgitt luftlinjeavstand fra testbehovet.</summary>
     private static Resource At(int id, double km, string status = "Tilgjengelig") => new()
     {
         Id = id, Type = $"Ressurs {id}", Latitude = km / 6371 * 180 / Math.PI,
         Longitude = 0, Status = status
     };
+    /// <summary>Oppretter testbehovet ved koordinatene null, null.</summary>
     private static Need Need() => new() { Id = 7, Type = "Hjelp", Latitude = 0, Longitude = 0 };
 
+    /// <summary>Alle tilgjengelige ressurser innenfor radiusen sorteres etter avstand.</summary>
     [Fact]
     public void Suggestions_ShouldReturnAllNearbyAvailableResourcesNearestFirst()
     {
@@ -27,6 +31,7 @@ public class NearbyAllocationTests
         Assert.Equal(new[] { 2,4,3,1 }, NearbyResourceSuggestions.Find(Need(), resources).Select(r => r.Id));
     }
 
+    /// <summary>Femkilometersgrensen avgrenser ressursforslagene.</summary>
     [Fact]
     public void Suggestions_ShouldRespectFiveKilometreBoundary()
     {
@@ -35,6 +40,7 @@ public class NearbyAllocationTests
         Assert.InRange(result[1].DistanceKm,4.9998,5.0);
     }
 
+    /// <summary>Ressurser med manglende eller ugyldige koordinater utelates.</summary>
     [Fact]
     public void Suggestions_ShouldIgnoreMissingOrInvalidCoordinates()
     {
@@ -46,6 +52,7 @@ public class NearbyAllocationTests
         Assert.Empty(NearbyResourceSuggestions.Find(need, new[] { At(4,0) }));
     }
 
+    /// <summary>Avstandsberegningen tar hensyn til breddegraden ved norske koordinater.</summary>
     [Fact]
     public void Suggestions_ShouldCalculateLongitudeDistanceAtNorwegianLatitude()
     {
@@ -54,6 +61,7 @@ public class NearbyAllocationTests
         Assert.InRange(Assert.Single(NearbyResourceSuggestions.Find(need,new[] { resource })).DistanceKm, 2.77,2.79);
     }
 
+    /// <summary>Oppretter controller, innlogget testidentitet og repository-mocker for scenarioet.</summary>
     private static (AllocationController Controller, Mock<IAllocationRepository> Allocations) Setup(List<Resource> resources, bool exists = true)
     {
         var allocations = new Mock<IAllocationRepository>();
@@ -67,6 +75,7 @@ public class NearbyAllocationTests
         return (controller,allocations);
     }
 
+    /// <summary>Visning av forslag oppretter ingen allokeringer.</summary>
     [Fact]
     public async Task Get_ShouldShowSuggestionsWithoutAllocating()
     {
@@ -78,6 +87,7 @@ public class NearbyAllocationTests
         allocations.Verify(a => a.AllocateAsync(It.IsAny<int>(),It.IsAny<List<int>>(),It.IsAny<string>()),Times.Never);
     }
 
+    /// <summary>Et ukjent behov gir 404.</summary>
     [Fact]
     public async Task MissingNeed_ShouldReturnNotFound()
     {
@@ -86,6 +96,7 @@ public class NearbyAllocationTests
         Assert.IsType<NotFoundResult>(await controller.FromNeed(new NeedAllocationViewModel { NeedId = 7 }));
     }
 
+    /// <summary>Tomme, utilgjengelige, fjerne og ukjente ressursvalg avvises.</summary>
     [Theory]
     [InlineData(0)]
     [InlineData(2)]
@@ -100,6 +111,7 @@ public class NearbyAllocationTests
         allocations.Verify(a => a.AllocateAsync(It.IsAny<int>(),It.IsAny<List<int>>(),It.IsAny<string>()),Times.Never);
     }
 
+    /// <summary>Valgt ressurs allokeres én gang til det opprinnelige behovet.</summary>
     [Fact]
     public async Task Post_ShouldAllocateSelectedResourceToOriginalNeedOnlyOnce()
     {
@@ -111,6 +123,7 @@ public class NearbyAllocationTests
         Assert.Equal(7,result.RouteValues!["id"]);
     }
 
+    /// <summary>Ugyldig merknad bevarer skjemaet uten allokering.</summary>
     [Fact]
     public async Task Post_InvalidNote_ShouldPreserveFormWithoutAllocating()
     {
@@ -121,6 +134,7 @@ public class NearbyAllocationTests
         allocations.Verify(a => a.AllocateAsync(It.IsAny<int>(),It.IsAny<List<int>>(),It.IsAny<string>()),Times.Never);
     }
 
+    /// <summary>Søk og kategori brukes på hele settet av ressurser innenfor radiusen.</summary>
     [Fact]
     public async Task Get_ShouldFilterAllNearbyResourcesBySearchAndCategory()
     {
@@ -135,6 +149,7 @@ public class NearbyAllocationTests
         Assert.Equal(new[] { "Aggregat", "Bil" }, model.CategoryOptions);
     }
 
+    /// <summary>Et filter uten treff gir en tom forslagsliste.</summary>
     [Fact]
     public async Task Get_UnmatchedFilter_ShouldShowEmptyList()
     {
@@ -143,6 +158,7 @@ public class NearbyAllocationTests
         Assert.Empty(Assert.IsType<NeedAllocationViewModel>(view.Model).Suggestions);
     }
 
+    /// <summary>Filterverdier og treff bevares ved skjemafeil.</summary>
     [Fact]
     public async Task Post_InvalidForm_ShouldKeepFiltersAndMatchingSuggestions()
     {
@@ -158,6 +174,7 @@ public class NearbyAllocationTests
         allocations.Verify(a => a.AllocateAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>()), Times.Never);
     }
 
+    /// <summary>Høyst tre av de nærmeste ressursene vises både før og etter filtrering.</summary>
     [Fact]
     public async Task Get_ShouldShowThreeNearestBeforeAndAfterFiltering()
     {

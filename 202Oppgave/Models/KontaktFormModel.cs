@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace _202Oppgave.Models;
 
-// Dataene brukeren fyller inn i kontaktskjemaet
+/// <summary>Inneholder og validerer opplysningene i kontaktskjemaet.</summary>
 public class KontaktFormModel
 {
     [Required(ErrorMessage = "Du må fylle inn navnet ditt.")]
@@ -18,12 +18,12 @@ public class KontaktFormModel
     [Required(ErrorMessage = "Du må skrive en melding.")]
     public string Melding { get; set; } = "";
 
-    // Konstruktør for når vi lager objektet selv
+    /// <summary>Oppretter en tom kontaktmodell for skjemabinding.</summary>
     public KontaktFormModel()
     {
     }
 
-    // Konstruktør for når vi oppretter et objekt med verdier
+    /// <summary>Oppretter skjemamodellen med oppgitte kontaktfelt.</summary>
     public KontaktFormModel(string navn, string epost, string emne, string melding)
     {
         Navn = navn;
@@ -32,5 +32,4 @@ public class KontaktFormModel
         Melding = melding;
     }
 }
-
 

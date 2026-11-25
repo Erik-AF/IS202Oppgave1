@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace _202Oppgave.ViewModels;
 
+/// <summary>Validerer navn, telefon og e-post ved profilendring.</summary>
 public class ProfileViewModel
 {
     [Required(ErrorMessage = "Du må oppgi fullt navn.")]

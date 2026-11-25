@@ -1,9 +1,7 @@
+@* Felles sideramme med navigasjon, profilmeny og varsler for innlogget brukers egne behov. *@
 @using System.Security.Claims
 @inject _202Oppgave.DataAccess.Repositories.IAllocationRepository HeaderAllocationRepo
-@* _Layout.cshtml - felles ramme for alle sider (Sarah)
-   Innholdet fra hver view settes inn der @RenderBody() står.
-   Andre views kan legge ting i <head> med @section Head og nederst på siden
-   med @section Scripts. Leaflet er allerede lastet her i layouten. *@
+
 @{
     var notificationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     var canApproveOwnNeeds = User.IsInRole("PublicActor") || User.IsInRole("Admin");
@@ -11,21 +9,17 @@
         ? (await HeaderAllocationRepo.GetPendingCountsByNeedAsync(notificationUserId)).Values.Sum()
         : 0;
 
-    // hvilken controller vi er på nå (brukes til å markere aktiv lenke i menyen)
     var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
 
-    // Sjekker hvilken controller vi er på
+    /// Sammenligner kontrollernavnet uten hensyn til store og små bokstaver for aktivt menyvalg.
     bool IsActive(string controller) =>
         string.Equals(current, controller, StringComparison.OrdinalIgnoreCase);
 
-    // Brukes for gjennomsiktig header på forsiden
     bool isHome = IsActive("Home") &&
         string.Equals(ViewContext.RouteData.Values["action"]?.ToString(), "Index", StringComparison.OrdinalIgnoreCase);
 
-    // Henter gjeldende action
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
-    // Design for behov, ressurser og tildelinger
     var needDesign =
         (IsActive("Need") &&
             (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
@@ -34,31 +28,27 @@
             || action.Equals("Confirmation", StringComparison.OrdinalIgnoreCase)))
         || (IsActive("Resource") &&
             (action.Equals("Index", StringComparison.OrdinalIgnoreCase)
-            || action.Equals("Create", StringComparison.OrdinalIgnoreCase) 
+            || action.Equals("Create", StringComparison.OrdinalIgnoreCase)
             || action.Equals("Details", StringComparison.OrdinalIgnoreCase)))
         || (IsActive("Allocation") &&
             (action.Equals("Create", StringComparison.OrdinalIgnoreCase)
             || action.Equals("FromNeed", StringComparison.OrdinalIgnoreCase)));
 
-    // Design for informasjonssidene
     var informationDesign =
         IsActive("Information") &&
         (action.Equals("Om", StringComparison.OrdinalIgnoreCase)
         || action.Equals("Hjelp", StringComparison.OrdinalIgnoreCase)
         || action.Equals("Kontakt", StringComparison.OrdinalIgnoreCase));
 
-    // Merkevareinformasjon fra main
     var brandName = "Ko/ordinert";
     var brandTagline = "Ressurser. Mennesker. Trygghet.";
     var brandLogo = "~/images/koordinert-logo.png";
 
-    // Eget design for innlogging og registrering
     var isAuthPage =
         IsActive("Account") &&
         (action.Equals("Login", StringComparison.OrdinalIgnoreCase)
         || action.Equals("Register", StringComparison.OrdinalIgnoreCase));
 
-    // Samme header på forsiden og innloggingssiden
     var useOverlayHeader = isHome || isAuthPage;
     var sharedChrome = !useOverlayHeader;
     var sharedFooter = !isAuthPage;
@@ -69,11 +59,10 @@
 <html lang="nb">
 
 <head>
-    @* viewport trengs for at siden skal tilpasse seg mobil *@
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    @* ===== Metadata ===== *@
     <meta name="theme-color" content="#122b35" />
     <meta name="description"
           content="Ko/ordinert samler lokale ressurser og behov. Finn oversikten, bidra med utstyr og se hvor hjelpen trengs." />
@@ -84,14 +73,11 @@
               href="~/css/site.css"
               asp-append-version="true"/>
 
-  
         <link rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
 
-    @* ===== Kartbiblioteker ===== *@
     <link rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
 
         @if (needDesign)
         {
@@ -99,7 +85,7 @@
                   href="~/css/need.css"
                   asp-append-version="true"/>
         }
-    @* ===== Ikoner og ekstra styling fra main ===== *@
+
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     @if (!useOverlayHeader)
@@ -136,13 +122,9 @@
 
 <body id="top" class="@bodyClass">
 
- 
-
-    @* ===== Header: design fra fix_homepage ===== *@
     <header class="site-header @(useOverlayHeader ? "site-header--overlay" : "")">
         <div class="container header-inner">
 
-            @* Logo og tekst fra designbranchen *@
             <a class="brand"
                asp-controller="Home"
                asp-action="Index"
@@ -162,7 +144,6 @@
                 </span>
             </a>
 
-            @* Mobilmeny fra designbranchen *@
             <button class="nav-toggle"
                     type="button"
                     aria-label="Åpne meny"
@@ -171,7 +152,6 @@
                 <span aria-hidden="true">☰</span>
             </button>
 
-            @* ===== Navigasjon ===== *@
             <nav id="main-nav"
                  class="main-nav"
                  aria-label="Hovedmeny">
@@ -182,7 +162,6 @@
                     Hjem
                 </a>
 
-                @* Ressurslisten er bare for offentlige aktører og admin, så den skjules for ressurseiere *@
                 @if (!User.IsInRole("ResourceProvider"))
                 {
                     <a asp-controller="Resource"
@@ -192,7 +171,6 @@
                     </a>
                 }
 
-                @* Rollebasert visning fra main *@
                 @if (!User.IsInRole("ResourceProvider"))
                 {
                     <a asp-controller="Need"
@@ -202,7 +180,6 @@
                     </a>
                 }
 
-                @* Korrekte controllere fra main *@
                 <a asp-controller="Kart"
                    asp-action="Oversikt"
                    aria-current="@(IsActive("Kart") ? "page" : null)">
@@ -253,13 +230,10 @@
         </div>
     </header>
 
-
-    @* ===== Hovedinnhold ===== *@
     <main id="main-content"
           class="site-main"
           tabindex="-1">
 
-        @* Bekreftelse etter registrering *@
         @if (!IsActive("ResourceProvider") &&
              !IsActive("PublicActor") &&
              TempData["Success"] is string successMessage)
@@ -271,7 +245,6 @@
             </div>
         }
 
-        @* Behold innloggings- og registreringslayout fra main *@
         @if (isAuthPage)
         {
             <div class="auth-page">
@@ -289,7 +262,7 @@
                 </div>
             </div>
         }
-        @* Behold egen layout for kontosider *@
+
         else if (IsActive("Account"))
         {
             <div class="container account-shell">
@@ -314,7 +287,6 @@
 
     </main>
 
-    @* ===== Footer: nytt design fra fix_homepage ===== *@
     <footer class="site-footer @(sharedFooter ? "shared-footer" : "")">
         <div class="container footer-main">
 
@@ -415,20 +387,14 @@
         </div>
     </footer>
 
-    @* ===== JavaScript ===== *@
-
-    @* jQuery beholdes fra main *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
-    @* Leaflet må lastes før leaflet.draw *@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="~/js/map-layers.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
-    @* Felles JavaScript *@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @* Beredskapsfunksjonalitet fra main *@
     <script src="~/js/beredskap.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)

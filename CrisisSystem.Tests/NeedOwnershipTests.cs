@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 namespace CrisisSystem.Tests;
+/// <summary>Tester NeedOwnership med kontrollerte testdata uten å starte hele applikasjonen.</summary>
 public class NeedOwnershipTests
 {
+    /// <summary>Brukere uten eierskap får ikke redigere eller slette behovet.</summary>
     [Theory]
     [InlineData("other", "owner", true)]
     [InlineData("owner", null, true)]
@@ -26,6 +28,7 @@ public class NeedOwnershipTests
         repo.Verify(r => r.UpdateAsync(It.IsAny<Need>()), Times.Never);
         repo.Verify(r => r.DeleteAsync(It.IsAny<int>()), Times.Never);
     }
+    /// <summary>Behovets eier får redigere og slette.</summary>
     [Fact]
     public async Task OwnerCanEditAndDelete()
     {
@@ -41,6 +44,7 @@ public class NeedOwnershipTests
         Assert.IsType<RedirectToActionResult>(await controller.Delete(7));
         repo.Verify(r => r.DeleteAsync(7), Times.Once);
     }
+    /// <summary>Oppretter controller, innlogget testidentitet og repository-mocker for scenarioet.</summary>
     private static (NeedController, Mock<INeedRepository>) Setup(string? userId, string? ownerId, bool authenticated)
     {
         var repo = new Mock<INeedRepository>();

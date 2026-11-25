@@ -1,3 +1,4 @@
+/* Presentasjon av eksportvalget i ressursoversikten. */
 .resource-filter-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; }
 .resource-filter-actions .rl-reset { margin: 0; }
 .resource-filter-actions .rl-btn { flex: 1; white-space: nowrap; }

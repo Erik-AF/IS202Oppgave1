@@ -1,3 +1,4 @@
+@* Registrerer behov med prioritet og kartform; oppretteren bestemmes på serveren. *@
 
 @model _202Oppgave.ViewModels.NeedViewModel
 
@@ -7,14 +8,13 @@ ViewData["Title"] = "Registrer behov";
 
 @section Head {
 <style>
-    /* Kartets størrelse */
+
     #need-map {
         height: 550px;
-        width: 100%;    
+        width: 100%;
         border-radius: 12px;
     }
 
-    /* Små koordinatfelt ved siden av hverandre under kartet */
     .resource-coords {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -22,27 +22,22 @@ ViewData["Title"] = "Registrer behov";
         margin-top: 0.75rem;
     }
 
-    /* Mindre tekst, så feltene ikke tar fokus fra skjemaet */
     .resource-coords label,
     .resource-coords input {
         font-size: 0.85rem;
     }
 
-    /* Grå bakgrunn viser at feltene ikke kan redigeres.
-       Må være mer spesifikk enn .form-control[readonly] i components.css */
     .resource-coords .form-control[readonly] {
         background-color: #edeeec;
         color: var(--muted);
         cursor: default;
     }
 
-    /* Ingen blå fokusramme når man klikker i feltene */
     .resource-coords .form-control[readonly]:focus {
         border-color: var(--line-strong);
         box-shadow: none;
     }
 
-    /* På mobil legges kartet under skjemaet */
     @@media (max-width: 800px) {
         #need-layout {
             grid-template-columns: 1fr;
@@ -56,14 +51,12 @@ ViewData["Title"] = "Registrer behov";
     <h1>Registrer behov</h1>
     <p class="page-intro">Beskriv hva som trengs, velg prioritet og marker hvor hjelpen skal frem.</p>
 
-    @* Skjemaet omslutter både feltene og kartet, slik at koordinatene under kartet sendes med *@
     <form id="need-layout"
           class="resource-layout"
           asp-controller="Need"
           asp-action="Create"
           method="post">
 
-        @* Venstre kolonne: skjemafeltene *@
         <div class="card" style="padding:2rem; min-width:0;">
             <h2 class="need-section-title"><span class="need-step" aria-hidden="true">1</span>Om behovet</h2>
 
@@ -72,9 +65,7 @@ ViewData["Title"] = "Registrer behov";
                  style="margin-bottom:1rem;">
             </div>
 
-            @* Skjult felt som sender kartformen sammen med skjmaet. *@
             <input asp-for="GeometryJson" type="hidden" />
-
 
             <div style="margin-bottom:1rem;">
                 <label asp-for="Type">Type behov</label>
@@ -138,8 +129,6 @@ ViewData["Title"] = "Registrer behov";
 
             <div id="need-map"></div>
 
-            @* Koordinatene fylles automatisk når man markerer i kartet.
-               Feltene er readonly, men sendes likevel med skjemaet. *@
             <div class="resource-coords">
                 <div>
                     <label asp-for="Latitude">Breddegrad</label>
@@ -174,21 +163,19 @@ ViewData["Title"] = "Registrer behov";
         maxZoom: 19
     }).setView([58.1467, 7.9956], 13);
 
-    // OpenStreetMap
     const standardLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
     addMapLayers(map, standardLayer);
 
-    // Gruppe for tegninger
     const drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
 
-    // Tilpass linjeverktøyet
     const originalAddVertex = L.Draw.Polyline.prototype.addVertex;
 
     L.Draw.Polyline.include({
+        /// Lar tegningen avsluttes ved første punkt når minst tre punkter er valgt.
         addVertex: function (latlng) {
             const result = originalAddVertex.call(this, latlng);
 
@@ -219,9 +206,9 @@ ViewData["Title"] = "Registrer behov";
         }
     });
 
-
     const priorityInput = document.getElementById('Priority');
 
+    /// Velger områdestil ut fra prioriteten i behovsskjemaet.
     function needAreaStyle() {
         return getMapAreaStyle({
             kategori: 'behov',
@@ -229,11 +216,11 @@ ViewData["Title"] = "Registrer behov";
         });
     }
 
+    /// Oppdaterer utseendet til behovets markør eller tegnede område.
     function styleNeedLayer(layer) {
         if (typeof layer.setStyle === 'function') layer.setStyle(needAreaStyle());
     }
 
-    // Leaflet.Draw-verktøy
     const drawControl = new L.Control.Draw({
         draw: {
             polygon: false,
@@ -251,17 +238,14 @@ ViewData["Title"] = "Registrer behov";
 
     map.addControl(drawControl);
 
-    // Koordinatfeltene
     const latitudeInput =
         document.getElementById('Latitude');
 
     const longitudeInput =
         document.getElementById('Longitude');
 
-    // Henter feltet som skal innehodlde kartformen
     const geometryInput = document.getElementById('GeometryJson');
 
-    // Adresseforslag etter at brukeren velger eller redigerer en kartform.
     const addressInput = document.getElementById('Location');
     const addressStatus = document.createElement('small');
     addressStatus.setAttribute('role', 'status');
@@ -273,6 +257,7 @@ ViewData["Title"] = "Registrer behov";
     let addressTimer;
     let addressController;
 
+    /// Avbryter forsinket og pågående adresseoppslag når brukerens valg endres.
     function cancelAddressLookup() {
         ++addressVersion;
         clearTimeout(addressTimer);
@@ -284,6 +269,7 @@ ViewData["Title"] = "Registrer behov";
         addressStatus.textContent = 'Manuelt angitt adresse eller sted.';
     });
 
+    /// Forsinker adresseoppslaget og unngår at et gammelt svar overskriver nyere valg.
     function scheduleAddressLookup(latlng) {
         cancelAddressLookup();
         const version = addressVersion;
@@ -318,11 +304,10 @@ ViewData["Title"] = "Registrer behov";
         }, 350);
     }
 
-    // Lagrer formen i det skjulte feltet.
+    /// Lagrer GeoJSON i skjemaet; sirkelradius må lagres separat fordi GeoJSON bare beskriver sentrum.
     function updateGeometry(layer) {
         const geometry = layer.toGeoJSON();
 
-        // Tar også vare på radius hvis formen er en sirkel.
         if (layer instanceof L.Circle) {
             geometry.properties.radius = layer.getRadius();
         }
@@ -330,7 +315,7 @@ ViewData["Title"] = "Registrer behov";
         geometryInput.value = JSON.stringify(geometry);
     }
 
-    // Oppdater koordinater for alle figurtyper
+    /// Oppdaterer skjemakoordinater fra markøren eller kartformens midtpunkt.
     function updateCoordinates(layer) {
         updateGeometry(layer);
         let latlng;
@@ -349,12 +334,12 @@ ViewData["Title"] = "Registrer behov";
         }
     }
 
-    // Gjenopprett formen etter skjemafeil.
     if (geometryInput.value) {
         const geometry = JSON.parse(geometryInput.value);
 
         const restored = L.geoJSON(prepareMapGeometry(geometry), {
             style: needAreaStyle(),
+            /// Gjenoppretter sirkler med lagret radius; andre punkter blir markører.
             pointToLayer: function (feature, latlng) {
                 const radius = feature.properties?.radius;
 
@@ -384,12 +369,11 @@ ViewData["Title"] = "Registrer behov";
         }
 }
 
-    // Når en ny markering opprettes
     map.on('draw:created', function (e) {
         drawnItems.clearLayers();
 
         let layer = e.layer;
-        // Et lukket omriss blir et fylt område.
+
         if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
             const points = layer.getLatLngs();
             if (points.length >= 4 && points[0].equals(points[points.length - 1])) {
@@ -402,14 +386,12 @@ ViewData["Title"] = "Registrer behov";
         updateCoordinates(layer);
     });
 
-    // Når markeringen redigeres
     map.on('draw:edited', function (e) {
         e.layers.eachLayer(function (layer) {
             updateCoordinates(layer);
         });
     });
 
-    // Tømmer koordinater og formdata når markeringen slettes.
     map.on('draw:deleted', function () {
         latitudeInput.value = '';
         longitudeInput.value = '';
@@ -419,8 +401,6 @@ ViewData["Title"] = "Registrer behov";
         addressStatus.textContent = 'Velg en ny plassering på kartet.';
     });
 
-
-    // Oppdater fargene når prioriteten endres.
     priorityInput.addEventListener('change', function () {
         drawnItems.eachLayer(styleNeedLayer);
         drawControl.setDrawingOptions({
@@ -430,18 +410,13 @@ ViewData["Title"] = "Registrer behov";
         });
     });
 
-    // Oppdater kartstørrelsen
     setTimeout(function () {
         map.invalidateSize();
     }, 100);
 
-    // Aktiver verktøylinjens markør ved åpning av et tomt skjema.
     if (drawnItems.getLayers().length === 0) {
         drawControl._toolbars.draw._modes.marker.handler.enable();
     }
 </script>
 }
-
-
-
 

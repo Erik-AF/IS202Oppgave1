@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace _202Oppgave.Services
 {
+    /// <summary>Oppretter manglende roller og demonstrasjonsbrukere ved oppstart.</summary>
     public static class IdentitySeeder
     {
+        /// <summary>Oppretter de faste rollene hvis de ikke finnes fra før.</summary>
         public static async Task SeedRolesAsync(
             RoleManager<IdentityRole> roleManager)
         {
@@ -35,6 +37,7 @@ namespace _202Oppgave.Services
             }
         }
 
+        /// <summary>Sikrer at demonstrasjonsbrukeren for administrator finnes med riktig rolle.</summary>
         public static async Task SeedDevelopmentAdminAsync(
             UserManager<ApplicationUser> userManager,
             string password)
@@ -46,6 +49,7 @@ namespace _202Oppgave.Services
                 RoleNames.Admin);
         }
 
+        /// <summary>Sikrer at demonstrasjonsbrukeren for ressursleverandør finnes med riktig rolle.</summary>
         public static async Task SeedDevelopmentResourceProviderAsync(
             UserManager<ApplicationUser> userManager,
             string password)
@@ -57,6 +61,7 @@ namespace _202Oppgave.Services
                 RoleNames.ResourceProvider);
         }
 
+        /// <summary>Sikrer at demonstrasjonsbrukeren for offentlig aktør finnes med riktig rolle.</summary>
         public static async Task SeedDevelopmentPublicActorAsync(
             UserManager<ApplicationUser> userManager,
             string password)
@@ -68,6 +73,7 @@ namespace _202Oppgave.Services
                 RoleNames.PublicActor);
         }
 
+        /// <summary>Oppretter en manglende demonstrasjonsbruker og sikrer rolletilknytningen.</summary>
         private static async Task SeedUserAsync(
             UserManager<ApplicationUser> userManager,
             string email,

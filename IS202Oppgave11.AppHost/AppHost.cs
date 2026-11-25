@@ -1,6 +1,6 @@
+// Starter MariaDB og webapplikasjonen gjennom Aspire.
 var builder = DistributedApplication.CreateBuilder(args);
 
-// MariaDB-container
 var mariadb = builder.AddContainer(
         "mariadb",
         "mariadb",
@@ -15,7 +15,6 @@ var mariadb = builder.AddContainer(
     .WithVolume("mariadb-data", "/var/lib/mysql")
     .WithLifetime(ContainerLifetime.Persistent);
 
-// MVC-applikasjon
 builder.AddDockerfile(
     "Oppgave202",
     "..",
@@ -23,10 +22,8 @@ builder.AddDockerfile(
     .WithHttpEndpoint(
         port: 5027,
         targetPort: 8080)
-    // Lagrer opplastede bilder i et Docker-volum utenfor containeren,
-    // så de ikke slettes når appen bygges og startes på nytt
+
+    // Bevarer opplastede bilder når webcontaineren erstattes.
     .WithVolume("ressursbilder", "/app/wwwroot/uploads");
-
-
 
 builder.Build().Run();

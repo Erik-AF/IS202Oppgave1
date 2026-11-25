@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace _202Oppgave.Controllers;
 
+/// <summary>Viser innlogget aktørs eller administrators egne behov og profil.</summary>
 [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
 public class PublicActorController : Controller
 {
@@ -17,6 +18,7 @@ public class PublicActorController : Controller
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly INeedRepository _needRepository;
 
+    /// <summary>Mottar avhengighetene som PublicActorController bruker.</summary>
     public PublicActorController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
@@ -27,7 +29,7 @@ public class PublicActorController : Controller
         _needRepository = needRepository;
     }
 
-   
+    /// <summary>Viser oversikten med behov som er opprettet av innlogget bruker, også når brukeren er administrator.</summary>
     [HttpGet]
     public async Task<IActionResult> Index()
     {
@@ -47,7 +49,7 @@ public class PublicActorController : Controller
         return View(myNeeds);
     }
 
-
+    /// <summary>Viser bare behov som tilhører innlogget bruker.</summary>
     [HttpGet]
     public async Task<IActionResult> Needs()
     {
@@ -64,7 +66,8 @@ public class PublicActorController : Controller
 
         return View(myNeeds);
     }
-    
+
+    /// <summary>Viser redigeringsskjemaet bare når behovet tilhører innlogget bruker.</summary>
     [HttpGet]
     public async Task<IActionResult> EditNeed(int id)
     {
@@ -95,6 +98,7 @@ public class PublicActorController : Controller
         return View(model);
     }
 
+    /// <summary>Validerer og oppdaterer brukerens eget behov fra Min side.</summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditNeed(int id, NeedViewModel model)
@@ -130,6 +134,7 @@ public class PublicActorController : Controller
         return RedirectToAction(nameof(Needs));
     }
 
+    /// <summary>Sletter bare behov som tilhører innlogget bruker og går tilbake til egne behov.</summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteNeed(int id)
@@ -151,6 +156,7 @@ public class PublicActorController : Controller
         return RedirectToAction(nameof(Needs));
     }
 
+    /// <summary>Viser profilfeltene til innlogget bruker.</summary>
     [HttpGet]
     public async Task<IActionResult> Profile()
     {
@@ -169,6 +175,7 @@ public class PublicActorController : Controller
         return View(model);
     }
 
+    /// <summary>Validerer profilendringer, holder e-post og brukernavn like og fornyer innloggingen etter lagring.</summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Profile(ProfileViewModel model)
@@ -197,7 +204,6 @@ public class PublicActorController : Controller
         user.FullName = model.FullName.Trim();
         user.PhoneNumber = model.PhoneNumber.Trim();
 
-        // Innloggingen bruker e-postadresse som brukernavn.
         user.Email = email;
         user.UserName = email;
 

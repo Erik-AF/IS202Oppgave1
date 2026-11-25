@@ -3,23 +3,25 @@ using _202Oppgave.Models.Entities;
 
 namespace _202Oppgave.DataAccess.Repositories
 {
+    /// <summary>Lagrer tilbud og allokeringer med tilhørende tilgjengelighetsstatus gjennom EF Core.</summary>
     public class AllocationRepository : IAllocationRepository
     {
         private readonly ApplicationDbContext _context;
 
+        /// <summary>Mottar avhengighetene som AllocationRepository bruker.</summary>
         public AllocationRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // Tilbud reserverer ressursen, men blir ikke bekreftet før behovets eier godkjenner.
+        /// <summary>Reserverer med betinget databaseoppdatering slik at parallelle tilbud ikke tar samme ressurs; lagrer tilbud og reservasjon i én transaksjon.</summary>
         public async Task<int> OfferAsync(int needId, List<int> resourceIds, string userId, string? note)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             var count = 0;
             foreach (var id in resourceIds.Distinct())
             {
-                // Betinget oppdatering hindrer at to innsendinger reserverer samme ressurs.
+
                 var reserved = await _context.Resources
                     .Where(r => r.Id == id && r.UserId == userId && r.Status == "Tilgjengelig"
                         && !r.Allocations.Any())
@@ -36,10 +38,12 @@ namespace _202Oppgave.DataAccess.Repositories
             return count;
         }
 
+        /// <inheritdoc />
         public Task<Allocation?> GetByIdAsync(int id) => _context.Allocations
             .Include(a => a.Need)
             .FirstOrDefaultAsync(a => a.AllocationId == id);
 
+        /// <summary>Oppdaterer både tilbud og ressurs betinget i én transaksjon; manglende tilstandsendring ruller tilbake godkjenningen.</summary>
         public async Task<bool> ApproveAsync(int id)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -59,18 +63,17 @@ namespace _202Oppgave.DataAccess.Repositories
             return true;
         }
 
+        /// <inheritdoc />
         public async Task<int> AllocateAsync(int needId, List<int> resourceIds, string? note)
         {
-            // Henter bare ressursene som er valgt OG fortsatt tilgjengelige.
-            // Da kan ikke en ressurs allokeres to ganger, selv om noen sender
-            // skjemaet med en ressurs som allerede er tatt.
+
             var resources = await _context.Resources
                 .Where(r => resourceIds.Contains(r.Id) && r.Status == "Tilgjengelig")
                 .ToListAsync();
 
             foreach (var resource in resources)
             {
-                // Ny rad i Allocations for hver ressurs
+
                 _context.Allocations.Add(new Allocation
                 {
                     ResourceId = resource.Id,
@@ -79,16 +82,15 @@ namespace _202Oppgave.DataAccess.Repositories
                     Note = note
                 });
 
-                // Ressursen er nå i bruk, og vises som utilgjengelig
                 resource.Status = "Utilgjengelig";
             }
 
-            // Én SaveChanges for alt: enten lagres alle endringene, eller ingen
             await _context.SaveChangesAsync();
 
             return resources.Count;
         }
 
+        /// <inheritdoc />
         public async Task<List<Allocation>> GetForNeedAsync(int needId)
         {
             return await _context.Allocations
@@ -99,6 +101,7 @@ namespace _202Oppgave.DataAccess.Repositories
                 .OrderByDescending(a => a.Date)
                 .ToListAsync();
         }
+        /// <inheritdoc />
         public async Task<int?> RemoveAsync(int allocationId)
         {
             var allocation = await _context.Allocations
@@ -115,8 +118,6 @@ namespace _202Oppgave.DataAccess.Repositories
 
             _context.Allocations.Remove(allocation);
 
-            // Ressursen blir tilgjengelig igjen, men bare hvis den ikke
-            // er allokert til andre behov også.
             var hasOtherAllocations = await _context.Allocations
                 .AnyAsync(a => a.ResourceId == resource.Id && a.AllocationId != allocationId);
 
@@ -125,12 +126,12 @@ namespace _202Oppgave.DataAccess.Repositories
                 resource.Status = "Tilgjengelig";
             }
 
-            // Én SaveChanges: slettingen og statusendringen lagres sammen
             await _context.SaveChangesAsync();
 
             return needId;
         }
-        // Teller bare ubehandlede tilbud på innlogget brukers egne behov.
+
+        /// <inheritdoc />
         public async Task<Dictionary<int, int>> GetPendingCountsByNeedAsync(string userId)
         {
             if (string.IsNullOrWhiteSpace(userId)) return new();
@@ -141,10 +142,10 @@ namespace _202Oppgave.DataAccess.Repositories
                 .ToDictionaryAsync(g => g.NeedId, g => g.Count);
         }
 
+        /// <inheritdoc />
         public async Task<Dictionary<int, List<string>>> GetResourceNamesByNeedAsync()
         {
-            // Én spørring: henter bare feltene vi trenger fra Allocations,
-            // Resources og Categories (to JOIN-er i SQL)
+
             var rows = await _context.Allocations
                 .Where(a => a.State != "Forespurt")
                 .Select(a => new
@@ -156,7 +157,6 @@ namespace _202Oppgave.DataAccess.Repositories
                 })
                 .ToListAsync();
 
-            // Grupperer per behov, og lager f.eks. "Traktor – John Deere 6R"
             return rows
                 .GroupBy(r => r.NeedId)
                 .ToDictionary(
@@ -167,6 +167,6 @@ namespace _202Oppgave.DataAccess.Repositories
                         return r.Category != null ? $"{r.Category} – {text}" : text;
                     }).ToList());
         }
-        
+
     }
 }

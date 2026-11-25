@@ -5,8 +5,10 @@ using Xunit;
 
 namespace CrisisSystem.Tests;
 
+/// <summary>Tester KartController med kontrollerte testdata uten å starte hele applikasjonen.</summary>
 public class KartControllerTests
 {
+    /// <summary>Manglende breddegrad viser skjemaet med valideringsfeil.</summary>
     [Fact]
     public void MissingLatitude_ShouldReturnViewWithError()
     {
@@ -23,6 +25,7 @@ public class KartControllerTests
         Assert.False(controller.ModelState.IsValid);
     }
 
+    /// <summary>Manglende lengdegrad viser skjemaet med valideringsfeil.</summary>
     [Fact]
     public void MissingLongitude_ShouldReturnViewWithError()
     {
@@ -38,8 +41,8 @@ public class KartControllerTests
         Assert.IsType<ViewResult>(result);
         Assert.False(controller.ModelState.IsValid);
     }
-    
-    
+
+    /// <summary>Et gyldig kartpunkt sender brukeren til kartoversikten.</summary>
     [Fact]
     public void ValidMapPoint_ShouldRedirectToOverview()
     {
@@ -59,6 +62,7 @@ public class KartControllerTests
         Assert.Equal("Oversikt", redirect.ActionName);
     }
 
+    /// <summary>Et gyldig kartpunkt gir ingen valideringsfeil.</summary>
     [Fact]
     public void ValidMapPoint_ShouldNotProduceValidationError()
     {
@@ -77,7 +81,7 @@ public class KartControllerTests
         Assert.True(controller.ModelState.IsValid);
     }
 
-    
+    /// <summary>Kartdata returneres som JSON med registrerte punkter.</summary>
     [Fact]
     public void Data_ShouldReturnJsonWithMapPoints()
     {
@@ -92,6 +96,7 @@ public class KartControllerTests
         Assert.NotEmpty(points);
     }
 
+    /// <summary>Et nylig registrert kartpunkt blir med i kartdataene.</summary>
     [Fact]
     public void RegisteredMapPoint_ShouldAppearInMapData()
     {

@@ -1,3 +1,4 @@
+/// Kobler vis/skjul-knapper til passordfelt og oppdaterer tilgjengelige etiketter.
 
 document.addEventListener("DOMContentLoaded", () => {
     const buttons = document.querySelectorAll(

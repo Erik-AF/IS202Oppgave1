@@ -1,3 +1,4 @@
+@* Viser registrerte behov og antall ventende tilbud på innlogget brukers egne behov. *@
 @model List<_202Oppgave.Models.Need>
 @using _202Oppgave.DataAccess.Repositories
 @inject IAllocationRepository AllocationRepo
@@ -6,18 +7,13 @@
 
 @{
     ViewData["Title"] = "Registrerte behov";
-    
-    // Allokerte ressurser for alle behov, hentet i én spørring.
-    // Nøkkel = behovets Id, verdi = navnene på ressursene.
+
     var allocated = await AllocationRepo.GetResourceNamesByNeedAsync();
     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     var pending = (User.IsInRole(RoleNames.PublicActor) || User.IsInRole(RoleNames.Admin)) && !string.IsNullOrWhiteSpace(userId)
         ? await AllocationRepo.GetPendingCountsByNeedAsync(userId)
         : new Dictionary<int, int>();
 }
-
-
-
 
 <div class="container rl need-design">
     <nav class="need-breadcrumb" aria-label="Brødsmuler"><a asp-controller="Home" asp-action="Index">Hjem</a><span aria-hidden="true">/</span><span aria-current="page">Behov</span></nav>
@@ -68,7 +64,7 @@
                                 <li>@need.Location</li>
                                 <li>Frist: @need.Deadline.ToString("dd.MM.yyyy HH:mm")</li>
                             </ul>
-                            @* Ressurser som er allokert til behovet *@
+
                             @if (allocated.TryGetValue(need.Id, out var names))
                             {
                                 <p style="margin:0.5rem 0 0; font-size:0.9rem;">
@@ -98,7 +94,7 @@
                 </li>
             }
         </ul>
-        
+
     }
         </section>
     </div>

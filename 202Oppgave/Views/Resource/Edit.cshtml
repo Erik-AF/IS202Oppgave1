@@ -1,11 +1,5 @@
+@* Redigerer eksisterende ressurs og gjenoppretter lagret kartform; eldre data vises som markør. *@
 @model _202Oppgave.ViewModels.ResourceViewModel
-
-@*
-    Edit.cshtml – redigeringsskjema for ressurser.
-
-    Feltnavnene her matcher ResourceViewModel. Latitude/Longitude fylles
-    ut av kartet, og kan ikke skrives inn for hånd.
-*@
 
 @{
     ViewData["Title"] = "Rediger ressurs";
@@ -24,7 +18,6 @@
     <h1>Rediger ressurs</h1>
     <p class="page-intro">Oppdater opplysningene og plasseringen for ressursen.</p>
 
-    @* Skjemaet omslutter både feltene og kartet, slik at koordinatene under kartet sendes med *@
     <form id="resource-layout"
           class="resource-layout"
           asp-action="Edit"
@@ -32,16 +25,13 @@
           method="post"
           enctype="multipart/form-data">
 
-        @* Venstre kolonne: skjemafeltene *@
         <div class="card" style="padding:2rem; min-width:0;">
             <h2 class="need-section-title"><span class="need-step" aria-hidden="true">1</span>Om ressursen</h2>
 
-            @* Sender kartformen sammen med ressursen. *@
             <input asp-for="GeometryJson" type="hidden" />
 
             <div asp-validation-summary="ModelOnly" style="color:var(--brick); margin-bottom:1rem;"></div>
 
-            @* Kategori. Listen fylles fra databasen av FillCategoryOptionsAsync i controlleren. *@
             <div style="margin-bottom:1rem;">
                 <label asp-for="CategoryId"></label>
                 <select asp-for="CategoryId" asp-items="Model.CategoryOptions" class="form-select">
@@ -78,9 +68,6 @@
                 <span asp-validation-for="AvailableTo" style="color:var(--brick);"></span>
             </div>
 
-
-
-
             <div style="margin-bottom:1rem;">
                 <label asp-for="Status"></label>
                 <select asp-for="Status" class="form-select">
@@ -90,12 +77,9 @@
                 </select>
             </div>
 
-
-            @* Bilde av ressursen. Velg et nytt for å bytte, ellers beholdes dagens. *@
             <div style="margin-bottom:1.5rem;">
                 <label asp-for="Image"></label>
 
-                @* Viser bildet som allerede er lagret *@
                 @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
                 {
                     <img src="@Model.ImagePath" alt="Dagens bilde"
@@ -110,12 +94,9 @@
                      style="display:block; margin-top:0.75rem; width:100%; max-width:320px; aspect-ratio:16/10; object-fit:cover;" />
             </div>
 
-            @* Inline style her fordi .btn i components.css foreløpig mangler
-               padding/hvit tekst/avrunding, se melding til Sarah. *@
             <button type="submit" class="btn btn-primary" style="color:#fff; padding:0.65rem 1.4rem; border-radius:999px; border:none; cursor:pointer;">Lagre endringer</button>
         </div>
 
-        @* Høyre kolonne: kartet og koordinatene *@
         <div class="resource-map-panel">
             <h2 class="need-section-title"><span class="need-step" aria-hidden="true">2</span>Plassering</h2>
             <p>
@@ -125,8 +106,6 @@
 
             <div id="resource-map"></div>
 
-            @* Koordinatene fylles automatisk fra kartet.
-               Feltene er readonly, men sendes likevel med skjemaet. *@
             <div class="resource-coords">
                 <div>
                     <label asp-for="Latitude"></label>
@@ -148,7 +127,7 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        // Forhåndsvisning av valgt bilde, uavhengig av kartet
+
         const imageInput = document.getElementById('Image');
         const imagePreview = document.getElementById('image-preview');
         let previewUrl = null;
@@ -168,39 +147,32 @@
             }
         });
 
-        // Opprett kartet (startpunkt i Kristiansand, flyttes til lagret posisjon under)
         const map = L.map('resource-map')
             .setView([58.1467, 7.9956], 13);
 
-        // OpenStreetMap
         const standardLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
         addMapLayers(map, standardLayer);
 
-        // Gruppe for tegninger. Den lagrede markeringen legges også her,
-        // slik at den kan flyttes med redigeringsverktøyet.
         const drawnItems = new L.FeatureGroup();
         map.addLayer(drawnItems);
 
-        // Tilpass linjeverktøyet:
-        // Klikk på første punkt for å lukke og avslutte linjen.
         const originalAddVertex = L.Draw.Polyline.prototype.addVertex;
 
         L.Draw.Polyline.include({
+            /// Lar tegningen avsluttes ved første punkt når minst tre punkter er valgt.
             addVertex: function (latlng) {
                 const result = originalAddVertex.call(this, latlng);
 
-                // Når første punkt opprettes, kobles
-                // en egen klikkhendelse til denne markøren.
                 if (this._markers.length === 1) {
                     const firstMarker = this._markers[0];
 
                     firstMarker.off('click');
 
                     firstMarker.on('click', (event) => {
-                        // Krev minst tre punkter før figuren lukkes.
+
                         if (this._markers.length < 3) {
                             return;
                         }
@@ -209,7 +181,6 @@
                             L.DomEvent.stop(event.originalEvent);
                         }
 
-                        // Legg til startpunktet som siste punkt og avslutt tegningen.
                         originalAddVertex.call(this, this._markers[0].getLatLng());
                         this.completeShape();
                     });
@@ -219,8 +190,6 @@
             }
         });
 
-        // Leaflet.Draw-verktøy. "edit" gir blyant-knappen som lar brukeren
-        // dra markeringen til en ny posisjon.
         const drawControl = new L.Control.Draw({
             draw: {
                 polygon: true,
@@ -238,25 +207,22 @@
 
         map.addControl(drawControl);
 
-        // Koordinatfeltene
         const latitudeInput = document.getElementById('Latitude');
         const longitudeInput = document.getElementById('Longitude');
 
-        // Det skjulte feltet for kartformen
         const geometryInput = document.getElementById('GeometryJson');
 
-        // Lagrer formen i det skjulte feltet
+        /// Lagrer GeoJSON i skjemaet; sirkelradius må lagres separat fordi GeoJSON bare beskriver sentrum.
         function updateGeometry(layer) {
             const geometry = layer.toGeoJSON();
 
-            // Sirkler trenger også radius for å gjenopprettes
             if (layer instanceof L.Circle) {
                 geometry.properties.radius = layer.getRadius();
             }
             geometryInput.value = JSON.stringify(geometry);
         }
 
-        // Oppdater koordinater for alle figurtyper
+        /// Oppdaterer skjemakoordinater fra markøren eller kartformens midtpunkt.
         function updateCoordinates(layer) {
             updateGeometry(layer);
             let latlng;
@@ -268,7 +234,6 @@
 
             } else if (typeof layer.getBounds === 'function') {
 
-                // For områder brukes midtpunktet
                 latlng = layer.getBounds().getCenter();
             }
 
@@ -278,9 +243,6 @@
             }
         }
 
-        // Vis lagret markering når siden åpnes:
-        // 1) Lagret form (GeometryJson) hvis den finnes
-        // 2) Ellers en markør på lagret breddegrad/lengdegrad (eldre ressurser)
         let geometry = null;
         if (geometryInput.value) {
             try {
@@ -292,6 +254,7 @@
 
         if (geometry) {
             const restored = L.geoJSON(geometry, {
+                /// Gjenoppretter sirkler med lagret radius; andre punkter blir markører.
                 pointToLayer: function (feature, latlng) {
                     const radius = feature.properties?.radius;
 
@@ -322,7 +285,6 @@
             }
         }
 
-        // Ny markering erstatter den gamle
         map.on('draw:created', function (e) {
             drawnItems.clearLayers();
 
@@ -332,21 +294,18 @@
             updateCoordinates(layer);
         });
 
-        // Markeringen er flyttet eller endret med blyant-knappen
         map.on('draw:edited', function (e) {
             e.layers.eachLayer(function (layer) {
                 updateCoordinates(layer);
             });
         });
 
-        // Markeringen er slettet
         map.on('draw:deleted', function () {
             latitudeInput.value = '';
             longitudeInput.value = '';
             geometryInput.value = '';
         });
 
-        // Oppdater kartstørrelsen
         setTimeout(function () {
             map.invalidateSize();
         }, 100);

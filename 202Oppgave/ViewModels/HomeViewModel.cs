@@ -1,8 +1,9 @@
 namespace _202Oppgave.ViewModels;
 
+/// <summary>Samler behovene som vises på forsiden.</summary>
 public class HomeViewModel
 {
-    
+
     public int ActiveNeedCount { get; set; }
 
     public List<string> ActiveNeedTypes { get; set; } = new();

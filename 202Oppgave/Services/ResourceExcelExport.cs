@@ -5,12 +5,14 @@ using _202Oppgave.Models;
 
 namespace _202Oppgave.Services;
 
+/// <summary>Bygger en XLSX-fil med ressurser som tekstceller uten å kreve Excel på serveren.</summary>
 public static class ResourceExcelExport
 {
     private static readonly XNamespace Sheet = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
     private static readonly XNamespace Relations = "http://schemas.openxmlformats.org/package/2006/relationships";
     private const string OfficeRelations = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 
+    /// <summary>Bygger et XLSX-øyeblikksbilde med eksporttid i UTC, filterrad og frosne overskrifter.</summary>
     public static byte[] Create(IEnumerable<Resource> resources, DateTimeOffset exportedAt)
     {
         var rows = new List<string?[]> {
@@ -52,11 +54,12 @@ public static class ResourceExcelExport
         return output.ToArray();
     }
 
+    /// <summary>Oppretter en Open XML-relasjon mellom delene i XLSX-arkivet.</summary>
     private static XElement Relationship(string type, string target) => new(Relations + "Relationships",
         new XElement(Relations + "Relationship", new XAttribute("Id", "rId1"),
             new XAttribute("Type", OfficeRelations + "/" + type), new XAttribute("Target", target)));
 
-    // Tekstceller bevarer telefonnumre og hindrer at brukerinnhold kjøres som Excel-formler.
+    /// <summary>Lagrer innhold som tekst for å bevare telefonnumre og unngå formler; fjerner ugyldige kontrolltegn og begrenser cellelengden.</summary>
     private static XElement Cell(string address, string? value)
     {
         var text = new string((value ?? "").Where(c => !char.IsControl(c) || c is '\t' or '\n' or '\r').ToArray());
@@ -65,6 +68,7 @@ public static class ResourceExcelExport
             new XElement(Sheet + "is", new XElement(Sheet + "t", new XAttribute(XNamespace.Xml + "space", "preserve"), text)));
     }
 
+    /// <summary>Skriver et XML-dokument til riktig del av XLSX-arkivet.</summary>
     private static void Write(ZipArchive zip, string path, XElement document)
     {
         using var stream = zip.CreateEntry(path).Open();

@@ -1,11 +1,5 @@
+/* Gjenbrukbare knapper, skjemaelementer og kort. */
 
-/* components.css - gjenbrukbare komponenter
-   Knapper, kort, skjema, tabell, badges og kart-boks.
-   Bruk klassene herfra i viewene i stedet for egen CSS, så ser alle sidene like ut.
-   Trenger du noe nytt, legg det inn her. Farger kommer fra :root i site.css. */
-
-
-/* --- 1. Sideramme (indre sider) --- */
 .page { padding-block: 2.5rem 4rem; }
 
 .page-title {
@@ -17,7 +11,6 @@
 
 .page-lead { margin: 0 0 2rem; color: var(--muted); }
 
-/* tittel til venstre og knapper til høyre, bryter ned på smal skjerm */
 .page-toolbar {
     display: flex;
     flex-wrap: wrap;
@@ -27,15 +20,12 @@
     margin-bottom: 1.5rem;
 }
 
-
-/* --- 2. Knapper ---
-   class="btn" på <a> eller <button>. Varianter: btn-secondary og btn-danger. */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
-    min-height: 44px;          /* god trykkflate på mobil */
+    min-height: 44px;
     padding: 0.7rem 1.25rem;
     border: 0;
     border-radius: var(--radius-md);
@@ -49,7 +39,6 @@
 
 .btn:hover { background: var(--green-800); }
 
-/* bare kant, for mindre viktige handlinger */
 .btn-secondary {
     background: transparent;
     color: var(--green-900);
@@ -58,18 +47,15 @@
 
 .btn-secondary:hover { background: rgba(9, 55, 50, 0.08); }
 
-/* lime knapp, for hovedhandlinger på mørk bakgrunn (forsiden) */
 .btn-lime { background: var(--lime); color: var(--green-900); }
 .btn-lime:hover { background: var(--lime-dark); }
 
-/* stor knapp */
 .btn-lg {
     min-height: 3.75rem;
     padding: 1rem 2rem;
     font-size: 1.25rem;
 }
 
-/* liten, lime overskrift med store mellomrom ("DITT BIDRAG TELLER", "FINN FREM") */
 .eyebrow {
     margin: 0;
     font-size: 0.8rem;
@@ -79,12 +65,9 @@
     color: var(--lime);
 }
 
-/* rød, for sletting */
 .btn-danger { background: var(--red); }
 .btn-danger:hover { background: var(--red); filter: brightness(0.85); }
 
-
-/* --- 3. Kort --- */
 .card {
     background: #fff;
     border: 1px solid var(--line);
@@ -95,7 +78,6 @@
 .card h2 { margin: 0 0 0.5rem; font-size: 1.6rem; font-weight: 800; }
 .card p { margin: 0 0 1.5rem; color: var(--muted); }
 
-/* kort der hele kortet er en lenke */
 .card-link {
     display: block;
     padding: 1.25rem 1rem;
@@ -107,14 +89,6 @@
 .card-link span { color: var(--muted); font-size: 0.95rem; }
 .card-link:hover { border-color: var(--green-600); }
 
-
-/* --- 4. Skjema ---
-   Ett felt i en view:
-   <div class="form-field">
-       <label asp-for="Name"></label>
-       <input asp-for="Name" class="form-control" />
-       <span asp-validation-for="Name" class="text-danger"></span>
-   </div> */
 .form-card { max-width: 640px; }
 
 .form-field {
@@ -126,7 +100,6 @@
 
 .form-field label { font-weight: 600; }
 
-/* font: inherit gir 16px skrift, som hindrer at iPhone zoomer inn i feltet */
 .form-control {
     width: 100%;
     min-height: 44px;
@@ -151,7 +124,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     margin-top: 1.5rem;
 }
 
-/* disse klassene legger ASP.NET Core på selv når validering feiler */
 .field-validation-error,
 .text-danger { color: #a3261c; font-size: 0.9rem; }
 
@@ -167,10 +139,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 
 .validation-summary-errors ul { margin: 0; padding-left: 1.2rem; }
 
-
-/* --- 5. Tabell ---
-   Legg <table class="table"> inni <div class="table-wrap">, så scroller
-   tabellen sideveis i boksen på mobil og ikke hele siden. */
 .table-wrap {
     overflow-x: auto;
     border: 1px solid var(--line);
@@ -190,22 +158,17 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 .table th { background: var(--sage); font-weight: 700; }
 .table tr:last-child td { border-bottom: 0; }
 
-/* teksten som vises når listen er tom */
 .empty-state {
     padding: 2rem 1rem;
     text-align: center;
     color: var(--muted);
 }
 
-
-/* --- 6. Badges ---
-   Små fargede etiketter med samme farger som på kartet.
-   Eksempel: <span class="badge badge-urgent">Akutt</span> */
 .badge {
     display: inline-block;
     padding: 0.15rem 0.7rem;
     border-radius: var(--radius-pill);
-    background: #6b7078;       /* grå hvis ingen variant er valgt */
+    background: #6b7078;
     color: #fff;
     font-size: 0.85rem;
     font-weight: 700;
@@ -216,9 +179,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 .badge-available { background: var(--map-available); }
 .badge-public { background: var(--map-public); }
 
-
-/* --- 7. Detaljvisning ---
-   Siden som viser én ressurs/ett behov (<dl> med <dt> og <dd>) */
 .detail-list {
     display: grid;
     grid-template-columns: max-content 1fr;
@@ -229,17 +189,11 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 .detail-list dt { font-weight: 700; }
 .detail-list dd { margin: 0; }
 
-/* navn og verdi under hverandre på små skjermer */
 @media (max-width: 520px) {
     .detail-list { grid-template-columns: 1fr; gap: 0.1rem; }
     .detail-list dd { margin-bottom: 0.75rem; }
 }
 
-
-/* --- 8. Kart (Marius) ---
-   Leaflet MÅ ha høyde på kart-boksen, ellers vises ikke kartet.
-   I skjema:   <div id="map" class="map-container"></div>
-   Kartside:   <div id="map" class="map-container map-container--full"></div> */
 .map-container {
     width: 100%;
     height: 380px;
@@ -250,7 +204,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 
 .map-container--full { height: min(72vh, 680px); }
 
-/* tegnforklaring under kartet */
 .map-legend {
     display: flex;
     flex-wrap: wrap;
@@ -261,7 +214,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     font-size: 0.9rem;
 }
 
-/* fargeprikken foran hver forklaring. Fargen kommer fra --dot (settes under) */
 .map-legend li::before {
     content: "";
     display: inline-block;
@@ -277,9 +229,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 .map-legend .legend-available { --dot: var(--map-available); }
 .map-legend .legend-public { --dot: var(--map-public); }
 
-
-/* --- 9. Meldinger ---
-   _Layout viser TempData["Success"] med .alert-success */
 .alert {
     margin-top: 1rem;
     padding: 0.85rem 1rem;
@@ -290,14 +239,10 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 .alert-success { background: #e2f3e8; color: #1d6b3d; }
 .alert-danger { background: #fbe9e7; color: #a3261c; }
 
-
-/* --- 10. Utskrift ---
-   Kravet er at man skal kunne skrive ut ressurslister. Skjuler det som ikke
-   hører hjemme på papir. */
 @media print {
     .site-header,
     .site-footer,
-    .no-print,                 /* legg på det du vil skjule ved utskrift */
+    .no-print,
     .btn,
     .map-container { display: none !important; }
 
@@ -306,7 +251,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     .table { min-width: 0; }
 }
 
-/* ingen animasjoner for de som har valgt "reduser bevegelse" i systemet */
 @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
 }

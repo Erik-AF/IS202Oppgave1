@@ -1,4 +1,5 @@
-/* Design for registrering, oversikt og redigering av behov. */
+/* Registrering og visning av behov samt delte detaljstiler. */
+
 body:is(.page-need.action-create,.page-need.action-edit,.page-need.action-index,.page-resource.action-create) .site-header { position: relative; top: auto; }
 .design-concept .need-design { color: #17251f; padding-top: 28px; }
 .need-design .need-breadcrumb { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; color: #65706a; font-size: .92rem; }
@@ -32,7 +33,7 @@ body:is(.page-need.action-create,.page-need.action-edit,.page-need.action-index,
 }
 
 body.design-concept.shared-chrome .need-design { padding-top: 20px; }
-/* Detaljsiden deler profil med registrering og oversikt. */
+
 .design-concept .need-details .detail-card { padding: clamp(22px,3vw,32px); border: 1px solid #dbe1d8; border-radius: 14px; background: #fff; }
 .need-details #details-map { height: 350px; width: 100%; margin: 24px 0; border: 1px solid #dbe1d8; border-radius: 12px; }
 .need-details .need-details-message { padding: 16px; background: #e9edde; border-radius: 8px; }
@@ -40,7 +41,6 @@ body.design-concept.shared-chrome .need-design { padding-top: 20px; }
 .need-details .detail-actions p, .need-details .detail-actions form { margin: 0; }
 .design-concept .need-details .need-delete-button { background: var(--brick); color: #fff; border: 0; border-radius: 8px; cursor: pointer; }
 
-/* Antall tilbud som venter på godkjenning på dette behovet. */
 .need-design .need-approval-badge {
     display: inline-flex;
     align-items: center;
