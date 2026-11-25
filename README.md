@@ -1,4 +1,4 @@
-# CrisisSystem — Group 7
+# Koordinert — Group 7
 
 CrisisSystem is an ASP.NET Core MVC web application developed by **Group 7** at the University of Agder. It supports coordination between public actors and resource providers during crises by showing needs, available resources and geographical locations.
 
