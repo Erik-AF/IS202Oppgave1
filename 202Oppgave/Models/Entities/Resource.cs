@@ -31,9 +31,13 @@
 
         public string? OwnerName { get; set; }
         
-        // Sti til opplastet bilde, f.eks. "/uploads/ressurser/abc.jpg".
+        // Adressen bildet vises fra, f.eks. "/Resource/Image/5".
+        // Eldre ressurser kan ha en fil-sti, f.eks. "/uploads/ressurser/abc.jpg".
         // Null betyr at ressursen ikke har eget bilde.
         public string? ImagePath { get; set; }
+
+        // Selve bildet i databasen. Hentes bare når det trengs.
+        public ResourceImage? Image { get; set; }
         
         //fremmednøkkel til Categories-tabellen.
         // Nullable, så ressurser som allerede finnes ikke fpr feil i migrering
