@@ -2,6 +2,7 @@
 using _202Oppgave.Controllers;
 using _202Oppgave.DataAccess.Repositories;
 using _202Oppgave.Models.Entities;
+using _202Oppgave.Models.Authorization;
 using _202Oppgave.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
@@ -422,6 +423,104 @@ public async Task Delete_NonExistingResource_ShouldReturnNotFound()
         var result = await controller.Image(999);
 
         Assert.IsType<NotFoundResult>(result);
+    }
+    
+    // ---------- Eierskapssjekk (OWASP A01, Broken Access Control) ----------
+
+    // Lager controlleren med en innlogget bruker med valgt ID.
+    // isAdmin = true gir brukeren Admin-rollen.
+    private static ResourceController CreateControllerAs(
+        FakeResourceRepository repository, string userId, bool isAdmin = false)
+    {
+        var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
+
+        if (isAdmin)
+            claims.Add(new Claim(ClaimTypes.Role, RoleNames.Admin));
+
+        return new ResourceController(repository, null!)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Test"))
+                }
+            }
+        };
+    }
+
+    // Testrepo med én ressurs (Id 1) som tilhører "user-123"
+    private static FakeResourceRepository CreateRepositoryWithOwnedResource()
+    {
+        var repository = new FakeResourceRepository();
+        repository.Resources.Add(new Resource
+        {
+            Id = 1,
+            UserId = "user-123",
+            Type = "Generator",
+            Name = "Kristiansand"
+        });
+        return repository;
+    }
+
+    [Fact]
+    public async Task EditGet_OtherUsersResource_ShouldReturnForbid()
+    {
+        var repository = CreateRepositoryWithOwnedResource();
+        var controller = CreateControllerAs(repository, "user-999");
+
+        var result = await controller.Edit(1);
+
+        Assert.IsType<ForbidResult>(result);
+    }
+
+    [Fact]
+    public async Task EditPost_OtherUsersResource_ShouldReturnForbid_AndNotChange()
+    {
+        var repository = CreateRepositoryWithOwnedResource();
+        var controller = CreateControllerAs(repository, "user-999");
+
+        var model = new ResourceViewModel
+        {
+            Type = "Endret",
+            Area = "Grimstad",
+            Latitude = 58.3405,
+            Longitude = 8.5934,
+            ContactName = "Testperson",
+            ContactPhone = "12345678",
+            CategoryId = 1
+        };
+
+        var result = await controller.Edit(1, model);
+
+        Assert.IsType<ForbidResult>(result);
+        // Ressursen er uendret
+        Assert.Equal("Generator", repository.Resources.Single().Type);
+    }
+
+    [Fact]
+    public async Task Delete_OtherUsersResource_ShouldReturnForbid_AndKeepResource()
+    {
+        var repository = CreateRepositoryWithOwnedResource();
+        var controller = CreateControllerAs(repository, "user-999");
+
+        var result = await controller.Delete(1);
+
+        Assert.IsType<ForbidResult>(result);
+        // Ressursen ble ikke slettet
+        Assert.Single(repository.Resources);
+    }
+
+    [Fact]
+    public async Task Delete_AsAdmin_ShouldRemoveOtherUsersResource()
+    {
+        var repository = CreateRepositoryWithOwnedResource();
+        var controller = CreateControllerAs(repository, "admin-1", isAdmin: true);
+
+        var result = await controller.Delete(1);
+
+        Assert.IsType<RedirectToActionResult>(result);
+        Assert.Empty(repository.Resources);
     }
 
 }
