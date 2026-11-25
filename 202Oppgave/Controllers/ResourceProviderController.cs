@@ -8,7 +8,6 @@ using _202Oppgave.DataAccess.Repositories;
 
 namespace _202Oppgave.Controllers;
 
-/// <summary>Viser leverandørens egne ressurser og lar brukeren oppdatere profilen.</summary>
 [Authorize(Roles = RoleNames.ResourceProvider)]
 public class ResourceProviderController : Controller
 {
@@ -16,7 +15,6 @@ public class ResourceProviderController : Controller
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IResourceRepository _resourceRepository;
 
-    /// <summary>Mottar avhengighetene som ResourceProviderController bruker.</summary>
     public ResourceProviderController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
@@ -27,7 +25,7 @@ public class ResourceProviderController : Controller
         _resourceRepository = resourceRepository;
     }
 
-    /// <summary>Viser de fire første ressursene fra leverandørens egen ressursliste.</summary>
+    /// Viser de fire første ressursene fra leverandørens egen ressursliste.
     [HttpGet]
     public async Task<IActionResult> Index()
     {
@@ -42,7 +40,7 @@ public class ResourceProviderController : Controller
         return View(resources.Take(4).ToList());
     }
 
-    /// <summary>Viser alle ressurser registrert av innlogget leverandør.</summary>
+    /// Viser alle ressurser registrert av innlogget leverandør.
     [HttpGet]
     public async Task<IActionResult> Resources()
     {
@@ -57,7 +55,6 @@ public class ResourceProviderController : Controller
         return View(resources);
     }
 
-    /// <summary>Viser profilfeltene til innlogget bruker.</summary>
     [HttpGet]
     public async Task<IActionResult> Profile()
     {
@@ -76,7 +73,7 @@ public class ResourceProviderController : Controller
         return View(model);
     }
 
-    /// <summary>Validerer profilendringer, holder e-post og brukernavn like og fornyer innloggingen etter lagring.</summary>
+    /// Validerer profilendringer, holder e-post og brukernavn like og fornyer innloggingen etter lagring.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Profile(ProfileViewModel model)

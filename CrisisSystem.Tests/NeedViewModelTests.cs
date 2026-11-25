@@ -7,10 +7,8 @@ using _202Oppgave.ViewModels;
 
 namespace CrisisSystem.Tests;
 
-/// <summary>Tester NeedViewModel med kontrollerte testdata uten å starte hele applikasjonen.</summary>
 public class NeedViewModelTests
 {
-    /// <summary>Behov uten koordinater avvises.</summary>
     [Fact]
     public void NeedWithoutCoordinates_ShouldFailValidation()
     {
@@ -38,7 +36,6 @@ public class NeedViewModelTests
             result.ErrorMessage == "Velg et punkt på kartet.");
     }
 
-    /// <summary>Behov med ugyldig breddegrad avvises.</summary>
     [Fact]
     public void NeedWithInvalidLatitude_ShouldFailValidation()
     {

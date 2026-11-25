@@ -5,10 +5,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace _202Oppgave.DataAccess
 {
-    /// <summary>Kobler domenedata og Identity til databasen og definerer relasjoner, slettingsregler og startkategorier.</summary>
+    /// Kobler domenedata og Identity til databasen og definerer relasjoner, slettingsregler og startkategorier.
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
-        /// <summary>Mottar avhengighetene som ApplicationDbContext bruker.</summary>
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -21,7 +20,7 @@ namespace _202Oppgave.DataAccess
 
         public DbSet<Allocation> Allocations { get; set; }
 
-        /// <summary>Definerer fremmednøkler, slettingsregler, tidsstempler og faste kategorier; hver allokering peker på én ressurs og ett behov.</summary>
+        /// Definerer fremmednøkler, slettingsregler, tidsstempler og faste kategorier; hver allokering peker på én ressurs og ett behov.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -6,10 +6,10 @@ using Microsoft.Extensions.Configuration;
 namespace _202Oppgave.DataAccess
 {
 
-    /// <summary>Oppretter databasekonteksten for EF-verktøy uten å starte webapplikasjonen.</summary>
+    /// Oppretter databasekonteksten for EF-verktøy uten å starte webapplikasjonen.
     public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
-        /// <summary>Leser tilkoblingsinnstillinger for EF-verktøy og angir MariaDB-versjonen uten automatisk serveroppslag.</summary>
+        /// Leser tilkoblingsinnstillinger for EF-verktøy og angir MariaDB-versjonen uten automatisk serveroppslag.
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";

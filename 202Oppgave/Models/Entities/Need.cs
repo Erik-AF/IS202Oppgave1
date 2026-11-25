@@ -1,7 +1,7 @@
 using _202Oppgave.ViewModels;
 namespace _202Oppgave.Models.Entities
 {
-    /// <summary>Databaseentitet for et behov med oppretter, prioritet, kartform og allokeringer.</summary>
+    /// Databaseentitet for et behov med oppretter, prioritet, kartform og allokeringer.
     public class Need
     {
         public int Id { get; set; }

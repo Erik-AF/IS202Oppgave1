@@ -14,7 +14,6 @@ using ResourceModel = _202Oppgave.Models.Resource;
 
 namespace _202Oppgave.Controllers;
 
-/// <summary>Håndterer ressurser, filtrering, kartdata, bildeopplasting og eksport.</summary>
 public class ResourceController : Controller
 {
     private readonly IResourceRepository _repo;
@@ -23,14 +22,13 @@ public class ResourceController : Controller
 
     private const string UploadFolder = "uploads/ressurser";
 
-    /// <summary>Mottar avhengighetene som ResourceController bruker.</summary>
     public ResourceController(IResourceRepository repo, IWebHostEnvironment env)
     {
         _repo = repo;
         _env = env;
     }
 
-    /// <summary>Filtrerer og sorterer ressursene ut fra søk, kategori, status og område.</summary>
+    /// Filtrerer og sorterer ressursene ut fra søk, kategori, status og område.
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     public async Task<IActionResult> Index(string? q, string? category, string? status, string? area, string? sort)
     {
@@ -58,7 +56,7 @@ public class ResourceController : Controller
         return View(model);
     }
 
-    /// <summary>Eksporterer tilgjengelige ressurser som passer filtrene til en XLSX-fil.</summary>
+    /// Eksporterer tilgjengelige ressurser som passer filtrene til en XLSX-fil.
     [HttpGet]
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     public async Task<IActionResult> ExportExcel(string? q, string? category, string? status, string? area, string? sort)
@@ -72,7 +70,7 @@ public class ResourceController : Controller
             $"ressurser-{exportedAt:yyyyMMdd-HHmmss}.xlsx");
     }
 
-    /// <summary>Bruker samme søk, filterverdier og sortering for ressursoversikten og eksporten.</summary>
+    /// Bruker samme søk, filterverdier og sortering for ressursoversikten og eksporten.
     private static IEnumerable<ResourceModel> FilterResources(IEnumerable<ResourceModel> all,
         string? q, string? category, string? status, string? area, string? sort)
     {
@@ -114,7 +112,6 @@ public class ResourceController : Controller
         return result;
     }
 
-    /// <summary>Fyller kategorivalgene og viser skjemaet for en ny ressurs.</summary>
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     public async Task<IActionResult> Create()
     {
@@ -123,7 +120,7 @@ public class ResourceController : Controller
         return View(model);
     }
 
-    /// <summary>Validerer ressursen, lagrer eventuell bildefil og knytter oppføringen til innlogget bruker.</summary>
+    /// Validerer ressursen, lagrer eventuell bildefil og knytter oppføringen til innlogget bruker.
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -173,7 +170,6 @@ public class ResourceController : Controller
             new { id = resource.Id });
     }
 
-    /// <summary>Viser ressursens detaljer eller returnerer 404 når ressursen ikke finnes.</summary>
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin + "," + RoleNames.PublicActor)]
     public async Task<IActionResult> Details(int id)
     {
@@ -191,7 +187,7 @@ public class ResourceController : Controller
         return View(model);
     }
 
-    /// <summary>Kontrollerer tilgang og fyller redigeringsskjemaet med eksisterende ressursdata.</summary>
+    /// Kontrollerer tilgang og fyller redigeringsskjemaet med eksisterende ressursdata.
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
@@ -229,7 +225,7 @@ public class ResourceController : Controller
         return View(model);
     }
 
-    /// <summary>Returnerer ressursenes posisjoner og kartformer som JSON.</summary>
+    /// Returnerer ressursenes posisjoner og kartformer som JSON.
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin + "," + RoleNames.PublicActor)]
     [HttpGet]
     public async Task<IActionResult> Geo()
@@ -268,7 +264,7 @@ public class ResourceController : Controller
         return Json(data);
     }
 
-    /// <summary>Kontrollerer tilgang før ressursen og det tilhørende bildet slettes.</summary>
+    /// Kontrollerer tilgang før ressursen og det tilhørende bildet slettes.
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -290,7 +286,7 @@ public class ResourceController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    /// <summary>Sammenligner innlogget bruker med ressursens lagrede eier.</summary>
+    /// Sammenligner innlogget bruker med ressursens lagrede eier.
     private bool OwnsResource(ResourceEntity resource)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -300,13 +296,13 @@ public class ResourceController : Controller
                && userId == resource.UserId;
     }
 
-    /// <summary>Tillater ressursens eier eller administrator å endre ressursen.</summary>
+    /// Tillater ressursens eier eller administrator å endre ressursen.
     private bool CanManageResource(ResourceEntity resource)
     {
         return OwnsResource(resource) || User.IsInRole(RoleNames.Admin);
     }
 
-    /// <summary>Bygger visningsdata og foretrekker kontaktinformasjon fra eierens profil fremfor eldre ressursfelter.</summary>
+    /// Bygger visningsdata og foretrekker kontaktinformasjon fra eierens profil fremfor eldre ressursfelter.
     private static ResourceModel ToModel(ResourceEntity entity)
     {
         return new ResourceModel
@@ -331,7 +327,7 @@ public class ResourceController : Controller
         };
     }
 
-    /// <summary>Kontrollerer tilgang og validering før ressursen og eventuelt bildet oppdateres.</summary>
+    /// Kontrollerer tilgang og validering før ressursen og eventuelt bildet oppdateres.
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -377,7 +373,7 @@ public class ResourceController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    /// <summary>Lagrer opplastet bilde med et unikt filnavn og returnerer stien som visningen kan bruke.</summary>
+    /// Lagrer opplastet bilde med et unikt filnavn og returnerer stien som visningen kan bruke.
     private async Task<string> SaveImageAsync(IFormFile image)
     {
         var folder = Path.Combine(_env.WebRootPath, UploadFolder);
@@ -393,7 +389,6 @@ public class ResourceController : Controller
         return $"/{UploadFolder}/{fileName}";
     }
 
-    /// <summary>Sletter en eksisterende opplastet bildefil når en bildesti er oppgitt.</summary>
     private void DeleteImage(string? imagePath)
     {
         if (string.IsNullOrWhiteSpace(imagePath) ||
@@ -409,7 +404,7 @@ public class ResourceController : Controller
         }
     }
 
-    /// <summary>Fyller kategorivalgene fra databasen, også når skjemaet må vises igjen etter feil.</summary>
+    /// Fyller kategorivalgene fra databasen, også når skjemaet må vises igjen etter feil.
     private async Task FillCategoryOptionsAsync(ResourceViewModel model)
     {
         var categories = await _repo.GetCategoriesAsync();

@@ -5,10 +5,8 @@ using Xunit;
 
 namespace CrisisSystem.Tests;
 
-/// <summary>Tester LoginViewModel med kontrollerte testdata uten å starte hele applikasjonen.</summary>
 public class LoginViewModelTests
 {
-    /// <summary>Validerer alle modellens attributter og eventuelle regler på tvers av felter.</summary>
     private static List<ValidationResult> Validate(LoginViewModel model)
     {
         var results = new List<ValidationResult>();
@@ -19,7 +17,6 @@ public class LoginViewModelTests
         return results;
     }
 
-    /// <summary>Gyldige innloggingsfelt godtas.</summary>
     [Fact]
     public void ValidLogin_ShouldPassValidation()
     {
@@ -34,7 +31,6 @@ public class LoginViewModelTests
         Assert.Empty(results);
     }
 
-    /// <summary>Manglende e-post avvises.</summary>
     [Fact]
     public void MissingEmail_ShouldFailValidation()
     {
@@ -50,7 +46,6 @@ public class LoginViewModelTests
             result.MemberNames.Contains(nameof(LoginViewModel.Email)));
     }
 
-    /// <summary>Ugyldig e-postformat avvises.</summary>
     [Fact]
     public void InvalidEmail_ShouldFailValidation()
     {
@@ -66,7 +61,6 @@ public class LoginViewModelTests
             result.MemberNames.Contains(nameof(LoginViewModel.Email)));
     }
 
-    /// <summary>Manglende passord avvises.</summary>
     [Fact]
     public void MissingPassword_ShouldFailValidation()
     {

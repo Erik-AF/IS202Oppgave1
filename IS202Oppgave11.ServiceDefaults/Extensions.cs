@@ -10,13 +10,12 @@ using OpenTelemetry.Trace;
 
 namespace Microsoft.Extensions.Hosting;
 
-/// <summary>Registrerer felles tjenesteoppdagelse, telemetri og helsesjekker for webapplikasjonen.</summary>
+/// Registrerer felles tjenesteoppdagelse, telemetri og helsesjekker for webapplikasjonen.
 public static class Extensions
 {
     private const string HealthEndpointPath = "/health";
     private const string AlivenessEndpointPath = "/alive";
 
-    /// <summary>Registrerer telemetri, helsesjekker, tjenesteoppdagelse og motstandsdyktige HTTP-klienter.</summary>
     public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.ConfigureOpenTelemetry();
@@ -36,7 +35,7 @@ public static class Extensions
         return builder;
     }
 
-    /// <summary>Registrerer logger, målinger og sporing; helsesjekkforespørsler utelates fra HTTP-sporingen.</summary>
+    /// Registrerer logger, målinger og sporing; helsesjekkforespørsler utelates fra HTTP-sporingen.
     public static TBuilder ConfigureOpenTelemetry<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.Logging.AddOpenTelemetry(logging =>
@@ -70,7 +69,7 @@ public static class Extensions
         return builder;
     }
 
-    /// <summary>Aktiverer OTLP-eksport bare når endepunktet er konfigurert i miljøet.</summary>
+    /// Aktiverer OTLP-eksport bare når endepunktet er konfigurert i miljøet.
     private static TBuilder AddOpenTelemetryExporters<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
@@ -83,7 +82,7 @@ public static class Extensions
         return builder;
     }
 
-    /// <summary>Registrerer en enkel livssjekk; den bekrefter ikke at databasen er tilgjengelig.</summary>
+    /// Registrerer en enkel livssjekk; den bekrefter ikke at databasen er tilgjengelig.
     public static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.Services.AddHealthChecks()
@@ -93,7 +92,7 @@ public static class Extensions
         return builder;
     }
 
-    /// <summary>Eksponerer helse- og livssjekk bare i utviklingsmiljøet.</summary>
+    /// Eksponerer helse- og livssjekk bare i utviklingsmiljøet.
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
 

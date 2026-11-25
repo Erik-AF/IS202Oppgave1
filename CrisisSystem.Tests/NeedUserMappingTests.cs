@@ -7,17 +7,14 @@ using Xunit;
 
 namespace CrisisSystem.Tests;
 
-/// <summary>Tester NeedUserMapping med kontrollerte testdata uten å starte hele applikasjonen.</summary>
 public class NeedUserMappingTests
 {
-    /// <summary>Oppretter databasekonteksten som brukes til kontroll av modell og migreringer.</summary>
     private static ApplicationDbContext CreateContext() => new(
         new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseMySql("Server=localhost;Database=unused;User=unused;Password=unused",
                 new MariaDbServerVersion(new Version(11, 0, 0)))
             .Options);
 
-    /// <summary>Behov knyttes til Identity samtidig som eldre behov uten oppretter støttes.</summary>
     [Fact]
     public void NeedUser_ShouldReferenceIdentityAndPreserveLegacyNeeds()
     {
@@ -30,7 +27,6 @@ public class NeedUserMappingTests
         Assert.Equal(DeleteBehavior.Restrict, relationship.DeleteBehavior);
     }
 
-    /// <summary>Migreringssnapshot samsvarer med dagens EF-modell.</summary>
     [Fact]
     public void MigrationSnapshot_ShouldMatchCurrentModel()
     {
@@ -38,7 +34,6 @@ public class NeedUserMappingTests
         Assert.False(db.Database.HasPendingModelChanges());
     }
 
-    /// <summary>Brukermigreringen avgrenses til oppretterfelt, indeks og fremmednøkkel.</summary>
     [Fact]
     public void Migration_ShouldOnlyAddUserColumnIndexAndForeignKey()
     {

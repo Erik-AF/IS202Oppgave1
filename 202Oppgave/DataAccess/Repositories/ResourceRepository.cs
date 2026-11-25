@@ -3,32 +3,30 @@ using _202Oppgave.Models.Entities;
 
 namespace _202Oppgave.DataAccess.Repositories;
 
-/// <summary>Lagrer ressurser gjennom EF Core og laster tilhørende kategori- og brukerdata.</summary>
+/// Lagrer ressurser gjennom EF Core og laster tilhørende kategori- og brukerdata.
 public class ResourceRepository : IResourceRepository
 {
     private readonly ApplicationDbContext _context;
 
-    /// <summary>Mottar avhengighetene som ResourceRepository bruker.</summary>
     public ResourceRepository(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    /// <inheritdoc />
     public async Task AddAsync(Resource resource)
     {
         await _context.Resources.AddAsync(resource);
         await _context.SaveChangesAsync();
     }
 
-    /// <inheritdoc />
     public async Task UpdateAsync(Resource resource)
     {
         _context.Resources.Update(resource);
         await _context.SaveChangesAsync();
     }
 
-    /// <inheritdoc />
+    /// Include laster kategori og eier sammen med ressursene, slik at visningen har relaterte data.
+    /// ToListAsync utfører spørringen; Where og Include bygger den opp før dette punktet.
     public async Task<List<Resource>> GetAllAsync()
     {
         return await _context.Resources
@@ -37,7 +35,6 @@ public class ResourceRepository : IResourceRepository
             .ToListAsync();
     }
 
-    /// <inheritdoc />
     public async Task<Resource?> GetByIdAsync(int id)
     {
         return await _context.Resources
@@ -46,7 +43,6 @@ public class ResourceRepository : IResourceRepository
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
-    /// <inheritdoc />
     public async Task<List<Resource>> GetByUserIdAsync(string userId)
     {
         return await _context.Resources
@@ -56,7 +52,6 @@ public class ResourceRepository : IResourceRepository
             .ToListAsync();
     }
 
-    /// <inheritdoc />
     public async Task DeleteAsync(int id)
     {
         var resource = await GetByIdAsync(id);
@@ -68,7 +63,6 @@ public class ResourceRepository : IResourceRepository
         }
     }
 
-    /// <inheritdoc />
     public async Task<List<Category>> GetCategoriesAsync()
     {
         return await _context.Categories

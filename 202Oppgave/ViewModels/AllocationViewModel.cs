@@ -5,7 +5,7 @@ using ResourceModel = _202Oppgave.Models.Resource;
 
 namespace _202Oppgave.ViewModels;
 
-/// <summary>Formidler valgte ressurser, behov og merknad; tilbudsmodus bestemmes på serveren.</summary>
+/// Formidler valgte ressurser, behov og merknad; tilbudsmodus bestemmes på serveren.
 public class AllocateViewModel
 {
     [Microsoft.AspNetCore.Mvc.ModelBinding.BindNever, ValidateNever]

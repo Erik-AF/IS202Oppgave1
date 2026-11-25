@@ -1,6 +1,6 @@
 namespace _202Oppgave.Models;
 
-/// <summary>Formidler forespørsels-ID slik at en feil kan knyttes til serverloggen.</summary>
+/// Formidler forespørsels-ID slik at en feil kan knyttes til serverloggen.
 public class ErrorViewModel
 {
     public string? RequestId { get; set; }

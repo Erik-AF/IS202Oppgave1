@@ -9,18 +9,15 @@ using _202Oppgave.Models.Authorization;
 
 namespace _202Oppgave.Controllers;
 
-/// <summary>Håndterer registrering, visning og endring av behov med kontroll av brukerens eierskap.</summary>
 public class NeedController : Controller
 {
     private readonly INeedRepository _needRepository;
 
-    /// <summary>Mottar avhengighetene som NeedController bruker.</summary>
     public NeedController(INeedRepository needRepository)
     {
         _needRepository = needRepository;
     }
 
-    /// <summary>Henter registrerte behov og gjør dem klare for behovsoversikten.</summary>
     [HttpGet]
     public async Task<IActionResult> Index()
     {
@@ -28,7 +25,6 @@ public class NeedController : Controller
         return View(needs.Select(ToModel).ToList());
     }
 
-    /// <summary>Viser skjemaet for et nytt behov.</summary>
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     [HttpGet]
     public IActionResult Create()
@@ -36,7 +32,7 @@ public class NeedController : Controller
         return View(new NeedViewModel());
     }
 
-    /// <summary>Validerer og lagrer behovet med oppretter hentet fra innloggingen, aldri fra skjemadata.</summary>
+    /// Validerer og lagrer behovet med oppretter hentet fra innloggingen, aldri fra skjemadata.
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -72,7 +68,6 @@ public class NeedController : Controller
         return RedirectToAction(nameof(Confirmation), new { id = need.Id });
     }
 
-    /// <summary>Viser detaljene for et lagret behov eller returnerer 404 når behovet mangler.</summary>
     [HttpGet]
     public async Task<IActionResult> Confirmation(int id)
     {
@@ -86,7 +81,7 @@ public class NeedController : Controller
         return View(ToModel(need));
     }
 
-    /// <summary>Kontrollerer eierskap og fyller redigeringsskjemaet fra det lagrede behovet.</summary>
+    /// Kontrollerer eierskap og fyller redigeringsskjemaet fra det lagrede behovet.
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
@@ -115,7 +110,7 @@ public class NeedController : Controller
         return View(model);
     }
 
-    /// <summary>Kontrollerer eierskap og validering før eksisterende behov oppdateres.</summary>
+    /// Kontrollerer eierskap og validering før eksisterende behov oppdateres.
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -149,7 +144,7 @@ public class NeedController : Controller
         return RedirectToAction(nameof(Confirmation), new { id });
     }
 
-    /// <summary>Kontrollerer eierskap og sletter behovet gjennom repositoryet.</summary>
+    /// Kontrollerer eierskap og sletter behovet gjennom repositoryet.
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -169,7 +164,7 @@ public class NeedController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    /// <summary>Returnerer behov med koordinater og kartform for visning i kartet.</summary>
+    /// Returnerer behov med koordinater og kartform for visning i kartet.
     [HttpGet]
     public async Task<IActionResult> Geo()
     {
@@ -190,7 +185,7 @@ public class NeedController : Controller
 
         return Json(data);
     }
-    /// <summary>Sammenligner innlogget bruker med behovets lagrede oppretter.</summary>
+    /// Sammenligner innlogget bruker med behovets lagrede oppretter.
     private bool OwnsNeed(NeedEntity need)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -199,7 +194,6 @@ public class NeedController : Controller
             && userId == need.UserId;
     }
 
-    /// <summary>Overfører databasefeltene til modellen som behovsvisningene bruker.</summary>
     private Need ToModel(NeedEntity need)
     {
         return new Need

@@ -13,10 +13,8 @@ using Xunit;
 
 namespace CrisisSystem.Tests;
 
-/// <summary>Tester ResourceOffer med kontrollerte testdata uten å starte hele applikasjonen.</summary>
 public class ResourceOfferTests
 {
-    /// <summary>Oppretter controller, innlogget testidentitet og repository-mocker for scenarioet.</summary>
     private static (AllocationController Controller, Mock<IAllocationRepository> Repo) Setup(
         string role = RoleNames.ResourceProvider, string userId = "provider", string resourceOwner = "provider")
     {
@@ -54,7 +52,6 @@ public class ResourceOfferTests
         }, allocations);
     }
 
-    /// <summary>Leverandøren får tilbudsskjema for egen ressurs.</summary>
     [Fact]
     public async Task Provider_Get_ShouldShowOfferFormForOwnResource()
     {
@@ -66,7 +63,6 @@ public class ResourceOfferTests
         Assert.Single(model.NeedOptions);
     }
 
-    /// <summary>Leverandøren får ikke tilby en annens ressurs.</summary>
     [Fact]
     public async Task Provider_CannotOfferSomeoneElsesResource()
     {
@@ -76,7 +72,6 @@ public class ResourceOfferTests
         repo.Verify(r => r.OfferAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
-    /// <summary>Leverandørens innsending oppretter tilbud i stedet for direkte allokering.</summary>
     [Fact]
     public async Task Provider_Post_ShouldSendOfferInsteadOfAllocating()
     {
@@ -87,7 +82,6 @@ public class ResourceOfferTests
         repo.Verify(r => r.AllocateAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>()), Times.Never);
     }
 
-    /// <summary>Tilbudsmodus bevares ved skjemafeil.</summary>
     [Fact]
     public async Task InvalidForm_ShouldKeepOfferMode()
     {
@@ -98,7 +92,6 @@ public class ResourceOfferTests
         repo.Verify(r => r.OfferAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
-    /// <summary>En annen offentlig aktør får ikke godkjenne eller fjerne tilbudet.</summary>
     [Fact]
     public async Task OtherActor_CannotApproveOrRemove()
     {
@@ -109,7 +102,6 @@ public class ResourceOfferTests
         repo.Verify(r => r.RemoveAsync(It.IsAny<int>()), Times.Never);
     }
 
-    /// <summary>Leverandørrollen får ikke godkjenne selv om bruker-ID samsvarer.</summary>
     [Fact]
     public async Task Provider_CannotApproveEvenWithMatchingUserId()
     {
@@ -118,7 +110,6 @@ public class ResourceOfferTests
         repo.Verify(r => r.ApproveAsync(It.IsAny<int>()), Times.Never);
     }
 
-    /// <summary>Behovets eier får godkjenne og fjerne tilbud.</summary>
     [Fact]
     public async Task NeedOwner_CanApproveAndRemove()
     {
@@ -129,7 +120,6 @@ public class ResourceOfferTests
         repo.Verify(r => r.RemoveAsync(10), Times.Once);
     }
 
-    /// <summary>Offentlige aktører beholder direkte allokering.</summary>
     [Fact]
     public async Task PublicActor_StillAllocatesDirectly()
     {
@@ -139,7 +129,6 @@ public class ResourceOfferTests
         repo.Verify(r => r.OfferAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
-    /// <summary>Ressursvalget fra kartet viser tilgjengelige egne ressurser og bevarer behovet.</summary>
     [Fact]
     public async Task FromMap_ShouldShowAvailableOwnResourcesAndKeepNeed()
     {
@@ -153,7 +142,6 @@ public class ResourceOfferTests
         repo.Verify(r => r.OfferAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
-    /// <summary>Ressursvalget avviser feil rolle og ukjent behov.</summary>
     [Fact]
     public async Task FromMap_ShouldRejectNonProviderAndMissingNeed()
     {

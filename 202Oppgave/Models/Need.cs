@@ -2,7 +2,7 @@ using _202Oppgave.ViewModels;
 
 namespace _202Oppgave.Models;
 
-/// <summary>Visningsmodell for behovsdata; lagring håndteres av Models.Entities.Need.</summary>
+/// Visningsmodell for behovsdata; lagring håndteres av Models.Entities.Need.
 public class Need
 {
     public int Id { get; set; }

@@ -1,6 +1,6 @@
 namespace _202Oppgave.Models.Entities
 {
-    /// <summary>Representerer en ressurskategori med tilhørende ressurser.</summary>
+    /// Representerer en ressurskategori med tilhørende ressurser.
     public class Category
     {
 

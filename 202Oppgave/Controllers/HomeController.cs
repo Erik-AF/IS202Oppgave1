@@ -6,18 +6,16 @@ using _202Oppgave.ViewModels;
 
 namespace _202Oppgave.Controllers;
 
-/// <summary>Bygger forsiden fra registrerte behov og viser personvern- og feilsider.</summary>
 public class HomeController : Controller
 
 {
 private readonly INeedRepository _needRepository;
-/// <summary>Mottar avhengighetene som HomeController bruker.</summary>
 public HomeController(INeedRepository needRepository)
 {
     _needRepository = needRepository;
 }
 
-/// <summary>Viser de tre registrerte behovene med lavest ID på forsiden.</summary>
+/// Viser de tre registrerte behovene med lavest ID på forsiden.
 public async Task<IActionResult> Index()
 {
 
@@ -39,13 +37,12 @@ public async Task<IActionResult> Index()
 
     return View(model);
 }
-/// <summary>Viser personvernsiden.</summary>
 public IActionResult Privacy()
 {
     return View();
 }
 
-/// <summary>Viser forespørsels-ID for feilsøking uten å mellomlagre feilsiden.</summary>
+/// Viser forespørsels-ID for feilsøking uten å mellomlagre feilsiden.
 [ResponseCache(
     Duration = 0,
     Location = ResponseCacheLocation.None,

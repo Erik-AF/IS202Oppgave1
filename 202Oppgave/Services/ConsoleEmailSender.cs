@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace _202Oppgave.Services
 {
-    /// <summary>Logger e-postinnhold for utvikling; sender ikke meldinger til en e-posttjener.</summary>
+    /// Logger e-postinnhold for utvikling; sender ikke meldinger til en e-posttjener.
     public class ConsoleEmailSender(ILogger<ConsoleEmailSender> logger) : IEmailSender
     {
-        /// <summary>Logger mottaker og meldingsinnhold for utvikling uten å sende e-post.</summary>
         public Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
             logger.LogInformation(

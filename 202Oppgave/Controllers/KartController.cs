@@ -3,7 +3,7 @@ using _202Oppgave.ViewModels;
 
 namespace _202Oppgave.Controllers;
 
-/// <summary>Viser kartoversikten, håndterer separate kartpunkter i minnet og slår opp adresser hos Kartverket.</summary>
+/// Viser kartoversikten, håndterer separate kartpunkter i minnet og slår opp adresser hos Kartverket.
 public class KartController : Controller
 {
 
@@ -23,14 +23,13 @@ public class KartController : Controller
         }
     };
 
-    /// <summary>Viser registrering av separate kartpunkter.</summary>
     [HttpGet]
     public IActionResult Index()
     {
         return View(new RegistrerPunktViewModel());
     }
 
-    /// <summary>Legger kartpunktet i en minneliste som nullstilles ved omstart, og omdirigerer til oversikten.</summary>
+    /// Legger kartpunktet i en minneliste som nullstilles ved omstart, og omdirigerer til oversikten.
     [HttpPost]
     public IActionResult Index(RegistrerPunktViewModel model)
     {
@@ -56,14 +55,14 @@ public class KartController : Controller
         return RedirectToAction(nameof(Oversikt));
     }
 
-    /// <summary>Viser kartoversikten som henter kartpunkter, behov og ressurser fra separate JSON-endepunkter.</summary>
+    /// Viser kartoversikten som henter kartpunkter, behov og ressurser fra separate JSON-endepunkter.
     [HttpGet]
     public IActionResult Oversikt()
     {
         return View();
     }
 
-    /// <summary>Returnerer punktene fra minnelisten; behov og ressurser i databasen har egne kartendepunkter.</summary>
+    /// Returnerer punktene fra minnelisten; behov og ressurser i databasen har egne kartendepunkter.
     [HttpGet]
     public IActionResult Data()
     {
@@ -75,7 +74,7 @@ public class KartController : Controller
         Timeout = TimeSpan.FromSeconds(10)
     };
 
-    /// <summary>Validerer koordinater og foreslår nærmeste adresse innenfor 100 meter fra Kartverket; feil gir mulighet for manuell innskriving.</summary>
+    /// Validerer koordinater og foreslår nærmeste adresse innenfor 100 meter fra Kartverket; feil gir mulighet for manuell innskriving.
     [HttpGet]
     public async Task<IActionResult> ReverseGeocode(
         [FromQuery] double? lat, [FromQuery] double? lon)

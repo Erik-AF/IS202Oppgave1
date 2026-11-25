@@ -1,7 +1,7 @@
 namespace _202Oppgave.Models.Entities
 {
 
-    /// <summary>Knytter én ressurs til ett behov og lagrer status, tidspunkt og eventuell merknad.</summary>
+    /// Knytter én ressurs til ett behov og lagrer status, tidspunkt og eventuell merknad.
     public class Allocation
     {
 

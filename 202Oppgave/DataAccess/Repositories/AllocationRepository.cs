@@ -3,18 +3,17 @@ using _202Oppgave.Models.Entities;
 
 namespace _202Oppgave.DataAccess.Repositories
 {
-    /// <summary>Lagrer tilbud og allokeringer med tilhørende tilgjengelighetsstatus gjennom EF Core.</summary>
+    /// Lagrer tilbud og allokeringer med tilhørende tilgjengelighetsstatus gjennom EF Core.
     public class AllocationRepository : IAllocationRepository
     {
         private readonly ApplicationDbContext _context;
 
-        /// <summary>Mottar avhengighetene som AllocationRepository bruker.</summary>
         public AllocationRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        /// <summary>Reserverer med betinget databaseoppdatering slik at parallelle tilbud ikke tar samme ressurs; lagrer tilbud og reservasjon i én transaksjon.</summary>
+        /// Reserverer med betinget databaseoppdatering slik at parallelle tilbud ikke tar samme ressurs; lagrer tilbud og reservasjon i én transaksjon.
         public async Task<int> OfferAsync(int needId, List<int> resourceIds, string userId, string? note)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -38,15 +37,16 @@ namespace _202Oppgave.DataAccess.Repositories
             return count;
         }
 
-        /// <inheritdoc />
         public Task<Allocation?> GetByIdAsync(int id) => _context.Allocations
             .Include(a => a.Need)
             .FirstOrDefaultAsync(a => a.AllocationId == id);
 
-        /// <summary>Oppdaterer både tilbud og ressurs betinget i én transaksjon; manglende tilstandsendring ruller tilbake godkjenningen.</summary>
+        /// Oppdaterer både tilbud og ressurs betinget i én transaksjon; manglende tilstandsendring ruller tilbake godkjenningen.
         public async Task<bool> ApproveAsync(int id)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
+            /// AsNoTracking brukes fordi statusendringene gjøres direkte i databasen med ExecuteUpdateAsync.
+            /// Ved tidlig retur disponeres transaksjonen uten commit, og endringene rulles tilbake.
             var allocation = await _context.Allocations.AsNoTracking()
                 .FirstOrDefaultAsync(a => a.AllocationId == id);
             if (allocation == null || allocation.State != "Forespurt") return false;
@@ -63,7 +63,6 @@ namespace _202Oppgave.DataAccess.Repositories
             return true;
         }
 
-        /// <inheritdoc />
         public async Task<int> AllocateAsync(int needId, List<int> resourceIds, string? note)
         {
 
@@ -90,7 +89,6 @@ namespace _202Oppgave.DataAccess.Repositories
             return resources.Count;
         }
 
-        /// <inheritdoc />
         public async Task<List<Allocation>> GetForNeedAsync(int needId)
         {
             return await _context.Allocations
@@ -101,7 +99,6 @@ namespace _202Oppgave.DataAccess.Repositories
                 .OrderByDescending(a => a.Date)
                 .ToListAsync();
         }
-        /// <inheritdoc />
         public async Task<int?> RemoveAsync(int allocationId)
         {
             var allocation = await _context.Allocations
@@ -131,7 +128,6 @@ namespace _202Oppgave.DataAccess.Repositories
             return needId;
         }
 
-        /// <inheritdoc />
         public async Task<Dictionary<int, int>> GetPendingCountsByNeedAsync(string userId)
         {
             if (string.IsNullOrWhiteSpace(userId)) return new();
@@ -142,7 +138,6 @@ namespace _202Oppgave.DataAccess.Repositories
                 .ToDictionaryAsync(g => g.NeedId, g => g.Count);
         }
 
-        /// <inheritdoc />
         public async Task<Dictionary<int, List<string>>> GetResourceNamesByNeedAsync()
         {
 

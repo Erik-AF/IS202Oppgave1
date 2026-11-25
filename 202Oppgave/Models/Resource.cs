@@ -2,7 +2,7 @@ using System;
 
 namespace _202Oppgave.Models;
 
-/// <summary>Visningsmodell for ressursdata; lagring håndteres av Models.Entities.Resource.</summary>
+/// Visningsmodell for ressursdata; lagring håndteres av Models.Entities.Resource.
 public class Resource
 {
 

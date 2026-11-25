@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace _202Oppgave.ViewModels;
 
-/// <summary>Validerer ressursens skjemadata, tilgjengelighetsperiode og eventuelle bildefil.</summary>
 public class ResourceViewModel : IValidatableObject
 {
     [Required(ErrorMessage = "Skriv en tittel")]
@@ -78,7 +77,7 @@ public class ResourceViewModel : IValidatableObject
 
     public List<SelectListItem> CategoryOptions { get; set; } = new();
 
-    /// <summary>Validerer tilgjengelighetsperioden og bildefilens type og størrelse på tvers av enkeltfeltene.</summary>
+    /// Validerer tilgjengelighetsperioden og bildefilens type og størrelse på tvers av enkeltfeltene.
     public IEnumerable<ValidationResult> Validate(ValidationContext context)
     {
         if (AvailableFrom.HasValue && AvailableTo.HasValue && AvailableTo < AvailableFrom)

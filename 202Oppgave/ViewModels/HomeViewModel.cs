@@ -1,6 +1,5 @@
 namespace _202Oppgave.ViewModels;
 
-/// <summary>Samler behovene som vises på forsiden.</summary>
 public class HomeViewModel
 {
 

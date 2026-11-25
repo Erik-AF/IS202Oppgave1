@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 namespace _202Oppgave.ViewModels
 {
 
-    /// <summary>Validerer feltene som sendes ved registrering eller redigering av behov.</summary>
     public class NeedViewModel
     {
 
@@ -33,7 +32,6 @@ namespace _202Oppgave.ViewModels
 
         public string? GeometryJson { get; set; }
     }
-    /// <summary>Angir om behovet er akutt eller ikke akutt.</summary>
     public enum NeedPriority
     {
         IkkeAkutt = 1,

@@ -2,7 +2,6 @@ using _202Oppgave.Models;
 
 namespace _202Oppgave.ViewModels;
 
-/// <summary>Samler ressurslisten og filterverdiene som brukes i oversikten.</summary>
 public class ResourceIndexViewModel
 {
 

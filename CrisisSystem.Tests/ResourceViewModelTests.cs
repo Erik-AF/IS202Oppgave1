@@ -7,10 +7,8 @@ using Xunit;
 
 namespace CrisisSystem.Tests;
 
-/// <summary>Tester ResourceViewModel med kontrollerte testdata uten å starte hele applikasjonen.</summary>
 public class ResourceViewModelTests
 {
-    /// <summary>Oppretter gyldige grunnverdier slik at hver test kan variere ett vilkår.</summary>
     private static ResourceViewModel CreateValidResource()
     {
         return new ResourceViewModel
@@ -25,7 +23,6 @@ public class ResourceViewModelTests
         };
     }
 
-    /// <summary>Validerer alle modellens attributter og eventuelle regler på tvers av felter.</summary>
     private static List<ValidationResult> Validate(ResourceViewModel model)
     {
         var results = new List<ValidationResult>();
@@ -36,7 +33,6 @@ public class ResourceViewModelTests
         return results;
     }
 
-    /// <summary>En gyldig ressursmodell godtas.</summary>
     [Fact]
     public void ValidResource_ShouldPassValidation()
     {
@@ -47,7 +43,6 @@ public class ResourceViewModelTests
         Assert.Empty(results);
     }
 
-    /// <summary>Manglende ressurstype avvises.</summary>
     [Fact]
     public void MissingType_ShouldFailValidation()
     {
@@ -60,7 +55,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.Type)));
     }
 
-    /// <summary>Manglende sted avvises.</summary>
     [Fact]
     public void MissingArea_ShouldFailValidation()
     {
@@ -73,7 +67,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.Area)));
     }
 
-    /// <summary>Tomt kontaktpersonfelt godtas i ressursmodellen.</summary>
     [Fact]
     public void EmptyContactName_ShouldPassValidation()
     {
@@ -86,7 +79,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.ContactName)));
     }
 
-    /// <summary>Tomt telefonfelt godtas i ressursmodellen.</summary>
     [Fact]
     public void EmptyContactPhone_ShouldPassValidation()
     {
@@ -99,7 +91,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.ContactPhone)));
     }
 
-    /// <summary>Manglende kategori avvises.</summary>
     [Fact]
     public void MissingCategory_ShouldFailValidation()
     {
@@ -112,7 +103,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.CategoryId)));
     }
 
-    /// <summary>Ugyldig breddegrad avvises.</summary>
     [Theory]
     [InlineData(-91)]
     [InlineData(91)]
@@ -127,7 +117,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.Latitude)));
     }
 
-    /// <summary>Ugyldig lengdegrad avvises.</summary>
     [Theory]
     [InlineData(-181)]
     [InlineData(181)]
@@ -142,7 +131,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.Longitude)));
     }
 
-    /// <summary>Manglende breddegrad avvises.</summary>
     [Fact]
     public void MissingLatitude_ShouldFailValidation()
     {
@@ -155,7 +143,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.Latitude)));
     }
 
-    /// <summary>Manglende lengdegrad avvises.</summary>
     [Fact]
     public void MissingLongitude_ShouldFailValidation()
     {
@@ -168,7 +155,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.Longitude)));
     }
 
-    /// <summary>Ugyldig e-postformat avvises.</summary>
     [Fact]
     public void InvalidEmail_ShouldFailValidation()
     {
@@ -181,7 +167,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.ContactEmail)));
     }
 
-    /// <summary>Gyldig e-postformat godtas.</summary>
     [Fact]
     public void ValidEmail_ShouldPassValidation()
     {
@@ -193,7 +178,6 @@ public class ResourceViewModelTests
         Assert.Empty(results);
     }
 
-    /// <summary>Sluttdato før startdato avvises.</summary>
     [Fact]
     public void AvailableToBeforeAvailableFrom_ShouldFailValidation()
     {
@@ -207,7 +191,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.AvailableTo)));
     }
 
-    /// <summary>En gyldig tilgjengelighetsperiode godtas.</summary>
     [Fact]
     public void ValidAvailabilityPeriod_ShouldPassValidation()
     {
@@ -220,7 +203,6 @@ public class ResourceViewModelTests
         Assert.Empty(results);
     }
 
-    /// <summary>Bildefiler med filtype utenfor de tillatte formatene avvises.</summary>
     [Theory]
     [InlineData("bilde.pdf")]
     [InlineData("bilde.gif")]
@@ -236,7 +218,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.Image)));
     }
 
-    /// <summary>Bildefiler med tillatt filtype godtas.</summary>
     [Theory]
     [InlineData("bilde.jpg")]
     [InlineData("bilde.jpeg")]
@@ -252,7 +233,6 @@ public class ResourceViewModelTests
         Assert.Empty(results);
     }
 
-    /// <summary>Bildefiler over fem megabyte avvises.</summary>
     [Fact]
     public void ImageLargerThan5MB_ShouldFailValidation()
     {
@@ -265,7 +245,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.Image)));
     }
 
-    /// <summary>En bildefil på nøyaktig fem megabyte godtas.</summary>
     [Fact]
     public void ImageExactly5MB_ShouldPassValidation()
     {
@@ -277,7 +256,6 @@ public class ResourceViewModelTests
         Assert.Empty(results);
     }
 
-    /// <summary>Oppretter en simulert bildefil med ønsket navn og størrelse.</summary>
     private static IFormFile CreateImage(string fileName, long size)
     {
         var stream = new MemoryStream();

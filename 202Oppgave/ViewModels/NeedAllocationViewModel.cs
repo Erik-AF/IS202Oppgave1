@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace _202Oppgave.ViewModels;
 
-/// <summary>Samler behov, søkefiltre og valgte ressursforslag for direkte allokering.</summary>
 public class NeedAllocationViewModel
 {
     public string? Q { get; set; }
@@ -23,7 +22,6 @@ public class NeedAllocationViewModel
     public List<NearbyResourceViewModel> Suggestions { get; set; } = new();
 }
 
-/// <summary>Viser et ressursforslag med avstand og kategori.</summary>
 public class NearbyResourceViewModel
 {
     public int Id { get; set; }

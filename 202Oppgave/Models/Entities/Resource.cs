@@ -1,6 +1,6 @@
 ﻿namespace _202Oppgave.Models.Entities
 {
-    /// <summary>Databaseentitet for en ressurs med eier, kategori, tilgjengelighet og allokeringer.</summary>
+    /// Databaseentitet for en ressurs med eier, kategori, tilgjengelighet og allokeringer.
     public class Resource
     {
         public int Id { get; set; }

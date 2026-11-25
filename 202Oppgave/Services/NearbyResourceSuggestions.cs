@@ -3,10 +3,10 @@ using _202Oppgave.ViewModels;
 
 namespace _202Oppgave.Services;
 
-/// <summary>Finner tilgjengelige ressurser innenfor fem kilometer målt som luftlinje.</summary>
+/// Finner tilgjengelige ressurser innenfor fem kilometer målt som luftlinje.
 public static class NearbyResourceSuggestions
 {
-    /// <summary>Returnerer tilgjengelige ressurser innenfor fem kilometer, sortert fra nærmest til lengst unna.</summary>
+    /// Returnerer tilgjengelige ressurser innenfor fem kilometer, sortert fra nærmest til lengst unna.
     public static List<NearbyResourceViewModel> Find(Need need, IEnumerable<Resource> resources)
     {
         if (!ValidPosition(need.Latitude, need.Longitude)) return new();
@@ -27,13 +27,14 @@ public static class NearbyResourceSuggestions
             .ToList();
     }
 
-    /// <summary>Avviser manglende, ikke-endelige eller geografisk ugyldige koordinater.</summary>
+    /// Avviser manglende, ikke-endelige eller geografisk ugyldige koordinater.
     private static bool ValidPosition(double? latitude, double? longitude) =>
         latitude is >= -90 and <= 90 && longitude is >= -180 and <= 180;
 
-    /// <summary>Beregner luftlinje med Haversine i kilometer, ikke kjøreavstand eller avstand til kanten av et område.</summary>
+    /// Beregner luftlinje med Haversine i kilometer, ikke kjøreavstand eller avstand til kanten av et område.
     private static double DistanceKm(double lat1, double lon1, double lat2, double lon2)
     {
+        /// Trigonometrien bruker radianer. Clamp hindrer avrundingsfeil fra å gi ugyldig verdi til Asin.
         const double radians = Math.PI / 180;
         var a = Math.Pow(Math.Sin((lat2 - lat1) * radians / 2), 2)
             + Math.Cos(lat1 * radians) * Math.Cos(lat2 * radians)

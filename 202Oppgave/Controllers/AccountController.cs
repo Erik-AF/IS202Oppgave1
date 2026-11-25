@@ -11,11 +11,9 @@ using System.Text.Encodings.Web;
 
 namespace _202Oppgave.Controllers
 {
-    /// <summary>Håndterer innlogging, registrering og tilbakestilling av passord gjennom Identity.</summary>
     public class AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
     IEmailSender emailSender) : Controller
     {
-        /// <summary>Viser innloggingsskjemaet og bevarer returadressen.</summary>
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
@@ -23,7 +21,6 @@ namespace _202Oppgave.Controllers
             return View(new LoginViewModel { ReturnUrl = returnUrl });
         }
 
-        /// <summary>Viser siden for manglende tilgang.</summary>
         [AllowAnonymous]
         [HttpGet]
         public IActionResult AccessDenied()
@@ -31,7 +28,7 @@ namespace _202Oppgave.Controllers
             return View();
         }
 
-        /// <summary>Validerer innlogging med Identity og omdirigerer bare til en lokal returadresse ved suksess.</summary>
+        /// Validerer innlogging med Identity og omdirigerer bare til en lokal returadresse ved suksess.
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -59,7 +56,6 @@ namespace _202Oppgave.Controllers
             return View(model);
         }
 
-        /// <summary>Avslutter innloggingen og sender brukeren til innloggingssiden.</summary>
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Logout()
@@ -68,7 +64,6 @@ namespace _202Oppgave.Controllers
             return RedirectToAction(nameof(Login));
         }
 
-        /// <summary>Viser registreringsskjemaet.</summary>
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Register()
@@ -76,7 +71,7 @@ namespace _202Oppgave.Controllers
             return View(new RegisterViewModel());
         }
 
-        /// <summary>Oppretter konto som ressursleverandør eller offentlig aktør; kontoen fjernes hvis rolletildelingen feiler.</summary>
+        /// Oppretter konto som ressursleverandør eller offentlig aktør; kontoen fjernes hvis rolletildelingen feiler.
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -130,7 +125,6 @@ namespace _202Oppgave.Controllers
             return View(model);
         }
 
-        /// <summary>Viser skjemaet for forespørsel om passordtilbakestilling.</summary>
         [AllowAnonymous]
         [HttpGet]
         public IActionResult ForgotPassword()
@@ -138,7 +132,7 @@ namespace _202Oppgave.Controllers
             return View(new ForgotPasswordViewModel());
         }
 
-        /// <summary>Genererer en tilbakestillingslenke for bekreftede kontoer; samme bekreftelse vises uansett om kontoen finnes.</summary>
+        /// Genererer en tilbakestillingslenke for bekreftede kontoer; samme bekreftelse vises uansett om kontoen finnes.
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
@@ -169,7 +163,7 @@ namespace _202Oppgave.Controllers
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
         }
 
-        /// <summary>Viser generell bekreftelse uten å avsløre om e-postadressen er registrert.</summary>
+        /// Viser generell bekreftelse uten å avsløre om e-postadressen er registrert.
         [AllowAnonymous]
         [HttpGet]
         public IActionResult ForgotPasswordConfirmation()
@@ -177,7 +171,6 @@ namespace _202Oppgave.Controllers
             return View();
         }
 
-        /// <summary>Viser skjemaet når både kode og e-post er oppgitt.</summary>
         [AllowAnonymous]
         [HttpGet]
         public IActionResult ResetPassword(string? code = null, string? email = null)
@@ -190,7 +183,7 @@ namespace _202Oppgave.Controllers
             return View(new ResetPasswordViewModel { Code = code, Email = email });
         }
 
-        /// <summary>Dekoder tilbakestillingskoden og lar Identity validere koden og endre passordet.</summary>
+        /// Dekoder tilbakestillingskoden og lar Identity validere koden og endre passordet.
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
@@ -231,7 +224,6 @@ namespace _202Oppgave.Controllers
             return View(model);
         }
 
-        /// <summary>Viser bekreftelsen etter behandling av passordtilbakestilling.</summary>
         [AllowAnonymous]
         [HttpGet]
         public IActionResult ResetPasswordConfirmation()
@@ -239,7 +231,7 @@ namespace _202Oppgave.Controllers
             return View();
         }
 
-        /// <summary>Tillater bare lokale returadresser for å hindre omdirigering til eksterne nettsteder.</summary>
+        /// Tillater bare lokale returadresser for å hindre omdirigering til eksterne nettsteder.
         private IActionResult RedirectToLocalUrl(string? returnUrl)
         {
             return Url.IsLocalUrl(returnUrl) ? Redirect(returnUrl) : RedirectToAction("Index", "Home")!;

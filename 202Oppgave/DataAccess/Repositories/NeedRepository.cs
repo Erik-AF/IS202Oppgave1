@@ -2,40 +2,36 @@
 using _202Oppgave.Models.Entities;
 namespace _202Oppgave.DataAccess.Repositories
 {
-    /// <summary>Lagrer behov gjennom EF Core og frigjør tilknyttede ressurser ved sletting.</summary>
+    /// Lagrer behov gjennom EF Core og frigjør tilknyttede ressurser ved sletting.
     public class NeedRepository : INeedRepository
     {
         private readonly ApplicationDbContext _context;
 
-        /// <summary>Mottar avhengighetene som NeedRepository bruker.</summary>
         public NeedRepository(ApplicationDbContext context)
         {
             _context = context;
         }
-        /// <inheritdoc />
+        /// async lar metoden avvente databasearbeid uten å blokkere forespørselstråden.
+        /// await sikrer at lagringen er ferdig før metoden fullføres; Task representerer arbeidet.
         public async Task AddAsync(Need need)
         {
             await _context.Needs.AddAsync(need);
             await _context.SaveChangesAsync();
         }
-        /// <inheritdoc />
         public async Task<List<Need>> GetAllAsync()
         {
             return await _context.Needs.ToListAsync();
         }
-        /// <inheritdoc />
         public async Task<Need?> GetByIdAsync(int id)
         {
             return await _context.Needs
                 .FirstOrDefaultAsync(n => n.Id == id);
         }
-        /// <inheritdoc />
         public async Task UpdateAsync(Need need)
         {
             _context.Needs.Update(need);
             await _context.SaveChangesAsync();
         }
-        /// <inheritdoc />
         public async Task DeleteAsync(int id)
         {
             var need = await GetByIdAsync(id);
@@ -43,6 +39,7 @@ namespace _202Oppgave.DataAccess.Repositories
             if (need != null)
             {
 
+                /// Frigjør bare ressurser uten koblinger til andre behov. Allokeringene slettes via cascade.
                 var resources = await _context.Resources
                     .Where(r => r.Allocations.Any(a => a.NeedId == id)
                         && !r.Allocations.Any(a => a.NeedId != id))
