@@ -45,6 +45,29 @@ public class ResourceControllerTests
             return Task.FromResult(
                 Resources.Where(r => r.UserId == userId).ToList());
         }
+        
+        
+        // Bildene lagres i en liste i stedet for i databasen
+        public List<ResourceImage> Images { get; } = new();
+
+        public Task<ResourceImage?> GetImageAsync(int resourceId)
+        {
+            return Task.FromResult(
+                Images.FirstOrDefault(i => i.ResourceId == resourceId));
+        }
+
+        public Task SaveImageAsync(int resourceId, byte[] data, string contentType)
+        {
+            // Samme regel som i databasen: én ressurs, ett bilde
+            Images.RemoveAll(i => i.ResourceId == resourceId);
+            Images.Add(new ResourceImage
+            {
+                ResourceId = resourceId,
+                Data = data,
+                ContentType = contentType
+            });
+            return Task.CompletedTask;
+        }
 
         public Task DeleteAsync(int id)
         {
@@ -329,5 +352,76 @@ public async Task Delete_NonExistingResource_ShouldReturnNotFound()
 
     Assert.IsType<NotFoundResult>(result);
 }
+
+
+    // ---------- Bilder i databasen ----------
+
+    // Lager et testbilde som om brukeren hadde lastet det opp
+    private static IFormFile CreateTestImage()
+    {
+        var bytes = new byte[] { 1, 2, 3, 4 };
+        return new FormFile(new MemoryStream(bytes), 0, bytes.Length, "Image", "test.jpg")
+        {
+            Headers = new HeaderDictionary(),
+            ContentType = "image/jpeg"
+        };
+    }
+
+    [Fact]
+    public async Task Create_WithImage_ShouldSaveImageInDatabase()
+    {
+        var repository = new FakeResourceRepository();
+        var controller = CreateLoggedInController(repository);
+
+        var model = new ResourceViewModel
+        {
+            Type = "Generator",
+            Area = "Kristiansand",
+            Latitude = 58.1467,
+            Longitude = 7.9956,
+            ContactName = "Testperson",
+            ContactPhone = "12345678",
+            CategoryId = 1,
+            Image = CreateTestImage()
+        };
+
+        await controller.Create(model);
+
+        var saved = Assert.Single(repository.Resources);
+        var image = Assert.Single(repository.Images);
+
+        // Bildet hører til ressursen, og har riktig innhold og type
+        Assert.Equal(saved.Id, image.ResourceId);
+        Assert.Equal(new byte[] { 1, 2, 3, 4 }, image.Data);
+        Assert.Equal("image/jpeg", image.ContentType);
+
+        // Ressursen viser til adressen som henter bildet fra databasen
+        Assert.Equal($"/Resource/Image/{saved.Id}", saved.ImagePath);
+    }
+
+    [Fact]
+    public async Task Image_Existing_ShouldReturnFile()
+    {
+        var repository = new FakeResourceRepository();
+        await repository.SaveImageAsync(1, new byte[] { 9, 8, 7 }, "image/png");
+
+        var controller = new ResourceController(repository, null!);
+
+        var result = await controller.Image(1);
+
+        var file = Assert.IsType<FileContentResult>(result);
+        Assert.Equal("image/png", file.ContentType);
+        Assert.Equal(new byte[] { 9, 8, 7 }, file.FileContents);
+    }
+
+    [Fact]
+    public async Task Image_Missing_ShouldReturnNotFound()
+    {
+        var controller = new ResourceController(new FakeResourceRepository(), null!);
+
+        var result = await controller.Image(999);
+
+        Assert.IsType<NotFoundResult>(result);
+    }
 
 }

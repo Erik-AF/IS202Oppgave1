@@ -465,6 +465,34 @@ namespace _202Oppgave.Migrations
                     b.ToTable("Resources");
                 });
 
+            modelBuilder.Entity("_202Oppgave.Models.Entities.ResourceImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("longblob");
+
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResourceId")
+                        .IsUnique();
+
+                    b.ToTable("ResourceImages");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -562,6 +590,17 @@ namespace _202Oppgave.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("_202Oppgave.Models.Entities.ResourceImage", b =>
+                {
+                    b.HasOne("_202Oppgave.Models.Entities.Resource", "Resource")
+                        .WithOne("Image")
+                        .HasForeignKey("_202Oppgave.Models.Entities.ResourceImage", "ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+                });
+
             modelBuilder.Entity("_202Oppgave.Models.Entities.Category", b =>
                 {
                     b.Navigation("Resources");
@@ -575,6 +614,8 @@ namespace _202Oppgave.Migrations
             modelBuilder.Entity("_202Oppgave.Models.Entities.Resource", b =>
                 {
                     b.Navigation("Allocations");
+
+                    b.Navigation("Image");
                 });
 #pragma warning restore 612, 618
         }
