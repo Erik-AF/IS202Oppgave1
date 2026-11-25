@@ -63,7 +63,6 @@ During development, Windows Smart App Control (SAC) blocked locally compiled .NE
 
 1. Start Docker Desktop.
 2. Open a terminal in the repository root, where `compose.yaml` is located.
-3. If the Compose configuration uses database environment variables, copy `.env.example` to `.env` and configure the local database passwords. If no example file is provided, create `.env` with `DB_ROOT_PASSWORD` and `DB_PASSWORD` set to local development passwords. Do not commit `.env`.
 4. Run:
 
    ```bash
