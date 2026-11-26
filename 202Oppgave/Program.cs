@@ -5,6 +5,7 @@ using _202Oppgave.Models.Entities;
 using _202Oppgave.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,8 +13,10 @@ var builder = WebApplication.CreateBuilder(args);
 ///Fjernet pga smart kontroller problem
 ///builder.AddServiceDefaults();
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// CSRF-beskyttelse på alle POST-er i hele appen (som i Espens Program.cs).
+// Sjekker tokenet på POST, PUT, PATCH og DELETE, men ikke på GET.
+builder.Services.AddControllersWithViews(o =>
+    o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
 // Register repository
 builder.Services.AddScoped<_202Oppgave.DataAccess.Repositories.IResourceRepository, _202Oppgave.DataAccess.Repositories.ResourceRepository>();
