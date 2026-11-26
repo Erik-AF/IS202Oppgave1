@@ -1,74 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
-using _202Oppgave.ViewModels;
-
 namespace _202Oppgave.Controllers;
 
 /// Viser kartoversikten, håndterer separate kartpunkter i minnet og slår opp adresser hos Kartverket.
 public class KartController : Controller
 {
-
-    private static readonly List<KartPunktViewModel> _punkter = new()
-    {
-        new KartPunktViewModel
-        {
-            Id = 1,
-            Kategori = "behov",
-            Type = "Drikkevann",
-            Latitude = 58.1467,
-            Longitude = 7.9956,
-            Prioritet = "Akutt",
-            Status = "Registrert",
-            Kontaktpunkt = "Kristiansand kommune",
-            Beskrivelse = "Behov for drikkevann i sentrum."
-        }
-    };
-
-    [HttpGet]
-    public IActionResult Index()
-    {
-        return View(new RegistrerPunktViewModel());
-    }
-
-    /// Legger kartpunktet i en minneliste som nullstilles ved omstart, og omdirigerer til oversikten.
-    [HttpPost]
-    public IActionResult Index(RegistrerPunktViewModel model)
-    {
-        if (model.Latitude == null || model.Longitude == null)
-        {
-
-            ModelState.AddModelError("", "Du må velge et punkt på kartet.");
-            return View(model);
-        }
-        _punkter.Add(new KartPunktViewModel
-        {
-            Id = _punkter.Count + 1,
-            Kategori = model.Kategori,
-            Type = model.Type,
-            Latitude = model.Latitude.Value,
-            Longitude = model.Longitude.Value,
-            Prioritet = "Ikke satt",
-            Status = "Registrert",
-            Kontaktpunkt = "Ikke satt",
-            Beskrivelse = model.Beskrivelse
-        });
-
-        return RedirectToAction(nameof(Oversikt));
-    }
-
-    /// Viser kartoversikten som henter kartpunkter, behov og ressurser fra separate JSON-endepunkter.
     [HttpGet]
     public IActionResult Oversikt()
     {
         return View();
     }
-
-    /// Returnerer punktene fra minnelisten. Behov og ressurser i databasen har egne kartendepunkter.
-    [HttpGet]
-    public IActionResult Data()
-    {
-        return Json(_punkter);
-    }
-
     private static readonly System.Net.Http.HttpClient AddressClient = new()
     {
         Timeout = TimeSpan.FromSeconds(10)

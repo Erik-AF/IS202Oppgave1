@@ -644,7 +644,7 @@
             }
         }
 
-        loadPoints('@Url.Action("Data", "Kart")', needLayer, p => p, null);
+        // Beholder eksempeldataene, og lar avkrysningen skjule behovene også her.
         loadPoints('@Url.Action("Geo", "Resource")', resourceLayer,
             r => ({ ...r, kategori: 'ressurs' }), '@Url.Action("Details", "Resource")');
         loadPoints('@Url.Action("Geo", "Need")', needLayer,

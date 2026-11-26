@@ -1,6 +1,6 @@
-# CrisisSystem — Group 7
+# Koordinert — Group 7
 
-CrisisSystem is an ASP.NET Core MVC web application developed by **Group 7** at the University of Agder. It supports coordination between public actors and resource providers during crises by showing needs, available resources and geographical locations.
+Koordinert is an ASP.NET Core MVC web application developed by **Group 7** at the University of Agder. It supports coordination between public actors and resource providers during crises by showing needs, available resources and geographical locations.
 
 ## Group 7 — Team Members
 
@@ -63,7 +63,6 @@ During development, Windows Smart App Control (SAC) blocked locally compiled .NE
 
 1. Start Docker Desktop.
 2. Open a terminal in the repository root, where `compose.yaml` is located.
-3. If the Compose configuration uses database environment variables, copy `.env.example` to `.env` and configure the local database passwords. If no example file is provided, create `.env` with `DB_ROOT_PASSWORD` and `DB_PASSWORD` set to local development passwords. Do not commit `.env`.
 4. Run:
 
    ```bash
@@ -152,7 +151,7 @@ Docker Compose uses a MariaDB health check and a lightweight Alpine Linux initia
 
 The Aspire AppHost also defines named volumes for database records and uploaded resource images.
 
-The system supports direct allocation and provider offers that must be approved by the need's authorized owner or an admin. The main map reads persisted resources and needs through JSON endpoints. A separate legacy map demo still uses an in-memory list.
+The system supports direct allocation and provider offers that must be approved by the need's authorized owner or an admin. The main map reads persisted resources and needs through JSON endpoints. All resource and need locations are stored in MariaDB. The map retrieves geographical data exclusively trough the /Resource/Geo and /Need/Geo endpoints.. AppHost does not explicitly define a named MariaDB data volume.
 
 See [System Architecture](SystemArchitecture.md) for the component diagram, data relationships, access control, request flows and current storage limitations.
 

@@ -37,6 +37,13 @@ Hvert testscenario dokumenteres med forutsetninger, teststeg, forventet resultat
 |---|---|---|---|---|---|---|---|
 | MAP-01 | Velge punkt i kart under registrering | Bruker er på registreringsskjema | 1. Klikk et punkt i kartet | Koordinater fylles automatisk inn i skjema | Koordinater fylles inn automatisk utifra hvor bruker trykker på kartet | Bestått | |
 | MAP-02 | Se registrerte ressurser/behov på kart | Minst én ressurs og ett behov er registrert | 1. Gå til Kart-siden | Riktig fargekode vises per type (rød/gul/grønn/blå) | Riktig fargekode vises per type | Bestått | |
+| MAP-03 | Registrere ressurs med koordinater | Innlogget som Resource Provider | Registrer ressurs med kartposisjon | Ressursen lagres i MariaDB og vises på kartet | | Ikke testet | |
+| MAP-04 | Registrere behov med koordinater | Innlogget som Public Actor | Registrer behov med kartposisjon | Behovet lagres i MariaDB og vises på kartet | | Ikke testet | |
+| MAP-05 | Redigere kartposisjon | Ressurs og behov er registrert | Endre kartposisjon | Kartet viser oppdaterte posisjoner | | Ikke testet | |
+| MAP-06 | Slette kartpunkter | Ressurs og behov er registrert | Slett ressurs og behov | Kartpunktene forsvinner | | Ikke testet | |
+| MAP-07 | Permanent lagring | Ressurs og behov er registrert | Start applikasjonen på nytt | Kartpunktene beholdes | | Ikke testet | |
+| MAP-08 | Autorisering | Brukere med forskjellige roller | Kontroller tilgang og synlighet | Eksisterende tilgangsregler opprettholdes | | Ikke testet | |
+| MAP-09 | Automatisert testing | Endringene er implementert | Kjør dotnet test | Alle tester består | 94 av 94 tester bestod | Bestått | |
 
 ## Frontend / UI (Sarah og Emma)
 
@@ -74,9 +81,8 @@ Hvert testscenario dokumenteres med forutsetninger, teststeg, forventet resultat
 |---|---|---|---|---|
 | Resource | 9 | 3 | 0 | |
 | Need | 1 | 1 | 0 | |
-| Kart | 2 | 2 | 0 | |
+| Kart | 9 | 3 | 0 | |
 | Frontend / UI | 4 | 3 | 0 | |
 | Informasjonssider | 7 | 7 | 0 | |
 | Autentisering | 2 | 0 | 0 | |
-| **Totalt** | **25** | **16** | **0** | |
-
+| **Totalt** | **32** | **17** | **0** | |
