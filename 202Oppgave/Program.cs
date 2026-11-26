@@ -1,17 +1,16 @@
 
-using _202Oppgave.Models.Entities;
-
-using Microsoft.EntityFrameworkCore;
 using _202Oppgave.DataAccess;
 using _202Oppgave.DataAccess.Repositories;
-using Microsoft.AspNetCore.Identity;
-using _202Oppgave.Models.Authorization;
+using _202Oppgave.Models.Entities;
 using _202Oppgave.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
+///Fjernet pga smart kontroller problem
+///builder.AddServiceDefaults();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -91,7 +90,7 @@ using (var scope = app.Services.CreateScope())
     await IdentitySeeder.SeedRolesAsync(roleManager);
 
 
-    
+
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
     var adminPassword = "!blueSideGromp1";
@@ -103,7 +102,8 @@ using (var scope = app.Services.CreateScope())
     await IdentitySeeder.SeedDevelopmentPublicActorAsync(userManager, publicPassword);
 }
 
-app.MapDefaultEndpoints();
+///Fjernet pga smart kontroller problem
+//app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

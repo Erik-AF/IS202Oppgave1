@@ -14,10 +14,15 @@ public interface IResourceRepository
     Task<List<Resource>> GetAllAsync();
 
     // Hent én ressurs basert på ID
-    Task<Resource?> GetByIdAsync(int id);
+    Task<Resource?> GetByIdAsync(int id);   
     
-    // Hent alle ressurser som en bestemt bruker har registrert
     Task<List<Resource>> GetByUserIdAsync(string userId);
+
+    // Hent bildet til en ressurs. Null hvis ressursen ikke har bilde i databasen.
+    Task<ResourceImage?> GetImageAsync(int resourceId);
+
+    // Lagre bildet til en ressurs. Har den bilde fra før, byttes det ut.
+    Task SaveImageAsync(int resourceId, byte[] data, string contentType);
 
     // Slett en ressurs
     Task DeleteAsync(int id);

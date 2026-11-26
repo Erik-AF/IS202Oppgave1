@@ -52,6 +52,35 @@ public class ResourceRepository : IResourceRepository
             .OrderByDescending(r => r.Id)
             .ToListAsync();
     }
+    
+    
+    // Hent bildet til en ressurs.
+    // AsNoTracking: vi skal bare lese bildet, ikke endre det.
+    public async Task<ResourceImage?> GetImageAsync(int resourceId)
+    {
+        return await _context.ResourceImages
+            .AsNoTracking()
+            .FirstOrDefaultAsync(i => i.ResourceId == resourceId);
+    }
+
+    // Lagre bildet. Finnes det et bilde fra før, oppdateres det i stedet for å lage en ny rad.
+    // Det passer med den unike indeksen: én ressurs, ett bilde.
+    public async Task SaveImageAsync(int resourceId, byte[] data, string contentType)
+    {
+        var image = await _context.ResourceImages
+            .FirstOrDefaultAsync(i => i.ResourceId == resourceId);
+
+        if (image == null)
+        {
+            image = new ResourceImage { ResourceId = resourceId };
+            _context.ResourceImages.Add(image);
+        }
+
+        image.Data = data;
+        image.ContentType = contentType;
+
+        await _context.SaveChangesAsync();
+    }
 
     // Slett ressurs
     public async Task DeleteAsync(int id)

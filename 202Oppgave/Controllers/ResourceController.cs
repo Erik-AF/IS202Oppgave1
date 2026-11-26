@@ -173,21 +173,39 @@ public class ResourceController : Controller
 
         };
 
-        // Lagrer bildet på disk hvis brukeren har valgt et
+        //Lagrer ressursen i MariaDB først, så den får en Id
+        await _repo.AddAsync(resource);
+
+        // Lagrer bildet i databasen hvis brukeren har valgt et.
+        // Bildet trenger ressursens Id, derfor skjer dette etter AddAsync.
         if (model.Image != null)
         {
-            resource.ImagePath = await SaveImageAsync(model.Image);
+            resource.ImagePath = await SaveImageAsync(resource.Id, model.Image);
+            await _repo.UpdateAsync(resource);
         }
-        
-        //Lagrer ressursen i MariaDB
-        await _repo.AddAsync(resource);
 
         // Sender brukeren til detaljsiden
         return RedirectToAction(
             nameof(Details),
             new { id = resource.Id });
     }
+    
+    // GET: /Resource/Image/5
+    // Henter bildet til en ressurs fra databasen og sender det til nettleseren.
+    // Alle innloggede kan se bildene.
+    [Authorize]
+    public async Task<IActionResult> Image(int id)
+    {
+        var image = await _repo.GetImageAsync(id);
 
+        if (image == null)
+        {
+            return NotFound();
+        }
+
+        // File() sender bytes med riktig bildetype, så nettleseren viser det som et bilde
+        return File(image.Data, image.ContentType);
+    }
 
     // GET: /Resource/Details/5
     // Henter én ressurs fra MariaDB
@@ -390,8 +408,9 @@ public class ResourceController : Controller
         // Ikke valgt: behold bildet som allerede er lagret.
         if (model.Image != null)
         {
+            // Fjerner eventuell gammel bildefil fra disk (eldre ressurser)
             DeleteImage(entity.ImagePath);
-            entity.ImagePath = await SaveImageAsync(model.Image);
+            entity.ImagePath = await SaveImageAsync(id, model.Image);
         }
 
         // Kopier verdiene fra skjemaet over i ressursen
@@ -411,23 +430,18 @@ public class ResourceController : Controller
 
         return RedirectToAction(nameof(Details), new { id });
     }
-    // Lagrer et opplastet bilde i wwwroot/uploads/ressurser.
-    // Filen får et tilfeldig navn (Guid), så to bilder med samme navn
-    // ikke overskriver hverandre.
-    // Returnerer stien som lagres i databasen.
-    private async Task<string> SaveImageAsync(IFormFile image)
+    // Lagrer et opplastet bilde i databasen (tabellen ResourceImages).
+    // Returnerer adressen bildet vises fra, som lagres i ImagePath.
+    private async Task<string> SaveImageAsync(int resourceId, IFormFile image)
     {
-        var folder = Path.Combine(_env.WebRootPath, UploadFolder);
-        Directory.CreateDirectory(folder); // lager mappen første gang
+        // Leser bildet inn i minnet som bytes
+        using var memory = new MemoryStream();
+        await image.CopyToAsync(memory);
 
-        var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
-        var fileName = $"{Guid.NewGuid()}{extension}";
-        var fullPath = Path.Combine(folder, fileName);
+        await _repo.SaveImageAsync(resourceId, memory.ToArray(), image.ContentType);
 
-        await using var stream = new FileStream(fullPath, FileMode.Create);
-        await image.CopyToAsync(stream);
-
-        return $"/{UploadFolder}/{fileName}";
+        // Image-actionen under henter bildet fra databasen
+        return $"/Resource/Image/{resourceId}";
     }
     
     // Sletter et opplastet bilde fra disk.

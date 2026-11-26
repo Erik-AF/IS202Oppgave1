@@ -17,7 +17,7 @@ CrisisSystem is an ASP.NET Core MVC web application developed by **Group 7** at 
 
 ## Project Goal
 
-The goal is to make crisis coordination easier by allowing public actors to register needs, resource providers to register available resources, and users to view relevant locations on a map. The project uses ASP.NET Core MVC and is run using .NET Aspire and Docker.
+The goal is to make crisis coordination easier by allowing public actors to register needs, resource providers to register available resources, and users to view relevant locations on a map. The project uses ASP.NET Core MVC, MariaDB and Docker. It can be started using Docker Compose or .NET Aspire.
 
 ## Project Requirements
 
@@ -39,11 +39,9 @@ The application is developed according to the requirements of the assignment.
 
 ### Prerequisites
 
-Before running the project, make sure the following software is installed:
-
 - Git
-- Docker
-- .NET SDK
+- Docker Desktop (Linux containers and Docker Compose)
+- .NET 10 SDK (required for .NET Aspire)
 
 ### Clone the repository
 
@@ -54,19 +52,72 @@ cd IS202Oppgave1
 
 ### Running the application
 
-1. Make sure Docker Desktop is running.
-2. Start the AppHost project from the root folder:
+| Operating system | Recommended startup method |
+|---|---|
+| Windows | Docker Compose |
+| macOS | .NET Aspire (Docker Compose is also an option) |
+
+#### Option 1 — Docker Compose (recommended for Windows)
+
+During development, Windows Smart App Control (SAC) blocked locally compiled .NET assemblies on some Windows machines. Docker Compose builds and runs the application inside Linux containers, avoiding the need to run these assemblies directly on Windows. Disabling Smart App Control is not required.
+
+1. Start Docker Desktop.
+2. Open a terminal in the repository root, where `compose.yaml` is located.
+3. If the Compose configuration uses database environment variables, copy `.env.example` to `.env` and configure the local database passwords. If no example file is provided, create `.env` with `DB_ROOT_PASSWORD` and `DB_PASSWORD` set to local development passwords. Do not commit `.env`.
+4. Run:
+
+   ```bash
+   docker compose up --build
+   ```
+
+   To run in the background instead:
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+5. Wait for MariaDB and the web application to start, then open [http://localhost:5027](http://localhost:5027).
+
+Docker Compose builds the MVC application using the existing Dockerfile, waits for MariaDB to become healthy, and initializes file ownership for the Data Protection volume. EF Core applies database migrations at application startup.
+
+Check container status or application logs:
+
+```bash
+docker compose ps
+docker compose logs oppgave202
+```
+
+Stop the application:
+
+```bash
+docker compose down
+```
+
+**Important:** Do not use `docker compose down -v` unless you intentionally want to delete the database, uploaded images and Data Protection keys.
+
+#### Option 2 — .NET Aspire (recommended for macOS)
+
+1. Start Docker Desktop.
+2. Open a terminal in the repository root and run:
 
    ```bash
    dotnet run --project IS202Oppgave11.AppHost
    ```
 
    Alternatively, open the solution in Rider and run `IS202Oppgave11.AppHost`.
-3. Open the web application at `http://localhost:5027`, or click the endpoint for `Oppgave202` in the Aspire dashboard.
+3. Open [http://localhost:5027](http://localhost:5027), or click the endpoint for `Oppgave202` in the Aspire dashboard.
+
+Windows users who do not experience Smart App Control issues may also use this method.
+
+### Important notes
+
+- Both methods use the same application code, database engine and database schema.
+- Docker Compose and Aspire may use separate Docker volumes, so existing data is not necessarily shared between the two methods.
+- Do not run both methods simultaneously because they use the same application port (5027).
 
 ## Default / Example Users
 
-No default user accounts or login credentials are documented in the current project README. Add confirmed demo accounts here if authentication is implemented. Do **not** commit real passwords or secrets.
+The following demo accounts are intended for local development and manual testing only. Do **not** reuse these passwords in production or commit real passwords or secrets.
 
 | User type | Example use | User Name | Password |
 |---|---|---|---|
@@ -75,7 +126,7 @@ No default user accounts or login credentials are documented in the current proj
 | Admin | Can do All | admin@example.com |!blueSideGromp1 |
 ## Test Data — Available Resources
 
-A proposed sample dataset is provided in [Testdata — Available Resources](Testscenarioer.md) for development and manual testing. These are **example records**, not confirmed preloaded resources in the running application. The current README describes temporary in-memory map-point storage; database persistence is planned.
+A proposed sample dataset is provided in [Testdata — Available Resources](Testscenarioer.md) for development and manual testing. These are **example records**, not confirmed preloaded resources in the running application.
 
 ## System Architecture
 
@@ -87,7 +138,19 @@ Browser (Razor HTML, CSS, JavaScript and Leaflet)
     -> ApplicationDbContext -> MariaDB
 ```
 
-**.NET Aspire AppHost** starts the web application and MariaDB in Docker. Resource photos are stored in the named Docker volume `ressursbilder`; the database stores their paths. EF Core migrations are applied when the application starts.
+Both **Docker Compose** and **.NET Aspire AppHost** start the web application and MariaDB in Docker using the existing Dockerfile. EF Core migrations are applied when the application starts.
+
+### Persistent Storage
+
+| Docker Compose volume | Purpose |
+|---|---|
+| `mariadb-data` | Database records and user accounts |
+| `ressursbilder` | Uploaded resource photos (their paths are stored in the database) |
+| `dataprotection-keys` | ASP.NET Core Data Protection keys used for authentication cookies and security tokens |
+
+Docker Compose uses a MariaDB health check and a lightweight Alpine Linux initialization container (`init-permissions`) to set file ownership for the Data Protection volume before the MVC application starts. This avoids manual permission changes on newly created volumes.
+
+The Aspire AppHost also defines named volumes for database records and uploaded resource images.
 
 The system supports direct allocation and provider offers that must be approved by the need's authorized owner or an admin. The main map reads persisted resources and needs through JSON endpoints. All resource and need locations are stored in MariaDB. The map retrieves geographical data exclusively trough the /Resource/Geo and /Need/Geo endpoints.. AppHost does not explicitly define a named MariaDB data volume.
 
@@ -106,7 +169,9 @@ IS202Oppgave1/
 │   └── Dockerfile
 ├── IS202Oppgave11.AppHost/          # .NET Aspire orchestration
 ├── IS202Oppgave11.ServiceDefaults/  # Shared Aspire configuration
+├── compose.yaml                    # Docker Compose orchestration
 ├── README.md
+├── SystemArchitecture.md
 └── Testscenarioer.md
 ```
 

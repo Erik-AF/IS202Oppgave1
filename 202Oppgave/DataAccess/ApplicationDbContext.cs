@@ -20,6 +20,9 @@ namespace _202Oppgave.DataAccess
         
         public DbSet<Allocation> Allocations { get; set; }
 
+        // Bildene til ressursene, i egen tabell
+        public DbSet<ResourceImage> ResourceImages { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -49,6 +52,20 @@ namespace _202Oppgave.DataAccess
                     .WithMany(c => c.Resources)
                     .HasForeignKey(e => e.CategoryId)
                     .OnDelete(DeleteBehavior.SetNull);
+            });
+            
+            modelBuilder.Entity<ResourceImage>(entity =>
+            {
+                entity.HasKey(i => i.Id);
+                entity.Property(i => i.Data).IsRequired();
+                entity.Property(i => i.ContentType).HasMaxLength(100).IsRequired();
+
+                // Én ressurs har ett bilde.
+                // Cascade: slettes ressursen, slettes bildet automatisk også.
+                entity.HasOne(i => i.Resource)
+                    .WithOne(r => r.Image)
+                    .HasForeignKey<ResourceImage>(i => i.ResourceId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
             
                         modelBuilder.Entity<Category>(entity =>
