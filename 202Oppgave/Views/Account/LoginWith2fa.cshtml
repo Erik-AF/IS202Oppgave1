@@ -1,0 +1,90 @@
+﻿@model _202Oppgave.ViewModels.Account.LoginWith2faViewModel
+
+@{
+    ViewData["Title"] = "Tofaktorautentisering";
+}
+
+<section class="auth-card auth-card--login"
+         aria-labelledby="auth-title">
+
+    <div class="auth-heading">
+
+        <p class="auth-eyebrow">SIKKER INNLOGGING</p>
+
+        <h1 id="auth-title">Tofaktorautentisering</h1>
+
+        <p>
+            Åpne autentiseringsappen din og skriv inn
+            den sekssifrede sikkerhetskoden.
+        </p>
+
+    </div>
+
+    <form asp-controller="Account"
+          asp-action="LoginWith2fa"
+          method="post">
+
+        <input asp-for="ReturnUrl" type="hidden" />
+        <input asp-for="RememberMe" type="hidden" />
+
+        <div asp-validation-summary="ModelOnly"
+             class="auth-validation"
+             role="alert">
+        </div>
+
+        <div class="auth-field">
+
+            <label asp-for="Code"></label>
+
+            <div class="auth-input-wrap">
+
+                <input asp-for="Code"
+                       type="text"
+                       inputmode="numeric"
+                       autocomplete="one-time-code"
+                       maxlength="6"
+                       placeholder="000000"
+                       autofocus />
+
+            </div>
+
+            <span asp-validation-for="Code"
+                  class="auth-validation">
+            </span>
+
+        </div>
+
+        <button type="submit" class="auth-submit">
+            Bekreft og logg inn
+        </button>
+
+    </form>
+
+    <div class="auth-bottom">
+
+        <a asp-controller="Account"
+           asp-action="LoginWithRecoveryCode"
+           asp-route-returnUrl="@Model.ReturnUrl">
+
+            Bruk gjenopprettingskode
+
+        </a>
+
+    </div>
+
+    <div class="auth-bottom">
+
+        <a asp-controller="Account"
+           asp-action="Login">
+
+            Tilbake til innlogging
+
+        </a>
+
+    </div>
+
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

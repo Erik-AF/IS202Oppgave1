@@ -1,0 +1,69 @@
+﻿@model _202Oppgave.ViewModels.Account.RecoveryCodesViewModel
+
+@{
+    ViewData["Title"] = "Gjenopprettingskoder";
+}
+
+<section class="auth-card">
+
+    <div class="auth-heading">
+
+        <p class="auth-eyebrow">SIKKERHET</p>
+
+        <h1>Gjenopprettingskoder</h1>
+
+        <p>
+            Oppbevar disse kodene på et sikkert sted.
+        </p>
+
+    </div>
+
+    @if (ViewData["SecurityWarning"] is string warning)
+    {
+        <div class="alert alert-warning">
+            @warning
+        </div>
+    }
+
+    <div class="alert alert-success">
+
+        Tofaktorautentisering er aktivert.
+
+    </div>
+
+    <div class="alert alert-warning">
+
+        Hvis du mister tilgang til autentiseringsappen,
+        kan du bruke en av disse kodene.
+
+        Hver kode kan bare brukes én gang.
+
+    </div>
+
+    <div class="row text-center my-4">
+
+        @foreach (var code in Model.RecoveryCodes)
+        {
+            <div class="col-6 mb-3">
+
+                <code>@code</code>
+
+            </div>
+        }
+
+    </div>
+
+    <p>
+        Kodene vises bare nå. Lagre dem i en
+        passordbehandler eller på et annet sikkert sted.
+    </p>
+
+    <a asp-controller="Account"
+       asp-action="Login"
+       class="btn btn-primary w-100">
+
+        Fortsett til innlogging
+
+    </a>
+
+</section>

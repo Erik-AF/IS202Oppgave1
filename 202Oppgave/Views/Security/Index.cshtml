@@ -1,0 +1,83 @@
+﻿@model _202Oppgave.ViewModels.Account.TwoFactorViewModel
+
+@{
+    ViewData["Title"] = "Sikkerhetsinnstillinger";
+}
+
+<section class="provider-profile">
+
+    <div class="container">
+
+        <div class="provider-profile-header">
+
+            <p class="provider-page-eyebrow">MIN SIDE</p>
+
+            <h1>Sikkerhetsinnstillinger</h1>
+            @if (Model.Is2faRequired)
+            {
+                <div class="alert alert-info">
+
+                    Tofaktorautentisering er obligatorisk
+                    for din brukertype.
+
+                </div>
+            }
+
+            <p class="provider-page-intro">
+                Administrer sikkerheten til brukerkontoen din.
+            </p>
+
+        </div>
+
+        <div class="provider-page-card">
+
+            <h2>Tofaktorautentisering</h2>
+
+            <p>
+                Beskytt kontoen din med et ekstra sikkerhetslag
+                ved hjelp av en autentiseringsapp.
+            </p>
+
+            @if (Model.Is2faEnabled)
+            {
+                <div class="alert alert-success">
+                    Tofaktorautentisering er aktivert.
+                </div>
+
+                <h3>Gjenopprettingskoder</h3>
+
+                <p>
+                    Du har @Model.RecoveryCodesLeft
+                    ubrukte gjenopprettingskoder.
+                </p>
+
+                @if (Model.RecoveryCodesLeft == 0)
+                {
+                    <div class="alert alert-warning">
+                        Du har ingen gjenopprettingskoder igjen.
+                    </div>
+                }
+
+                <a asp-controller="Security"asp-action="GenerateRecoveryCodes"class="btn btn-outline-primary">Generer nye gjenopprettingskoder</a>
+
+                @if (!Model.Is2faRequired)
+                {
+                    <hr />
+
+                    <a asp-controller="Security"asp-action="Disable2fa"class="btn btn-outline-danger">Deaktiver tofaktorautentisering</a>
+                }
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    Tofaktorautentisering er ikke aktivert.
+                </div>
+
+                <a asp-controller="Security" asp-action="StartAuthenticator"class="btn btn-primary">Aktiver tofaktorautentisering</a>
+            }
+
+        </div>
+
+    </div>
+
+</section>

@@ -1,0 +1,77 @@
+﻿@model _202Oppgave.ViewModels.Account.LoginWithRecoveryCodeViewModel
+
+@{
+    ViewData["Title"] = "Gjenopprettingskode";
+}
+
+<section class="auth-card auth-card--login"
+         aria-labelledby="auth-title">
+
+    <div class="auth-heading">
+
+        <p class="auth-eyebrow">SIKKER INNLOGGING</p>
+
+        <h1 id="auth-title">Gjenopprettingskode</h1>
+
+        <p>
+            Skriv inn en av gjenopprettingskodene
+            du mottok da du aktiverte tofaktorautentisering.
+            Hver kode kan bare brukes én gang.
+        </p>
+
+    </div>
+
+    <form asp-controller="Account"
+          asp-action="LoginWithRecoveryCode"
+          method="post">
+
+        <input asp-for="ReturnUrl" type="hidden" />
+
+        <div asp-validation-summary="ModelOnly"
+             class="auth-validation">
+        </div>
+
+        <div class="auth-field">
+
+            <label asp-for="Code"></label>
+
+            <div class="auth-input-wrap">
+
+                <input asp-for="Code"
+                       type="text"
+                       autocomplete="off"
+                       maxlength="64"
+                       autofocus />
+
+            </div>
+
+            <span asp-validation-for="Code"
+                  class="auth-validation">
+            </span>
+
+        </div>
+
+        <button type="submit" class="auth-submit">
+            Bekreft og logg inn
+        </button>
+
+    </form>
+
+    <div class="auth-bottom">
+
+        <a asp-controller="Account"
+           asp-action="LoginWith2fa"
+           asp-route-returnUrl="@Model.ReturnUrl"
+           asp-route-rememberMe="false">
+
+            Bruk autentiseringsapp
+
+        </a>
+
+    </div>
+
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
