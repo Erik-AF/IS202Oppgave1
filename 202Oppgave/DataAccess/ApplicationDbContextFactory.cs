@@ -5,9 +5,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace _202Oppgave.DataAccess
 {
-    // Design-time factory for EF Core tools (migrations, scaffolding)
+
+    /// Oppretter databasekonteksten for EF-verktøy uten å starte webapplikasjonen.
     public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
+        /// Leser tilkoblingsinnstillinger for EF-verktøy og angir MariaDB-versjonen uten automatisk serveroppslag.
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
@@ -29,7 +31,7 @@ namespace _202Oppgave.DataAccess
             }
 
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            // Use the project's configured MySQL provider (Pomelo)
+
             optionsBuilder.UseMySql(
                          connectionString,
                          new MariaDbServerVersion(new Version(11, 0, 0)));

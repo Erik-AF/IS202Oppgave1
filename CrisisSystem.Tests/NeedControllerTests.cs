@@ -74,7 +74,7 @@ public class NeedControllerTests
         Assert.Same(model, view.Model);
         Assert.Empty(repository.Needs);
     }
-    
+
     [Fact]
     public async Task Create_ValidModel_ShouldSaveNeed()
     {
@@ -207,7 +207,6 @@ public async Task Delete_NonExistingNeed_ShouldReturnNotFound()
 
     Assert.IsType<NotFoundResult>(result);
 }
-
 
     private static NeedController CreateController(INeedRepository repository)
     {

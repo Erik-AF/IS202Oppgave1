@@ -15,13 +15,12 @@ public HomeController(INeedRepository needRepository)
     _needRepository = needRepository;
 }
 
+/// Viser de tre registrerte behovene med lavest ID på forsiden.
 public async Task<IActionResult> Index()
 {
-    // Henter registrerte behov fra databasen.
+
     var needs = await _needRepository.GetAllAsync();
 
-    // Viser de tre behovene med lavest ID først.
-    // Dette påvirker ikke sorteringen i behovoversikten.
     var oldestNeeds = needs
         .OrderBy(n => n.Id)
         .Take(3)
@@ -43,6 +42,7 @@ public IActionResult Privacy()
     return View();
 }
 
+/// Viser forespørsels-ID for feilsøking uten å mellomlagre feilsiden.
 [ResponseCache(
     Duration = 0,
     Location = ResponseCacheLocation.None,

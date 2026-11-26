@@ -1,5 +1,5 @@
+/* Oversikt og ressursadministrasjon for leverandører. */
 
-/* Felles farger og bakgrunn */
 body.page-resourceprovider {
     --provider-green: #194f43;
     --provider-dark: #102b29;
@@ -13,7 +13,6 @@ body.page-resourceprovider main {
     background: var(--provider-bg);
 }
 
-/* Toppseksjon */
 .provider-hero {
     background: #093833;
     color: white;
@@ -57,7 +56,6 @@ body.page-resourceprovider main {
     margin: 12px 0 0;
 }
 
-/* Navigasjon */
 .provider-nav {
     background: var(--provider-bg);
     border-bottom: 1px solid var(--provider-border);
@@ -86,7 +84,6 @@ body.page-resourceprovider main {
     border-bottom-color: var(--provider-accent);
 }
 
-/* Oversikt */
 .provider-overview {
     padding: 24px 0 56px;
 }
@@ -129,7 +126,6 @@ body.page-resourceprovider main {
     margin: 0;
 }
 
-/* Hovedinnhold */
 .provider-dashboard-grid {
     display: grid;
     grid-template-columns: 1.8fr 1fr;
@@ -256,7 +252,6 @@ body.page-resourceprovider main {
     border-bottom: none;
 }
 
-/* Ressursliste */
 .provider-resource-list {
     margin-top: 24px;
 }
@@ -284,8 +279,6 @@ body.page-resourceprovider main {
     color: #64748b;
 }
 
-
-/* Undersider – samme design som registreringssidene */
 .provider-resources,
 .provider-profile {
     padding: 48px 0 80px;
@@ -413,7 +406,6 @@ body.page-resourceprovider main {
     font-weight: 500;
 }
 
-/* Responsivt oppsett */
 @media (max-width: 900px) {
     .provider-stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -448,7 +440,6 @@ body.page-resourceprovider main {
     position: relative;
     z-index: 1;
 }
-
 
 .provider-resource-list-header {
     display: flex;
@@ -494,7 +485,6 @@ body.page-resourceprovider .site-header .main-nav a:hover {
     color: #d5eee2;
 }
 
-/* Øvre header farger */
 body.page-resourceprovider .site-header .main-nav button.nav-login {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.55);
@@ -503,7 +493,6 @@ body.page-resourceprovider .site-header .main-nav button.nav-login {
     padding: 12px 20px;
     cursor: pointer;
 }
-
 
 body.page-resourceprovider .site-header .main-nav button.nav-login:hover {
     background: rgba(255, 255, 255, 0.1);
@@ -518,8 +507,6 @@ body.page-resourceprovider .utility-bar {
 body.page-resourceprovider .utility-bar a {
     color: #fff;
 }
-
-/* Testressurser på dashboardet */
 
 .provider-resource-demo {
     display: flex;
@@ -606,8 +593,6 @@ body.page-resourceprovider .utility-bar a {
     }
 }
 
-/* Ressursstatus og detaljknapp */
-
 .provider-resource-controls {
     display: flex;
     align-items: center;
@@ -654,8 +639,6 @@ body.page-resourceprovider .utility-bar a {
     margin-top: 6px;
 }
 
-
-/* Samme header som Registrerte behov – kun undersidene */
 body.design-concept.page-resourceprovider:is(.action-resources, .action-profile) .utility-bar {
     display: none;
 }
@@ -702,8 +685,6 @@ body.design-concept.page-resourceprovider:is(.action-resources, .action-profile)
     }
 }
 
-
-/* Samme hovedheader som Registrerte behov – kun Min oversikt */
 body.design-concept.page-resourceprovider.action-index .utility-bar {
     display: none;
 }
@@ -727,8 +708,6 @@ body.design-concept.page-resourceprovider.action-index .provider-hero {
     background: #093833;
 }
 
-
-/* Profilskjema */
 .provider-profile-layout {
     display: grid;
     gap: 24px;
@@ -798,7 +777,6 @@ body.design-concept.page-resourceprovider.action-index .provider-hero {
     }
 }
 
-/* Offentlig aktør – samme header som ressursleverandør */
 body.page-publicactor {
     --provider-green: #194f43;
     --provider-dark: #102b29;
@@ -836,5 +814,5 @@ body.page-publicactor .utility-bar {
 body.page-publicactor main {
     background: var(--provider-bg);
 }
-/* Handlingene hører til samme ressurs og står under hverandre. */
+
 .provider-resource-actions { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }

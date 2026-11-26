@@ -3,37 +3,35 @@ using _202Oppgave.Models;
 
 namespace _202Oppgave.Controllers;
 
+/// Viser informasjonssider og en oppsummering av kontaktskjemaet. Meldingen sendes ikke som e-post.
 public class InformationController : Controller
 {
-    // Metode for Om-siden
+
     public IActionResult Om()
     {
         return View();
     }
 
-    // Metode for Kontakt-siden
     [HttpGet]
     public IActionResult Kontakt()
     {
         return View();
     }
 
-    // Metode for innsending av kontaktskjemaet
+    /// Validerer skjemaet og viser en oppsummering. Meldingen lagres ikke og sendes ikke som e-post.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Kontakt(KontaktFormModel model)
     {
-        // Sjekker om feltene oppfyller valideringskravene
+
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        // Viser bekreftelsessiden med dataene fra skjemaet
         return View("KontaktBekreftelse", model);
     }
 
-    // Metode for Hjelp-siden
     public IActionResult Hjelp()
     {
         return View();

@@ -1,24 +1,14 @@
-/* home.css - bare forsiden (Sarah)
-   Hero, "Slik kommer du i gang", kartkort, aktive hendelser og CTA-båndet.
-   Lastes fra Index.cshtml via @section Head, så andre sider slipper den. */
+/* Forsidens hero, handlingskort og kartforhåndsvisning. */
 
-
-/* --- 1. Hero ---
-   Tre lag oppå hverandre: bilde (z-index 0), mørkegrønn overlay (1) og tekst (2).
-   Headeren ligger gjennomsiktig over toppen (.site-header--overlay i site.css),
-   derfor er padding-top = headerhøyden + litt luft. */
 .hero {
     position: relative;
-    overflow: hidden;       /* bildet klippes ved kantene når parallakse flytter det */
+    overflow: hidden;
     min-height: clamp(34rem, 45vw, 46rem);
     padding: calc(var(--header-h) + clamp(2.5rem, 7.5vw, 7rem)) 0 clamp(3rem, 6vw, 5rem);
     color: #fff;
-    background: var(--green-900);   /* vises mens bildet laster */
+    background: var(--green-900);
 }
 
-/* Bildet starter 40px over hero, så det er plass til parallakse-bevegelsen (site.js).
-   object-position bestemmer hvilken del av bildet som vises. Endre den
-   (f.eks. 70% 45% til 70% 60%) hvis utsnittet ikke ser riktig ut. */
 .hero-bg {
     position: absolute;
     top: -40px;
@@ -30,7 +20,6 @@
     z-index: 0;
 }
 
-/* mørkegrønn fade fra venstre (der teksten står) og fra toppen (der menyen ligger) */
 .hero-overlay {
     position: absolute;
     inset: 0;
@@ -44,7 +33,6 @@
             rgba(9, 55, 50, 0) 85%);
 }
 
-/* På mobil går teksten over hele bredden, så overlayen blir jevn i stedet */
 @media (max-width: 760px) {
     .hero-overlay {
         background: linear-gradient(180deg, rgba(9, 55, 50, 0.88) 0%, rgba(9, 55, 50, 0.72) 100%);
@@ -58,7 +46,6 @@
     z-index: 2;
 }
 
-/* "SAMMEN FOR NORGE" med en kort lime strek foran */
 .hero-kicker {
     display: flex;
     align-items: center;
@@ -79,7 +66,7 @@
 
 .hero h1 {
     margin: 0 0 1.25rem;
-    font-size: clamp(2.6rem, 4.6vw, 4.5rem);   /* størrelsen følger skjermbredden */
+    font-size: clamp(2.6rem, 4.6vw, 4.5rem);
     font-weight: 600;
     line-height: 1.04;
     letter-spacing: -0.02em;
@@ -101,7 +88,6 @@
     gap: 1.25rem 2.5rem;
 }
 
-/* tekstlenke med hvit understrek ("Jeg trenger hjelp") */
 .link-underline {
     padding-bottom: 0.2rem;
     border-bottom: 2px solid #fff;
@@ -113,9 +99,6 @@
 
 .link-underline:hover { color: var(--lime); border-color: var(--lime); }
 
-
-/* --- 2. Innhold under hero --- */
-/* Felles bredde, luft og rytme */
 .home-content {
     display: grid;
     gap: clamp(1.5rem, 2.7vw, 2.25rem);
@@ -127,8 +110,6 @@
 
 }
 
-
-/* 3. Slik kommer du i gang */
 .steps {
     display: grid;
     gap: 1.35rem;
@@ -245,8 +226,6 @@
     color: var(--muted);
 }
 
-
-/* 4. Kartoversikt – høyere og mindre avlangt */
 .home-map {
     position: relative;
     height: clamp(17rem, 25vw, 21rem);
@@ -356,8 +335,6 @@
     box-shadow: inset 0 0 0 2px var(--green-900);
 }
 
-
-/* 5. Aktive hendelser – mer kompakt */
 .events {
     display: flex;
     align-items: center;
@@ -426,8 +403,6 @@
     flex-shrink: 0;
 }
 
-
-/* 6. CTA-bånd – beholdt uendret */
 .cta-band {
     padding-block: 4rem;
     background: var(--green-900);
@@ -449,8 +424,6 @@
     letter-spacing: -0.02em;
 }
 
-
-/* 7. Responsivitet */
 @media (max-width: 900px) {
     .steps-grid {
         gap: 0.75rem;
@@ -553,7 +526,6 @@
     }
 }
 
-/* Hover-effekt på kartoversikten */
 .home-map__live {
     transform: scale(1);
     transition: transform 0.55s ease, opacity 0.4s;
@@ -570,7 +542,6 @@
     }
 }
 
-/* Respekter redusert bevegelse */
 @media (prefers-reduced-motion: reduce) {
     .home-map__live {
         transition: none;
@@ -581,8 +552,6 @@
     }
 }
 
-
-/* Hele kartoversikten er klikkbar */
 .home-map__full-link {
     position: absolute;
     inset: 0;
@@ -598,7 +567,6 @@
     pointer-events: none;
 }
 
-/* Hele Aktive hendelser er klikkbar */
 .events {
     position: relative;
     cursor: pointer;
@@ -615,7 +583,6 @@
     z-index: 2;
 }
 
-/* Headeren ligger over forsidebildet og scroller bort med siden. */
 body.page-home.action-index .site-header--overlay {
     position: relative;
     top: auto;
@@ -636,7 +603,6 @@ body.page-home.action-index .skip-link:focus {
     transform: translateY(0);
 }
 
-/* Kartvelgeren kan brukes uten å aktivere panorering i forhåndsvisningen. */
 .home-map__live .leaflet-control-layers,
 .home-map__live .leaflet-control-attribution {
     pointer-events: auto;

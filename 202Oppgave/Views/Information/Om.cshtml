@@ -1,5 +1,5 @@
 @{
-    // Tittelen i nettleserfanen
+
     ViewData["Title"] = "Om oss";
 }
 <section class="information-hero"><div class="container">
@@ -14,7 +14,7 @@
     <article>
         <h3>Fortell hva som trengs</h3>
         <p>Offentlige aktører beskriver behovet, setter prioritet og velger plassering.</p>
-        @* Providere kan ikke registrere behov, så lenken skjules for dem *@
+
         @if (!User.IsInRole("ResourceProvider"))
         {
             <a asp-controller="Need" asp-action="Create">Registrer et behov →</a>

@@ -40,15 +40,13 @@ public class ResourceControllerTests
             return Task.FromResult(
                 Resources.FirstOrDefault(r => r.Id == id));
         }
-        
+
         public Task<List<Resource>> GetByUserIdAsync(string userId)
         {
             return Task.FromResult(
                 Resources.Where(r => r.UserId == userId).ToList());
         }
-        
-        
-      
+
         public List<ResourceImage> Images { get; } = new();
 
         public Task<ResourceImage?> GetImageAsync(int resourceId)
@@ -59,7 +57,7 @@ public class ResourceControllerTests
 
         public Task SaveImageAsync(int resourceId, byte[] data, string contentType)
         {
-            /// Samme regel som i databasen: én ressurs, ett bilde
+
             Images.RemoveAll(i => i.ResourceId == resourceId);
             Images.Add(new ResourceImage
             {
@@ -81,8 +79,7 @@ public class ResourceControllerTests
             return Task.FromResult(new List<Category>());
         }
     }
-    
-    /// Lager controlleren med en innlogget testbruker, som på NeedControllerTests
+
     private static ResourceController CreateLoggedInController(FakeResourceRepository repository)
     {
         return new ResourceController(repository, null!)
@@ -103,7 +100,7 @@ public class ResourceControllerTests
     {
         var repository = new FakeResourceRepository();
         var controller = CreateLoggedInController(repository);
-        
+
         var model = new ResourceViewModel
         {
             Type = "Generator",
@@ -124,7 +121,7 @@ public class ResourceControllerTests
         Assert.Equal(model.Latitude, saved.Latitude);
         Assert.Equal(model.Longitude, saved.Longitude);
         Assert.Equal("Testperson", saved.ContactName);
-        Assert.Equal("user-123", saved.UserId);   
+        Assert.Equal("user-123", saved.UserId);
     }
 
     [Fact]
@@ -132,7 +129,7 @@ public class ResourceControllerTests
     {
         var repository = new FakeResourceRepository();
         var controller = CreateLoggedInController(repository);
-        
+
         var model = new ResourceViewModel
         {
             Type = "Drikkevann",
@@ -151,14 +148,14 @@ public class ResourceControllerTests
         Assert.Equal("Details", redirect.ActionName);
         Assert.Equal(repository.Resources[0].Id, redirect.RouteValues!["id"]);
     }
-    
+
     [Fact]
     public async Task Create_WithoutLoggedInUser_ShouldNotSave()
     {
         var repository = new FakeResourceRepository();
         var controller = new ResourceController(repository, null!)
         {
-            // Tom bruker = ikke logget inn
+
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
         };
 
@@ -167,7 +164,7 @@ public class ResourceControllerTests
         Assert.IsType<ChallengeResult>(result);
         Assert.Empty(repository.Resources);
     }
-    
+
 [Fact]
 public async Task Index_Search_ShouldReturnMatchingResources()
 {
@@ -275,7 +272,6 @@ public async Task Edit_ExistingResource_ShouldUpdateResource()
         Name = "Kristiansand"
     });
 
-    
     var controller = CreateLoggedInController(repository);
     var model = new ResourceViewModel
     {
@@ -332,7 +328,6 @@ public async Task Delete_ExistingResource_ShouldRemoveResource()
         UserId = "user-123"
     });
 
-
     var controller = CreateLoggedInController(repository);
 
     var result = await controller.Delete(1);
@@ -354,10 +349,6 @@ public async Task Delete_NonExistingResource_ShouldReturnNotFound()
     Assert.IsType<NotFoundResult>(result);
 }
 
-
-
-
-    /// Lager et testbilde som om brukeren hadde lastet det opp
     private static IFormFile CreateTestImage()
     {
         var bytes = new byte[] { 1, 2, 3, 4 };
@@ -391,12 +382,10 @@ public async Task Delete_NonExistingResource_ShouldReturnNotFound()
         var saved = Assert.Single(repository.Resources);
         var image = Assert.Single(repository.Images);
 
-        /// Bildet hører til ressursen, og har riktig innhold og type
         Assert.Equal(saved.Id, image.ResourceId);
         Assert.Equal(new byte[] { 1, 2, 3, 4 }, image.Data);
         Assert.Equal("image/jpeg", image.ContentType);
 
-        /// Ressursen viser til adressen som henter bildet fra databasen
         Assert.Equal($"/Resource/Image/{saved.Id}", saved.ImagePath);
     }
 
@@ -425,8 +414,6 @@ public async Task Delete_NonExistingResource_ShouldReturnNotFound()
         Assert.IsType<NotFoundResult>(result);
     }
 
-
-    /// Lager controlleren med en innlogget bruker med valgt ID.
     private static ResourceController CreateControllerAs(
         FakeResourceRepository repository, string userId, bool isAdmin = false)
     {
@@ -446,7 +433,6 @@ public async Task Delete_NonExistingResource_ShouldReturnNotFound()
             }
         };
     }
-
 
     private static FakeResourceRepository CreateRepositoryWithOwnedResource()
     {
@@ -492,7 +478,7 @@ public async Task Delete_NonExistingResource_ShouldReturnNotFound()
         var result = await controller.Edit(1, model);
 
         Assert.IsType<ForbidResult>(result);
-        /// Ressursen er uendret
+
         Assert.Equal("Generator", repository.Resources.Single().Type);
     }
 
@@ -505,7 +491,7 @@ public async Task Delete_NonExistingResource_ShouldReturnNotFound()
         var result = await controller.Delete(1);
 
         Assert.IsType<ForbidResult>(result);
-        /// Ressursen ble ikke slettet
+
         Assert.Single(repository.Resources);
     }
 

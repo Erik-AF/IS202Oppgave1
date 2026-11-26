@@ -1,11 +1,11 @@
 using _202Oppgave.ViewModels;
 namespace _202Oppgave.Models.Entities
 {
+    /// Databaseentitet for et behov med oppretter, prioritet, kartform og allokeringer.
     public class Need
     {
         public int Id { get; set; }
 
-        // Eldre behov har ukjent oppretter; nye behov får ID fra innlogget bruker.
         public string? UserId { get; set; }
         public ApplicationUser? User { get; set; }
 
@@ -17,12 +17,9 @@ namespace _202Oppgave.Models.Entities
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string? GeometryJson { get; set; }
-        
-        // Tidspunktet behovet ble registrert.
-        // Settes automatisk av databasen (DEFAULT CURRENT_TIMESTAMP), ikke av koden.
+
         public DateTime CreatedAt { get; set; }
-        
-        // Alle allokeringer til dette behovet (ett behov, mange allokeringer)
+
         public List<Allocation> Allocations { get; set; } = new();
 
     }

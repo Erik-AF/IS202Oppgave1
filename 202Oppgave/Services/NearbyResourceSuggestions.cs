@@ -3,8 +3,10 @@ using _202Oppgave.ViewModels;
 
 namespace _202Oppgave.Services;
 
+/// Finner tilgjengelige ressurser innenfor fem kilometer målt som luftlinje.
 public static class NearbyResourceSuggestions
 {
+    /// Returnerer tilgjengelige ressurser innenfor fem kilometer, sortert fra nærmest til lengst unna.
     public static List<NearbyResourceViewModel> Find(Need need, IEnumerable<Resource> resources)
     {
         if (!ValidPosition(need.Latitude, need.Longitude)) return new();
@@ -25,10 +27,11 @@ public static class NearbyResourceSuggestions
             .ToList();
     }
 
+    /// Avviser manglende, ikke-endelige eller geografisk ugyldige koordinater.
     private static bool ValidPosition(double? latitude, double? longitude) =>
         latitude is >= -90 and <= 90 && longitude is >= -180 and <= 180;
 
-    // Haversine gir luftlinje i kilometer, ikke kjørelengde eller avstand til kanten av et tegnet område.
+    /// Beregner luftlinje med Haversine i kilometer, ikke kjøreavstand eller avstand til kanten av et område.
     private static double DistanceKm(double lat1, double lon1, double lat2, double lon2)
     {
         const double radians = Math.PI / 180;

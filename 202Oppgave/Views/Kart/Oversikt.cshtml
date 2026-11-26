@@ -138,7 +138,6 @@
         filter: saturate(0.8) brightness(1.02) contrast(1.08);
     }
 
-    /* Ikonmarkører: hvitt symbol på farget, dråpeformet bakgrunn. */
     #map .crisis-marker {
         background: transparent;
         border: 0;
@@ -274,7 +273,7 @@
         accent-color: #1d705b;
         cursor: pointer;
     }
-    
+
 </style>
 
 @section Scripts {
@@ -304,6 +303,7 @@
             showCoverageOnHover: false,
             zoomToBoundsOnClick: false,
             spiderfyOnMaxZoom: true,
+            /// Tilpasser markørgrupperingen til zoomnivået.
             maxClusterRadius: function (zoom) {
                 if (zoom <= 13) return 160;
                 if (zoom <= 15) return 120;
@@ -313,7 +313,7 @@
             disableClusteringAtZoom: 19,
             removeOutsideVisibleBounds: true
         }).addTo(map);
-        
+
         clusterLayer.on('clusterclick', function (e) {
             map.flyToBounds(e.layer.getBounds(), {
                 padding: [50, 50],
@@ -551,8 +551,6 @@
         map.on('locationerror', function (e) {
             alert('Kunne ikke finne posisjonen din: ' + e.message);
         });
-        
-        
 
         const standardLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -560,7 +558,6 @@
         }).addTo(map);
         addMapLayers(map, standardLayer);
 
-        // Kartdataene skal fortsatt vises om terrengtillegget ikke lastes.
         if (typeof L.gridLayer.relief === 'function') {
             try {
                 L.gridLayer.relief({
@@ -571,13 +568,14 @@
             }
         }
 
-        // Bruk tekstnoder slik at registrert tekst ikke tolkes som HTML.
+        /// Bygger informasjon og detaljlenke for kartpunktet med tekstnoder for brukerinnhold.
         function createPopup(punkt, detailsUrl) {
             const popup = document.createElement('div');
             const title = document.createElement('strong');
             title.textContent = punkt.type ?? 'Registrering';
             popup.append(title);
 
+            /// Legger til en tekstlinje i kartpopupen uten å tolke innholdet som HTML.
             function addLine(label, value) {
                 if (value == null || value === '') return;
                 const line = document.createElement('p');
@@ -600,6 +598,7 @@
             return popup;
         }
 
+        /// Henter og normaliserer kartdata. Ugyldige registreringer hoppes over uten å stoppe resten.
         async function loadPoints(url, layer, normalize, detailsUrl) {
             try {
                 const response = await fetch(url);
@@ -613,7 +612,7 @@
                         const feature = createMapFeature(point);
                         if (!feature) return;
 
-
+                        /// Fordeler markører til filtrerbare grupper og legger øvrige kartformer direkte på laget.
                         function addFeatureToMap(item) {
                             if (item instanceof L.Marker && !(item instanceof L.CircleMarker)) {
                                 var group = layer === resourceLayer ? 'resource' : 'need';
@@ -645,7 +644,6 @@
             }
         }
 
-        // Beholder eksempeldataene, og lar avkrysningen skjule behovene også her.
         loadPoints('@Url.Action("Data", "Kart")', needLayer, p => p, null);
         loadPoints('@Url.Action("Geo", "Resource")', resourceLayer,
             r => ({ ...r, kategori: 'ressurs' }), '@Url.Action("Details", "Resource")');

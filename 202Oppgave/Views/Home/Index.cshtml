@@ -1,16 +1,7 @@
-@* Index.cshtml - forsiden (Sarah)
-   Hører til HomeController.Index(). Header, meny og footer kommer fra _Layout.cshtml.
-   Stilen ligger i home.css (lastes under i @section Head).
 
-   Seksjoner: 1. Hero  2. Steg  3. Kartkort  4. Aktive hendelser  5. CTA-bånd
 
-   Lenkene forutsetter disse controllerne:
-     Resource/Create og Resource/Index (Vetle)
-     Need/Create og Need/Index         (Sindre)
-     Map/Index og Map/Markers          (Marius) *@
 @{
-    // tittelen i nettleserfanen ("Hjem - CrisisSystem")
-    
+
     @model _202Oppgave.ViewModels.HomeViewModel
     ViewData["Title"] = "Hjem";
 }
@@ -20,13 +11,8 @@
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
 }
 
-@* ===== 1. Hero =====
-   Stort banner med bakgrunnsbilde. Headeren ligger gjennomsiktig oppå det.
-   Tre lag: bilde (.hero-bg), mørkegrønn overlay (.hero-overlay) og tekst (.hero-content).
-   Bildet flyttes litt ved scrolling, se site.js (parallakse).
-   Foto: Jesse de Backer, Unsplash. *@
 <section class="hero">
-    @* bildet er bare pynt (tom alt). data-parallax er det site.js bruker for å finne det *@
+
     <img src="~/images/hero.jpg" alt="" aria-hidden="true"
          class="hero-bg" data-parallax fetchpriority="high" decoding="async" />
     <div class="hero-overlay" aria-hidden="true"></div>
@@ -40,10 +26,9 @@
         </p>
 
         <div class="hero-actions">
-            @* Jeg vil bidra: registrere en ressurs (Vetle) *@
+
             <a class="btn btn-lime btn-lg" asp-controller="Resource" asp-action="Create">Registrer Ressurs</a>
-            @* Jeg trenger hjelp: registrere et behov (Sindre) *@
-            @* Jeg trenger hjelp: registrere et behov (Sindre). Skjules for providere, de kan ikke registrere behov *@
+
             @if (!User.IsInRole("ResourceProvider"))
             {
                 <a class="link-underline" asp-controller="Need" asp-action="Create">Registrer Behov</a>
@@ -53,13 +38,10 @@
 
 <div class="container home-content">
 
-@* ===== 2. Slik kommer du i gang =====
-       Overskrift + tre steg.*@
-     
        <section class="steps" aria-labelledby="steps-title">
            <div class="steps-header">
                <h2 id="steps-title">Slik kommer du i gang</h2>
-   
+
                <a class="steps-more" asp-controller="Information" asp-action="Om">
                    Les mer om tjenesten
                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -67,9 +49,9 @@
                    </svg>
                </a>
            </div>
-   
+
            <div class="steps-grid">
-   
+
                <article class="step">
                    <div class="step-top">
                        <span class="step-number" aria-label="Steg 1">1</span>
@@ -82,13 +64,13 @@
                                  stroke-linecap="round" />
                        </svg>
                    </div>
-   
+
                    <div>
                        <h3 class="step-title">Registrer deg</h3>
                        <p class="step-text">Opprett en bruker for å komme i gang.</p>
                    </div>
                </article>
-   
+
                <article class="step">
                    <div class="step-top">
                        <span class="step-number" aria-label="Steg 2">2</span>
@@ -102,13 +84,13 @@
                            <path d="m8 11 1.5 1.5L12 10M14 11h2M8 17h8" />
                        </svg>
                    </div>
-   
+
                    <div>
                        <h3 class="step-title">Meld inn</h3>
                        <p class="step-text">Registrer et behov eller en ressurs.</p>
                    </div>
                </article>
-   
+
                <article class="step">
                    <div class="step-top">
                        <span class="step-number" aria-label="Steg 3">3</span>
@@ -117,58 +99,53 @@
                            <path d="M12 2.5a7.5 7.5 0 0 0-7.5 7.5c0 5.4 7.5 12 7.5 12s7.5-6.6 7.5-12A7.5 7.5 0 0 0 12 2.5Zm0 10.6a3.1 3.1 0 1 1 0-6.2 3.1 3.1 0 0 1 0 6.2Z" />
                        </svg>
                    </div>
-   
+
                    <div>
                        <h3 class="step-title">Få oversikt</h3>
                        <p class="step-text">Se behov og ressurser i kartet.</p>
                    </div>
                </article>
-   
+
            </div>
        </section>
-   
-       @* 3. Kartoversikt – Leaflet og lenker beholdt *@
+
        <section class="home-map" aria-label="Kartoversikt">
            <div class="home-map__bg" aria-hidden="true"></div>
-           
-           @* Gjør hele kartflaten klikkbar *@
+
            <a class="home-map__full-link"
               asp-controller="Kart"
               asp-action="Oversikt"
               aria-label="Åpne kartoversikten"></a>
-   
+
            <div id="home-map" class="home-map__live"
                 data-markers-url="@Url.Action("Markers", "Map")"></div>
-   
+
            <a class="home-map__card"
               asp-controller="Kart" asp-action="Oversikt">
                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                    <path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z" />
                    <circle cx="12" cy="10" r="2.3" />
                </svg>
-   
+
                <span class="home-map__text">
                    <strong>Kartoversikt</strong>
                    <span>Ressurser og behov på ett kart</span>
                </span>
-   
+
                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                    <path d="M5 12h14M13 6l6 6-6 6" />
                </svg>
            </a>
-   
-     
+
        </section>
-   
-       @* 4. Aktive hendelser – dynamiske verdier beholdt *@
+
        <section class="events" aria-labelledby="events-title">
-         
-           @* Gjør hele seksjonen klikkbar *@
+
            <a class="events-full-link"
               asp-controller="Need"
               asp-action="Index"
               aria-label="Se aktive hendelser"></a>
-           
+
            <span class="events-icon" aria-hidden="true">
                <svg class="icon" viewBox="0 0 24 24">
                    <path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16z"/>
@@ -194,7 +171,6 @@
        </section>
    </div>
 
-@* Kartkoden for forsiden. Leaflet er allerede lastet i _Layout. *@
 @section Scripts {
     <script src="~/js/home-map.js" asp-append-version="true"></script>
 }

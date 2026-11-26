@@ -27,7 +27,7 @@ public class PublicActorController : Controller
         _needRepository = needRepository;
     }
 
-   
+    /// Viser oversikten med behov som er opprettet av innlogget bruker, også når brukeren er administrator.
     [HttpGet]
     public async Task<IActionResult> Index()
     {
@@ -47,7 +47,7 @@ public class PublicActorController : Controller
         return View(myNeeds);
     }
 
-
+    /// Viser bare behov som tilhører innlogget bruker.
     [HttpGet]
     public async Task<IActionResult> Needs()
     {
@@ -64,7 +64,8 @@ public class PublicActorController : Controller
 
         return View(myNeeds);
     }
-    
+
+    /// Viser redigeringsskjemaet bare når behovet tilhører innlogget bruker.
     [HttpGet]
     public async Task<IActionResult> EditNeed(int id)
     {
@@ -95,6 +96,7 @@ public class PublicActorController : Controller
         return View(model);
     }
 
+    /// Validerer og oppdaterer brukerens eget behov fra Min side.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditNeed(int id, NeedViewModel model)
@@ -130,6 +132,7 @@ public class PublicActorController : Controller
         return RedirectToAction(nameof(Needs));
     }
 
+    /// Sletter bare behov som tilhører innlogget bruker og går tilbake til egne behov.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteNeed(int id)
@@ -169,6 +172,7 @@ public class PublicActorController : Controller
         return View(model);
     }
 
+    /// Validerer profilendringer, holder e-post og brukernavn like og fornyer innloggingen etter lagring.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Profile(ProfileViewModel model)
@@ -197,7 +201,6 @@ public class PublicActorController : Controller
         user.FullName = model.FullName.Trim();
         user.PhoneNumber = model.PhoneNumber.Trim();
 
-        // Innloggingen bruker e-postadresse som brukernavn.
         user.Email = email;
         user.UserName = email;
 

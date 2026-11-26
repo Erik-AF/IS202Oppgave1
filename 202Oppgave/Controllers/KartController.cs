@@ -3,11 +3,10 @@ using _202Oppgave.ViewModels;
 
 namespace _202Oppgave.Controllers;
 
+/// Viser kartoversikten, håndterer separate kartpunkter i minnet og slår opp adresser hos Kartverket.
 public class KartController : Controller
 {
-    // Midlertidig eksempeldata i minnet, inntil ekte database (MariaDB)
-    // er koblet på av Vetle/Sindre. Formen (KartPunktViewModel) er avtalt
-    // som "kontrakten" med dem.
+
     private static readonly List<KartPunktViewModel> _punkter = new()
     {
         new KartPunktViewModel
@@ -23,19 +22,20 @@ public class KartController : Controller
             Beskrivelse = "Behov for drikkevann i sentrum."
         }
     };
-    // Viser registreringsskjemaet med kart
+
     [HttpGet]
     public IActionResult Index()
     {
         return View(new RegistrerPunktViewModel());
     }
-    // Tar imot skjemaet med valgt kartpunkt og lagrer det.
+
+    /// Legger kartpunktet i en minneliste som nullstilles ved omstart, og omdirigerer til oversikten.
     [HttpPost]
     public IActionResult Index(RegistrerPunktViewModel model)
     {
         if (model.Latitude == null || model.Longitude == null)
         {
-            // Ingen punkt valgt på kartet - vis skjemaet på nytt med feilmelding
+
             ModelState.AddModelError("", "Du må velge et punkt på kartet.");
             return View(model);
         }
@@ -51,31 +51,30 @@ public class KartController : Controller
             Kontaktpunkt = "Ikke satt",
             Beskrivelse = model.Beskrivelse
         });
-        // PRG-mønster (Post-Redirect-Get): redirect etter POST i stedet for
-        // å returnere View() direkte, slik at brukeren ikke får "skjema sendt
-        // på nytt"-advarsel hvis siden lastes om.
+
         return RedirectToAction(nameof(Oversikt));
     }
-    // Viser oversiktskartet med alle registrerte punkter
+
+    /// Viser kartoversikten som henter kartpunkter, behov og ressurser fra separate JSON-endepunkter.
     [HttpGet]
     public IActionResult Oversikt()
     {
         return View();
     }
-    
-    // JSON-endepunkt som oversiktskartet henter data fra via JavaScript (fetch)
+
+    /// Returnerer punktene fra minnelisten. Behov og ressurser i databasen har egne kartendepunkter.
     [HttpGet]
     public IActionResult Data()
     {
         return Json(_punkter);
     }
 
-    // Adresseforslag fra Kartverkets åpne adresse-API.
     private static readonly System.Net.Http.HttpClient AddressClient = new()
     {
         Timeout = TimeSpan.FromSeconds(10)
     };
 
+    /// Validerer koordinater og foreslår nærmeste adresse innenfor 100 meter fra Kartverket. Feil gir mulighet for manuell innskriving.
     [HttpGet]
     public async Task<IActionResult> ReverseGeocode(
         [FromQuery] double? lat, [FromQuery] double? lon)
@@ -111,6 +110,7 @@ public class KartController : Controller
             }
 
             var first = addresses[0];
+            /// Leser et tekstfelt fra adresseoppslaget og bruker tom tekst når feltet mangler.
             string ReadText(string name) =>
                 first.TryGetProperty(name, out var value) &&
                 value.ValueKind == System.Text.Json.JsonValueKind.String

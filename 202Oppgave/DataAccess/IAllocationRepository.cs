@@ -2,27 +2,29 @@ using _202Oppgave.Models.Entities;
 
 namespace _202Oppgave.DataAccess.Repositories
 {
-    // Lagrer og henter allokeringer (koblingen mellom ressurser og behov)
+
     public interface IAllocationRepository
     {
-        // Allokerer flere ressurser til ett behov i én operasjon.
-        // Returnerer hvor mange ressurser som faktisk ble allokert.
+
+        /// Reserverer tilgjengelige ressurser eid av brukeren og oppretter ventende tilbud. Returnerer antall tilbud.
         Task<int> OfferAsync(int needId, List<int> resourceIds, string userId, string? note);
+        /// Henter allokeringen med behovet som brukes til tilgangskontroll, eller null hvis den mangler.
         Task<Allocation?> GetByIdAsync(int id);
+        /// Bekrefter et ventende tilbud og setter ressursen utilgjengelig. Returnerer false hvis tilstanden ikke tillater godkjenning.
         Task<bool> ApproveAsync(int id);
+        /// Teller ventende tilbud per behov for den oppgitte oppretteren. Tom bruker-ID gir ingen treff.
         Task<Dictionary<int, int>> GetPendingCountsByNeedAsync(string userId);
 
+        /// Allokerer valgte ressurser som er tilgjengelige ved uthenting og returnerer antallet som ble lagret.
         Task<int> AllocateAsync(int needId, List<int> resourceIds, string? note);
 
-        // Henter alle allokeringer for ett behov, med ressursen og kategorien
+        /// Henter behovets allokeringer med behov, ressurs og kategori, nyeste først.
         Task<List<Allocation>> GetForNeedAsync(int needId);
-        
-        // Fjerner en allokering og gjør ressursen tilgjengelig igjen.
-        // Returnerer id-en til behovet, eller null hvis allokeringen ikke fantes.
+
+        /// Fjerner allokeringen og frigjør ressursen hvis ingen andre allokeringer finnes. Returnerer behovets ID eller null.
         Task<int?> RemoveAsync(int allocationId);
-        
-        // Henter navnene på allokerte ressurser for alle behov i én spørring.
-        // Nøkkelen er NeedId, verdien er listen med ressursnavn.
+
+        /// Grupperer ressursnavn per behov uten ventende tilbud, med kategori og beskrivelse der dette finnes.
         Task<Dictionary<int, List<string>>> GetResourceNamesByNeedAsync();
     }
 }

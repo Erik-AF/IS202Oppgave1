@@ -1,55 +1,41 @@
+/* Felles farger, typografi, navigasjon og profilmeny. */
 
-/* site.css - felles stil for alle sider (Sarah)
-   Farger, header/meny og footer. Forsiden har sin egen fil: home.css.
-   Knapper, kort, skjema og tabeller ligger i components.css. */
-
-
-/* --- 1. Farger og variabler ---
-   Fargene er målt fra designet. Endre dem bare her i :root.
-   Resten av CSS-en bruker var(--navn). */
 :root {
-    --green-900: #093732;   /* hovedfarge: header, footer, CTA-bånd, mørk tekst på lime */
-    --green-800: #0f4a43;   /* litt lysere, brukes ved hover på mørke flater */
-    --green-600: #1f7366;   /* kantfarge ved fokus og hover */
-    --lime: #e1f18b;        /* aksentfarge: knapper, understreker, merkelapper */
-    --lime-dark: #cfe26f;   /* lime ved hover */
-    --paper: #f9f8f6;       /* sidebakgrunn */
-    --sage: #ecf1eb;        /* svak grønn bakgrunn (steg-boks, tabelloverskrift) */
-    --ink: #10201d;         /* vanlig tekst og overskrifter */
-    --muted: #5a6764;       /* svakere tekst */
-    --line: #dde4e0;        /* tynne linjer og kortkanter */
-    --line-strong: #b7c3be; /* tydeligere kant, f.eks. på skjemafelt */
-    --red: #c1443a;         /* farlige handlinger (slett) */
+    --green-900: #093732;
+    --green-800: #0f4a43;
+    --green-600: #1f7366;
+    --lime: #e1f18b;
+    --lime-dark: #cfe26f;
+    --paper: #f9f8f6;
+    --sage: #ecf1eb;
+    --ink: #10201d;
+    --muted: #5a6764;
+    --line: #dde4e0;
+    --line-strong: #b7c3be;
+    --red: #c1443a;
 
-    /* kartfarger fra case-beskrivelsen (brukes i kart og badges) */
-    --map-urgent: #d64541;     /* rød = akutt behov */
-    --map-planned: #e0a800;    /* gul = planlagt behov */
-    --map-available: #2e9e5b;  /* grønn = tilgjengelig ressurs */
-    --map-public: #2f6fbf;     /* blå = offentlig aktør */
+    --map-urgent: #d64541;
+    --map-planned: #e0a800;
+    --map-available: #2e9e5b;
+    --map-public: #2f6fbf;
 
     --radius-lg: 20px;
     --radius-md: 10px;
     --radius-pill: 999px;
-    --container: 1390px;         /* innholdet blir 1350px bredt (padding trekkes fra) */
-    --container-header: 1451px;  /* headeren er litt bredere, som i designet */
-    --header-h: 5.5rem;          /* høyden på headeren. Hero bruker den også. */
+    --container: 1390px;
+    --container-header: 1451px;
+    --header-h: 5.5rem;
 
-    /* systemfonter, så vi slipper å laste ned noe (virker også uten godt nett) */
     --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-
-/* --- 2. Grunnstiler --- */
-
-/* padding og kant regnes med i bredden */
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
-    -webkit-text-size-adjust: 100%;   /* hindrer at iPhone forstørrer teksten når den snus */
-    scroll-padding-top: 6rem;         /* ting vi scroller til havner ikke bak headeren */
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
 }
 
-/* flex-kolonne, så footeren havner nederst selv på sider med lite innhold */
 body {
     margin: 0;
     min-height: 100vh;
@@ -61,11 +47,9 @@ body {
     line-height: 1.5;
 }
 
-/* bilder blir aldri bredere enn boksen de ligger i */
 img, svg { max-width: 100%; }
 a { color: inherit; }
 
-/* blå ramme rundt det som er valgt med tastaturet (Tab). Lime syns på de mørke flatene. */
 :focus-visible {
     outline: 3px solid var(--green-600);
     outline-offset: 2px;
@@ -78,7 +62,6 @@ a { color: inherit; }
     outline-color: var(--lime);
 }
 
-/* sentrerer innholdet og gir maks bredde */
 .container {
     width: 100%;
     max-width: var(--container);
@@ -91,7 +74,6 @@ a { color: inherit; }
     background: var(--paper);
 }
 
-/* ikoner (inline SVG). Fargen følger teksten rundt (currentColor). */
 .icon {
     width: 1.25em;
     height: 1.25em;
@@ -103,23 +85,16 @@ a { color: inherit; }
     stroke-linejoin: round;
 }
 
-
-/* --- 3. Header og meny ---
-   Mørkegrønn og sticky (blir stående øverst når man scroller).
-   På forsiden har den klassen .site-header--overlay: da er den gjennomsiktig
-   og ligger over hero-bildet til man har scrollet (site.js legger på .is-scrolled). */
 .site-header {
     position: sticky;
     top: 0;
-    z-index: 1100;            /* over hero-lagene og Leaflet-kartet (1000) */
+    z-index: 1100;
     height: var(--header-h);
     background: var(--green-900);
     color: #fff;
     transition: background-color 0.25s, box-shadow 0.25s;
 }
 
-/* negativ margin trekker hero opp bak headeren */
-/* Gjennomsiktig header over hero på forsiden */
 .site-header--overlay {
     margin-bottom: calc(var(--header-h) * -1);
 
@@ -144,7 +119,6 @@ a { color: inherit; }
     height: 100%;
 }
 
-/* logo + navn + slagord */
 .brand {
     display: inline-flex;
     align-items: center;
@@ -197,7 +171,6 @@ a { color: inherit; }
 
 .main-nav a:hover { color: var(--lime); }
 
-/* siden vi er på nå får lime understrek (aria-current settes i _Layout) */
 .main-nav a[aria-current="page"] {
     text-decoration: underline;
     text-decoration-color: var(--lime);
@@ -205,7 +178,6 @@ a { color: inherit; }
     text-underline-offset: 10px;
 }
 
-/* "Logg inn": knapp med hvit kant */
 .main-nav .nav-login {
     display: inline-flex;
     align-items: center;
@@ -217,10 +189,9 @@ a { color: inherit; }
 
 .main-nav .nav-login:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
 
-/* hamburgerknapp, skjult på desktop */
 .nav-toggle {
     display: none;
-    min-width: 44px;      /* 44px = minste trykkflate på mobil */
+    min-width: 44px;
     min-height: 44px;
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: var(--radius-md);
@@ -230,8 +201,6 @@ a { color: inherit; }
     cursor: pointer;
 }
 
-/* Under 900px blir menyen en nedtrekksliste. Logo + seks menyvalg får ikke
-   plass på én linje under dette. site.js legger på .is-open når knappen trykkes. */
 @media (max-width: 900px) {
     .nav-toggle { display: inline-grid; place-items: center; }
 
@@ -261,9 +230,6 @@ a { color: inherit; }
     }
 }
 
-
-/* --- 4. Footer ---
-   Samme mørkegrønne som CTA-båndet på forsiden, så de henger sammen. */
 .site-footer {
     background: var(--green-900);
     color: #fff;
@@ -271,7 +237,6 @@ a { color: inherit; }
     padding-top: 4.5rem;
 }
 
-/* tre kolonner: navn og slagord, "Finn frem", "Vi hjelper deg" */
 .footer-main {
     display: grid;
     grid-template-columns: 2.25fr 1.25fr 1fr;
@@ -307,7 +272,6 @@ a { color: inherit; }
     gap: 0.6rem;
 }
 
-/* padding gir en høyere trykkflate */
 .footer-col a {
     display: inline-block;
     padding: 0.2rem 0;
@@ -318,7 +282,6 @@ a { color: inherit; }
 
 .footer-col a:hover { color: var(--lime); text-decoration: underline; }
 
-/* nederste linje: copyright, slagord og "Til toppen" */
 .footer-bottom {
     display: flex;
     flex-wrap: wrap;
@@ -349,9 +312,6 @@ a { color: inherit; }
     .footer-main { grid-template-columns: 1fr; }
 }
 
-
-/* --- 5. Grid (to og tre kolonner) ---
-   Enkle hjelpere som kan brukes på alle sider. */
 .grid-2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -364,7 +324,6 @@ a { color: inherit; }
     gap: 1.5rem;
 }
 
-/* én kolonne på smale skjermer */
 @media (max-width: 860px) {
     .grid-3 { grid-template-columns: 1fr; }
 }
@@ -372,7 +331,7 @@ a { color: inherit; }
 @media (max-width: 640px) {
     .grid-2 { grid-template-columns: 1fr; }
 }
-/* Felles profilmeny for offentlige aktører og ressursleverandører. */
+
 .site-header .profile-menu { position: relative; }
 .site-header .profile-menu-toggle {
     display: flex; align-items: center; justify-content: center;
@@ -403,7 +362,6 @@ body.design-concept .site-header #main-nav .profile-menu-panel button:hover {
     .site-header .profile-menu-panel { position: static; margin-top: 8px; max-width: 100%; }
 }
 
-/* Samme antall ventende tilbud i profilmenyen og på egne behov. */
 .approval-badge {
     display: inline-flex; align-items: center; justify-content: center;
     min-width: 26px; height: 26px; padding: 0 7px; border-radius: 999px;
