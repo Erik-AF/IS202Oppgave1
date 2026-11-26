@@ -71,7 +71,7 @@ The interface uses custom CSS, responsive layouts, Razor Tag Helpers and client-
 | `AccountController` | Registration, cookie login/logout, access-denied page and password reset. |
 | `ResourceProviderController` | The provider's overview, own resources and profile settings. |
 | `PublicActorController` | The public actor's overview, own needs and profile settings. In this checkout the controller is restricted to the PublicActor role. |
-| `KartController` | Map pages, reverse geocoding and the separate legacy in-memory map-point demo. |
+| `KartController` | Map overview and reverse geocoding. |
 | `InformationController` | About, help and contact pages. The contact form returns a confirmation view; it does not store or email submissions. |
 
 ## Database and file storage
@@ -96,8 +96,7 @@ Schema changes are versioned in `202Oppgave/Migrations/`. The model snapshot is 
 - **Database records:** resources, needs, categories, allocations and Identity data are stored in MariaDB, not in application-memory lists.
 - **Database container:** AppHost uses `ContainerLifetime.Persistent`, but does not explicitly configure a named database volume or bind mount. Keeping a container alive is not the same as defining durable storage for container replacement; this configuration does not guarantee preservation when MariaDB is removed/recreated.
 - **Uploaded images:** AppHost explicitly mounts the named volume `ressursbilder` at `/app/wwwroot/uploads`. Resource photos are saved under `uploads/ressurser`.
-- **Legacy map demo:** `KartController._punkter` remains a static in-memory list used by `/Kart/Index` and `/Kart/Data`. Those points are temporary and separate from the persisted resources and needs.
-
+- **Map data:** All resource and need locations are stored in MariaDB through the existing repositories. The map retrieves persisted data through `/Resource/Geo` and `/Need/Geo`. No separate map-point table is required.
 ## Identity and access control
 
 ASP.NET Core Identity stores users, password hashes, roles and related Identity data in MariaDB. Authentication uses cookies through `SignInManager`; this is not JWT authentication.

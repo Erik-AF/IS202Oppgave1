@@ -89,7 +89,7 @@ Browser (Razor HTML, CSS, JavaScript and Leaflet)
 
 **.NET Aspire AppHost** starts the web application and MariaDB in Docker. Resource photos are stored in the named Docker volume `ressursbilder`; the database stores their paths. EF Core migrations are applied when the application starts.
 
-The system supports direct allocation and provider offers that must be approved by the need's authorized owner or an admin. The main map reads persisted resources and needs through JSON endpoints. A separate legacy map demo still uses an in-memory list. AppHost does not explicitly define a named MariaDB data volume.
+The system supports direct allocation and provider offers that must be approved by the need's authorized owner or an admin. The main map reads persisted resources and needs through JSON endpoints. All resource and need locations are stored in MariaDB. The map retrieves geographical data exclusively trough the /Resource/Geo and /Need/Geo endpoints.. AppHost does not explicitly define a named MariaDB data volume.
 
 See [System Architecture](SystemArchitecture.md) for the component diagram, data relationships, access control, request flows and current storage limitations.
 
