@@ -16,7 +16,7 @@ namespace CrisisSystem.Tests;
 public class ResourceOfferTests
 {
     private static (AllocationController Controller, Mock<IAllocationRepository> Repo) Setup(
-        string role = RoleNames.ResourceProvider, string userId = "provider", string resourceOwner = "provider")
+        string role = RoleNames.ResourceProvider, string userId = "provider", string resourceOwner = "provider", string? needOwner = "actor")
     {
         var allocations = new Mock<IAllocationRepository>();
         allocations.Setup(r => r.GetByIdAsync(10)).ReturnsAsync(new Allocation
@@ -38,7 +38,7 @@ public class ResourceOfferTests
             new() { Id = 2, UserId = "provider", Type = "Bil", Status = "Reservert" }
         });
         var needs = new Mock<INeedRepository>();
-        var need = new Need { Id = 7, UserId = "actor", Type = "Strøm" };
+        var need = new Need { Id = 7, UserId = needOwner, Type = "Strøm" };
         needs.Setup(r => r.GetByIdAsync(7)).ReturnsAsync(need);
         needs.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<Need> { need });
         var http = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity(new[]
@@ -149,5 +149,47 @@ public class ResourceOfferTests
         Assert.IsType<ForbidResult>(await actor.OfferToNeed(7));
         var (provider, _) = Setup();
         Assert.IsType<NotFoundResult>(await provider.OfferToNeed(999));
+    }
+
+    [Fact]
+    public async Task Provider_NeedWithoutOwner_ShouldRejectOffer()
+    {
+        var (controller, repo) = Setup(needOwner: null);
+        var model = new AllocateViewModel { NeedId = 7, ResourceIds = new() { 1 } };
+
+        var result = await controller.Create(model);
+
+        Assert.IsType<ViewResult>(result);
+        Assert.False(controller.ModelState.IsValid);
+        repo.Verify(r => r.OfferAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        repo.Verify(r => r.AllocateAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task MissingAllocation_ShouldReturnNotFoundWithoutChangingAnything()
+    {
+        var (controller, repo) = Setup(RoleNames.PublicActor, "actor");
+
+        var approval = await controller.Approve(999, null);
+        var removal = await controller.Remove(999, null);
+
+        Assert.IsType<NotFoundResult>(approval);
+        Assert.IsType<NotFoundResult>(removal);
+        repo.Verify(r => r.ApproveAsync(It.IsAny<int>()), Times.Never);
+        repo.Verify(r => r.RemoveAsync(It.IsAny<int>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Admin_ShouldApproveOfferForAnotherOwnersNeed()
+    {
+        var (controller, repo) = Setup(RoleNames.Admin, "admin");
+
+        var result = await controller.Approve(10, null);
+
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Confirmation", redirect.ActionName);
+        Assert.Equal("Need", redirect.ControllerName);
+        Assert.Equal(7, redirect.RouteValues!["id"]);
+        repo.Verify(r => r.ApproveAsync(10), Times.Once);
     }
 }
