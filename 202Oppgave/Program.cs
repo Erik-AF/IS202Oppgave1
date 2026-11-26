@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.AddServerHeader = false;
+});
 
 ///Fjernet pga smart kontroller problem
 ///builder.AddServiceDefaults();
@@ -93,6 +97,24 @@ using (var scope = app.Services.CreateScope())
     await IdentitySeeder.SeedDevelopmentPublicActorAsync(userManager, publicPassword);
 }
 
+///Fjernet pga smart kontroller problem
+//app.MapDefaultEndpoints();
+
+// Configure the HTTP request pipeline.
+app.Use(async (context, next) =>
+{
+    context.Response.OnStarting(() =>
+    {
+        var headers = context.Response.Headers;
+        headers["X-Frame-Options"] = "SAMEORIGIN";
+        headers["X-Content-Type-Options"] = "nosniff";
+        headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+
+        return Task.CompletedTask;
+    });
+
+    await next(context);
+});
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
