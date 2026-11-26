@@ -1,5 +1,4 @@
-/// Felles meny- og scrolleffekter. Profilmenyen kan også lukkes med tastatur.
-﻿
+﻿/// Felles meny- og scrolleffekter. Profilmenyen kan også lukkes med tastatur.
 
 (function () {
     const toggle = document.querySelector('.nav-toggle');
@@ -109,7 +108,7 @@
         if (!menu.contains(event.target)) menu.open = false;
     });
     menu.addEventListener('focusout', function (event) {
-        if (!menu.contains(event.relatedTarget)) menu.open = false;
+        if (event.relatedTarget && !menu.contains(event.relatedTarget)) menu.open = false;
     });
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape' && menu.open) {
