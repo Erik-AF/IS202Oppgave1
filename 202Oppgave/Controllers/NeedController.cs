@@ -13,7 +13,6 @@ public class NeedController : Controller
 {
     private readonly INeedRepository _needRepository;
 
-    // Tar imot repositoryet som brukes til å hente og lagre behov i databasen.
     public NeedController(INeedRepository needRepository)
     {
         _needRepository = needRepository;
@@ -26,7 +25,6 @@ public class NeedController : Controller
         return View(needs.Select(ToModel).ToList());
     }
 
-    // Bare offentlige aktører og admin kan registrere behov, ikke providere
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     [HttpGet]
     public IActionResult Create()
@@ -34,20 +32,19 @@ public class NeedController : Controller
         return View(new NeedViewModel());
     }
 
-    // Bare offentlige aktører og admin kan registrere behov, ikke providere
+    /// Validerer og lagrer behovet med oppretter hentet fra innloggingen, aldri fra skjemadata.
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(NeedViewModel model)
     {
-        // Oppretteren hentes fra innloggingen, aldri fra skjemadata.
+
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (User.Identity?.IsAuthenticated != true || string.IsNullOrWhiteSpace(userId))
         {
             return Challenge();
         }
 
-        // Beholder skjemadataene dersom brukeren må rette opp feil.
         if (!ModelState.IsValid)
         {
             return View(model);
@@ -84,6 +81,7 @@ public class NeedController : Controller
         return View(ToModel(need));
     }
 
+    /// Kontrollerer eierskap og fyller redigeringsskjemaet fra det lagrede behovet.
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
@@ -97,7 +95,6 @@ public class NeedController : Controller
 
         if (!OwnsNeed(need)) return Forbid();
 
-        // Fyller redigeringsskjemaet med verdiene som allerede er lagret.
         var model = new NeedViewModel
         {
             Type = need.Type,
@@ -113,6 +110,7 @@ public class NeedController : Controller
         return View(model);
     }
 
+    /// Kontrollerer eierskap og validering før eksisterende behov oppdateres.
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -133,7 +131,6 @@ public class NeedController : Controller
             return View(model);
         }
 
-        // Oppdaterer det eksisterende behovet med verdiene fra skjemaet.
         need.Type = model.Type;
         need.Location = model.Location;
         need.Priority = model.Priority!.Value;
@@ -147,6 +144,7 @@ public class NeedController : Controller
         return RedirectToAction(nameof(Confirmation), new { id });
     }
 
+    /// Kontrollerer eierskap og sletter behovet gjennom repositoryet.
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -161,18 +159,17 @@ public class NeedController : Controller
 
         if (!OwnsNeed(need)) return Forbid();
 
-        // Sletter behovet og sender brukeren tilbake til oversikten.
         await _needRepository.DeleteAsync(id);
 
         return RedirectToAction(nameof(Index));
     }
 
+    /// Returnerer behov med koordinater og kartform for visning i kartet.
     [HttpGet]
     public async Task<IActionResult> Geo()
     {
         var needs = await _needRepository.GetAllAsync();
 
-        // Kartet bruker navnet Planlagt for behov som ikke er akutte.
         var data = needs.Select(need => new
         {
             need.Id,
@@ -188,6 +185,7 @@ public class NeedController : Controller
 
         return Json(data);
     }
+    /// Sammenligner innlogget bruker med behovets lagrede oppretter.
     private bool OwnsNeed(NeedEntity need)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -196,7 +194,6 @@ public class NeedController : Controller
             && userId == need.UserId;
     }
 
-    // Gjør databaseobjektet om til modellen som brukes i visningene.
     private Need ToModel(NeedEntity need)
     {
         return new Need

@@ -24,8 +24,8 @@ public class ResourceProviderController : Controller
         _signInManager = signInManager;
         _resourceRepository = resourceRepository;
     }
-   
-    
+
+    /// Viser de fire første ressursene fra leverandørens egen ressursliste.
     [HttpGet]
     public async Task<IActionResult> Index()
     {
@@ -40,17 +40,16 @@ public class ResourceProviderController : Controller
         return View(resources.Take(4).ToList());
     }
 
-    
+    /// Viser alle ressurser registrert av innlogget leverandør.
     [HttpGet]
     public async Task<IActionResult> Resources()
     {
-        // Henter ID-en til den innloggede brukeren
+
         var userId = _userManager.GetUserId(User);
 
         if (userId == null)
             return Challenge();
 
-        // Viser bare ressursene denne brukeren har registrert
         var resources = await _resourceRepository.GetByUserIdAsync(userId);
 
         return View(resources);
@@ -74,6 +73,7 @@ public class ResourceProviderController : Controller
         return View(model);
     }
 
+    /// Validerer profilendringer, holder e-post og brukernavn like og fornyer innloggingen etter lagring.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Profile(ProfileViewModel model)
@@ -102,7 +102,6 @@ public class ResourceProviderController : Controller
         user.FullName = model.FullName.Trim();
         user.PhoneNumber = model.PhoneNumber.Trim();
 
-        // Innloggingen bruker e-postadresse som brukernavn.
         user.Email = email;
         user.UserName = email;
 
@@ -127,5 +126,4 @@ public class ResourceProviderController : Controller
         return RedirectToAction(nameof(Profile));
     }
 }
-
 

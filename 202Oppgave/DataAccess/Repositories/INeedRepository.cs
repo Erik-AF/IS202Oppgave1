@@ -1,4 +1,4 @@
-﻿using _202Oppgave.Models.Entities;
+using _202Oppgave.Models.Entities;
 namespace _202Oppgave.DataAccess.Repositories
 {
     public interface INeedRepository
@@ -7,6 +7,7 @@ namespace _202Oppgave.DataAccess.Repositories
         Task<List<Need>> GetAllAsync();
         Task<Need?> GetByIdAsync(int id);
         Task UpdateAsync(Need need);
+        /// Sletter behovet og tilhørende allokeringer. Frigjør ressurser uten allokeringer til andre behov.
         Task DeleteAsync(int id);
     }
 }

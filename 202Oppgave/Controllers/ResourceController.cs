@@ -10,40 +10,31 @@ using ResourceEntity = _202Oppgave.Models.Entities.Resource;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 
-// Skiller mellom den gamle modellen og database-entity
 using ResourceModel = _202Oppgave.Models.Resource;
 
 namespace _202Oppgave.Controllers;
 
-
- ///ResourceController – registrering og visning av ressurser.
- 
 public class ResourceController : Controller
 {
     private readonly IResourceRepository _repo;
 
-// Gir tilgang til wwwroot-mappen, der opplastede bilder lagres
     private readonly IWebHostEnvironment _env;
 
-// Mappen bildene lagres i, under wwwroot
     private const string UploadFolder = "uploads/ressurser";
 
-// Dependency Injection
     public ResourceController(IResourceRepository repo, IWebHostEnvironment env)
     {
         _repo = repo;
         _env = env;
     }
-    // GET: /Resource
-    // Henter alle ressurser fra MariaDB
-    // ResourceProvider og Admin kan åpne Create
+
+    /// Filtrerer og sorterer ressursene ut fra søk, kategori, status og område.
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     public async Task<IActionResult> Index(string? q, string? category, string? status, string? area, string? sort)
     {
         var entities = await _repo.GetAllAsync();
         var all = entities.Select(ToModel).ToList();
 
-        // Valgene i nedtrekkslistene lages fra ALLE ressursene, før filtrering
         var model = new ResourceIndexViewModel
         {
             Q = q,
@@ -65,6 +56,7 @@ public class ResourceController : Controller
         return View(model);
     }
 
+    /// Eksporterer tilgjengelige ressurser som passer filtrene til en XLSX-fil.
     [HttpGet]
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     public async Task<IActionResult> ExportExcel(string? q, string? category, string? status, string? area, string? sort)
@@ -78,13 +70,13 @@ public class ResourceController : Controller
             $"ressurser-{exportedAt:yyyyMMdd-HHmmss}.xlsx");
     }
 
+    /// Bruker samme søk, filterverdier og sortering for ressursoversikten og eksporten.
     private static IEnumerable<ResourceModel> FilterResources(IEnumerable<ResourceModel> all,
         string? q, string? category, string? status, string? area, string? sort)
     {
-        // Starter med alle, og fjerner det som ikke passer for hvert filter
+
         IEnumerable<Models.Resource> result = all;
 
-        // Søk i type, beskrivelse, sted og eier
         if (!string.IsNullOrWhiteSpace(q))
         {
             var search = q.Trim().ToLower();
@@ -110,7 +102,6 @@ public class ResourceController : Controller
             result = result.Where(r => r.Area == area);
         }
 
-        // Sortering. Standard er nyeste først (høyest Id).
         result = sort switch
         {
             "category" => result.OrderBy(r => r.CategoryName),
@@ -120,27 +111,22 @@ public class ResourceController : Controller
 
         return result;
     }
-    // GET: /Resource/Create
-    // Viser et tomt registreringsskjema.
-    // ResourceProvider og Admin kan åpne Create
+
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     public async Task<IActionResult> Create()
     {
         var model = new ResourceViewModel();
-        await FillCategoryOptionsAsync(model);   
+        await FillCategoryOptionsAsync(model);
         return View(model);
     }
 
-    // POST: /Resource/Create
-    // Lagrer en ny ressurs i MariaDB
-    // ResourceProvider og Admin kan åpne Create
+    /// Validerer ressursen, lagrer eventuell bildefil og knytter oppføringen til innlogget bruker.
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ResourceViewModel model)
     {
-        // Hvem som registrerer hentes fra innloggingen, aldri fra skjemaet.
-        // Da kan ingen registrere en ressurs i en annens navn.
+
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (User.Identity?.IsAuthenticated != true || string.IsNullOrWhiteSpace(userId))
         {
@@ -148,11 +134,10 @@ public class ResourceController : Controller
         }
         if (!ModelState.IsValid)
         {
-            await FillCategoryOptionsAsync(model);   
+            await FillCategoryOptionsAsync(model);
             return View(model);
         }
 
-        // Konverterer ViewModel til database-entity
         var resource = new ResourceEntity
         {
             UserId = userId,
@@ -173,26 +158,19 @@ public class ResourceController : Controller
 
         };
 
-        //Lagrer ressursen i MariaDB først, så den får en Id
         await _repo.AddAsync(resource);
 
-        // Lagrer bildet i databasen hvis brukeren har valgt et.
-        // Bildet trenger ressursens Id, derfor skjer dette etter AddAsync.
         if (model.Image != null)
         {
             resource.ImagePath = await SaveImageAsync(resource.Id, model.Image);
             await _repo.UpdateAsync(resource);
         }
 
-        // Sender brukeren til detaljsiden
         return RedirectToAction(
             nameof(Details),
             new { id = resource.Id });
     }
-    
-    // GET: /Resource/Image/5
-    // Henter bildet til en ressurs fra databasen og sender det til nettleseren.
-    // Alle innloggede kan se bildene.
+
     [Authorize]
     public async Task<IActionResult> Image(int id)
     {
@@ -203,12 +181,9 @@ public class ResourceController : Controller
             return NotFound();
         }
 
-        // File() sender bytes med riktig bildetype, så nettleseren viser det som et bilde
         return File(image.Data, image.ContentType);
     }
 
-    // GET: /Resource/Details/5
-    // Henter én ressurs fra MariaDB
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin + "," + RoleNames.PublicActor)]
     public async Task<IActionResult> Details(int id)
     {
@@ -221,28 +196,24 @@ public class ResourceController : Controller
 
         var model = ToModel(entity);
 
-        // Rediger og Slett vises bare for eieren og admin
         model.CanManage = CanManageResource(entity);
 
         return View(model);
     }
 
-    //GET: /Resource/Edit/5
-    // Henter ressursen fra Maria DB og viser skjeamet ferdig utfylt. 
+    /// Kontrollerer tilgang og fyller redigeringsskjemaet med eksisterende ressursdata.
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
         var entity = await _repo.GetByIdAsync(id);
-        
+
         if (entity == null)
         {
             return NotFound();
         }
 
-        // Eieren og admin kan redigere ressursen
         if (!CanManageResource(entity)) return Forbid();
-        //Kopierer verdier fra databsen over i skjemaet
-        
+
         var model = new ResourceViewModel
         {
             Type = entity.Type,
@@ -250,7 +221,7 @@ public class ResourceController : Controller
             Area = entity.Name,
             Latitude = entity.Latitude,
             Longitude = entity.Longitude,
-            // Lagret kartform, så kartet viser den samme markeringen som ble registrert
+
             GeometryJson = entity.GeometryJson,
             AvailableFrom = entity.AvailableFrom,
             AvailableTo = entity.AvailableTo,
@@ -262,22 +233,19 @@ public class ResourceController : Controller
             ImagePath = entity.ImagePath,
             CategoryId = entity.CategoryId
 
-            
         };
         ViewBag.ResourceID = id;
-        await FillCategoryOptionsAsync(model);       
+        await FillCategoryOptionsAsync(model);
         return View(model);
     }
-    
-    // GET: /Resource/Geo
-    // Henter kartdata fra MariaDB
+
+    /// Returnerer ressursenes posisjoner og kartformer som JSON.
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin + "," + RoleNames.PublicActor)]
     [HttpGet]
     public async Task<IActionResult> Geo()
     {
         var resources = await _repo.GetAllAsync();
 
-        // Resource Providers skal kun se egne ressurser
         if (User.IsInRole(RoleNames.ResourceProvider) &&
             !User.IsInRole(RoleNames.Admin) &&
             !User.IsInRole(RoleNames.PublicActor))
@@ -309,9 +277,8 @@ public class ResourceController : Controller
 
         return Json(data);
     }
-    
-    // POST: /Resource/Delete
-    // Sletter ressurs fra MariaDB
+
+    /// Kontrollerer tilgang før ressursen og det tilhørende bildet slettes.
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -324,18 +291,16 @@ public class ResourceController : Controller
             return NotFound();
         }
 
-        // Eieren og admin kan slette ressursen
         if (!CanManageResource(resource)) return Forbid();
 
-        // Sletter bildefilen også, så den ikke blir liggende igjen
-        
         DeleteImage(resource.ImagePath);
 
         await _repo.DeleteAsync(id);
 
         return RedirectToAction(nameof(Index));
     }
-    // Sjekker om innlogget bruker er den som registrerte ressursen
+
+    /// Sammenligner innlogget bruker med ressursens lagrede eier.
     private bool OwnsResource(ResourceEntity resource)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -345,15 +310,13 @@ public class ResourceController : Controller
                && userId == resource.UserId;
     }
 
-    // Eieren og admin kan redigere og slette ressursen.
-    // Admin kan det for alle ressurser, også eldre ressurser uten eier.
+    /// Tillater ressursens eier eller administrator å endre ressursen.
     private bool CanManageResource(ResourceEntity resource)
     {
         return OwnsResource(resource) || User.IsInRole(RoleNames.Admin);
     }
-    
-    // Konverterer database-entity til modellen
-    // som MVC Views allerede bruker
+
+    /// Bygger visningsdata og foretrekker kontaktinformasjon fra eierens profil fremfor eldre ressursfelter.
     private static ResourceModel ToModel(ResourceEntity entity)
     {
         return new ResourceModel
@@ -366,8 +329,7 @@ public class ResourceController : Controller
             Longitude = entity.Longitude,
             AvailableFrom = entity.AvailableFrom,
             AvailableTo = entity.AvailableTo,
-            // Kontaktinfo hentes fra brukeren som registrerte ressursen.
-            // Eldre ressurser har ingen bruker, da brukes feltene som ble lagret på ressursen.
+
             ContactName = entity.User?.FullName ?? entity.ContactName,
             ContactPhone = entity.User?.PhoneNumber ?? entity.ContactPhone,
             ContactEmail = entity.User?.Email ?? entity.ContactEmail,
@@ -378,42 +340,38 @@ public class ResourceController : Controller
             CategoryName = entity.Category?.Name
         };
     }
-    // POST: /Resource/Edit/5
-    // Lagrer endringene i MariaDB.
+
+    /// Kontrollerer tilgang og validering før ressursen og eventuelt bildet oppdateres.
     [Authorize(Roles = RoleNames.ResourceProvider + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, ResourceViewModel model)
     {
-        // Hent den ekte ressursen fra databasen
+
         var entity = await _repo.GetByIdAsync(id);
         if (entity == null)
         {
             return NotFound();
         }
 
-        // Eieren og admin kan redigere ressursen
         if (!CanManageResource(entity)) return Forbid();
 
-        // Ugyldig skjema: vis det på nytt med feilmeldinger
         if (!ModelState.IsValid)
         {
             ViewBag.ResourceId = id;
-            // Viser dagens bilde igjen, siden det ikke sendes med skjemaet
+
             model.ImagePath = entity.ImagePath;
             await FillCategoryOptionsAsync(model);
             return View(model);
         }
-        // Nytt bilde valgt: lagre det nye og slett det gamle.
-        // Ikke valgt: behold bildet som allerede er lagret.
+
         if (model.Image != null)
         {
-            // Fjerner eventuell gammel bildefil fra disk (eldre ressurser)
+
             DeleteImage(entity.ImagePath);
             entity.ImagePath = await SaveImageAsync(id, model.Image);
         }
 
-        // Kopier verdiene fra skjemaet over i ressursen
         entity.Type = model.Type;
         entity.Description = model.Description;
         entity.Name = model.Area;
@@ -425,27 +383,24 @@ public class ResourceController : Controller
         entity.Status = model.Status;
         entity.CategoryId = model.CategoryId;
 
-        // Lagre i MariaDB
         await _repo.UpdateAsync(entity);
 
         return RedirectToAction(nameof(Details), new { id });
     }
-    // Lagrer et opplastet bilde i databasen (tabellen ResourceImages).
-    // Returnerer adressen bildet vises fra, som lagres i ImagePath.
+
+    /// Bildet lagres som bytes i databasen. ImagePath peker på endepunktet som leverer bildet.
     private async Task<string> SaveImageAsync(int resourceId, IFormFile image)
     {
-        // Leser bildet inn i minnet som bytes
+
         using var memory = new MemoryStream();
         await image.CopyToAsync(memory);
 
         await _repo.SaveImageAsync(resourceId, memory.ToArray(), image.ContentType);
 
-        // Image-actionen under henter bildet fra databasen
         return $"/Resource/Image/{resourceId}";
     }
-    
-    // Sletter et opplastet bilde fra disk.
-    // Sletter bare filer i uploads-mappen, aldri standardbildene.
+
+    /// Rydder eldre diskbaserte bilder. Bare stier under uploads behandles her.
     private void DeleteImage(string? imagePath)
     {
         if (string.IsNullOrWhiteSpace(imagePath) ||
@@ -460,9 +415,8 @@ public class ResourceController : Controller
             System.IO.File.Delete(fullPath);
         }
     }
-    
-    // Fyller nedtrekkslisten med kategorier fra databasen.
-    // Brukes både når skjemaet vises første gang og når det vises på nytt med feil.
+
+    /// Fyller kategorivalgene fra databasen, også når skjemaet må vises igjen etter feil.
     private async Task FillCategoryOptionsAsync(ResourceViewModel model)
     {
         var categories = await _repo.GetCategoriesAsync();

@@ -1,12 +1,14 @@
-﻿
+
 using _202Oppgave.Models.Entities;
 using _202Oppgave.Models.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace _202Oppgave.Services
 {
+    /// Oppretter manglende roller og demonstrasjonsbrukere ved oppstart.
     public static class IdentitySeeder
     {
+        /// Oppretter de faste rollene hvis de ikke finnes fra før.
         public static async Task SeedRolesAsync(
             RoleManager<IdentityRole> roleManager)
         {
@@ -35,6 +37,7 @@ namespace _202Oppgave.Services
             }
         }
 
+        /// Sikrer at demonstrasjonsbrukeren for administrator finnes med riktig rolle.
         public static async Task SeedDevelopmentAdminAsync(
             UserManager<ApplicationUser> userManager,
             string password)
@@ -46,6 +49,7 @@ namespace _202Oppgave.Services
                 RoleNames.Admin);
         }
 
+        /// Sikrer at demonstrasjonsbrukeren for ressursleverandør finnes med riktig rolle.
         public static async Task SeedDevelopmentResourceProviderAsync(
             UserManager<ApplicationUser> userManager,
             string password)
@@ -57,6 +61,7 @@ namespace _202Oppgave.Services
                 RoleNames.ResourceProvider);
         }
 
+        /// Sikrer at demonstrasjonsbrukeren for offentlig aktør finnes med riktig rolle.
         public static async Task SeedDevelopmentPublicActorAsync(
             UserManager<ApplicationUser> userManager,
             string password)
@@ -68,6 +73,7 @@ namespace _202Oppgave.Services
                 RoleNames.PublicActor);
         }
 
+        /// Oppretter en manglende demonstrasjonsbruker og sikrer rolletilknytningen.
         private static async Task SeedUserAsync(
             UserManager<ApplicationUser> userManager,
             string email,

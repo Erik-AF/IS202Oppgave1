@@ -11,10 +11,7 @@ using ResourceEntity = _202Oppgave.Models.Entities.Resource;
 
 namespace _202Oppgave.Controllers;
 
-/*
- * AllocationController – allokerer valgte ressurser til et behov.
- * Leverandører kan tilby egne ressurser; behovets eier godkjenner tilbud.
- */
+/// Håndterer direkte allokering og tilbud som må godkjennes av behovets eier eller administrator.
 [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin + "," + RoleNames.ResourceProvider)]
 public class AllocationController : Controller
 {
@@ -22,7 +19,6 @@ public class AllocationController : Controller
     private readonly IResourceRepository _resourceRepo;
     private readonly INeedRepository _needRepo;
 
-    // Dependency Injection: får alle tre repositoryene fra Program.cs
     public AllocationController(
         IAllocationRepository allocationRepo,
         IResourceRepository resourceRepo,
@@ -34,13 +30,14 @@ public class AllocationController : Controller
     }
 
     private bool IsProvider => User.IsInRole(RoleNames.ResourceProvider);
+    /// Tillater administrator eller offentlig aktør som eier behovet å behandle tilbud.
     private bool CanManage(_202Oppgave.Models.Entities.Need need) =>
         User.IsInRole(RoleNames.Admin)
         || (User.IsInRole(RoleNames.PublicActor)
             && !string.IsNullOrEmpty(need.UserId)
             && need.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-    // Fra et behov velger leverandøren en egen ressurs før den vanlige tilbudssiden.
+    /// Viser leverandørens tilgjengelige ressurser for det valgte behovet. Innsending går direkte til godkjenning.
     [Authorize(Roles = RoleNames.ResourceProvider)]
     [HttpGet]
     public async Task<IActionResult> OfferToNeed(int needId)
@@ -66,11 +63,10 @@ public class AllocationController : Controller
         return View(model);
     }
 
-    // GET: /Allocation/Create?resourceIds=3&resourceIds=7
-    // Viser de valgte ressursene og lar brukeren velge et behov.
+    /// Viser valgte ressurser og behovsvalg etter eierskapskontroll for leverandører.
     public async Task<IActionResult> Create(List<int> resourceIds, int? needId = null)
     {
-        // Ingen ressurser valgt: tilbake til listen med en melding
+
         if (resourceIds.Count == 0)
         {
             TempData["Message"] = "Velg minst én ressurs før du allokerer.";
@@ -84,8 +80,7 @@ public class AllocationController : Controller
         return View(model);
     }
 
-    // POST: /Allocation/Create
-    // Leverandører sender tilbud; offentlige aktører beholder direkte allokering.
+    /// Sender leverandørens egne ressurser som tilbud. Andre tillatte roller allokerer direkte.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(AllocateViewModel model)
@@ -97,14 +92,12 @@ public class AllocationController : Controller
 
         if (IsProvider && !await OwnsResourcesAsync(model.ResourceIds)) return Forbid();
 
-        // Ugyldig skjema (f.eks. ikke valgt behov): vis siden på nytt med feilmelding
         if (!ModelState.IsValid)
         {
             await FillAsync(model);
             return View(model);
         }
 
-        // Sjekker at behovet faktisk finnes
         var need = await _needRepo.GetByIdAsync(model.NeedId!.Value);
         if (need == null)
         {
@@ -132,10 +125,10 @@ public class AllocationController : Controller
             ? $"{count} ressurs(er) allokert til behovet."
             : "Ingen av ressursene var tilgjengelige lenger. Ingenting ble allokert.";
 
-        // Sender brukeren til behovssiden, der de allokerte ressursene vises
         return RedirectToAction("Confirmation", "Need", new { id = need.Id });
     }
-    
+
+    /// Viser inntil tre filtrerte ressursforslag for behovet.
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     [HttpGet]
     public async Task<IActionResult> FromNeed(int needId, string? q = null, string? category = null)
@@ -145,6 +138,7 @@ public class AllocationController : Controller
         return View(model);
     }
 
+    /// Beregner forslag på nytt før lagring, fordi innsendte ID-er og tilgjengelighet kan ha endret seg.
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -155,7 +149,6 @@ public class AllocationController : Controller
         if (selected.Count == 0)
             ModelState.AddModelError(nameof(model.ResourceIds), "Velg minst én foreslått ressurs.");
 
-        // Beregn på nytt: skjulte ID-er kan endres, og tilgjengeligheten kan ha endret seg.
         if (selected.Any(id => !model.Suggestions.Any(r => r.Id == id)))
             ModelState.AddModelError(nameof(model.ResourceIds), "Forslagene har endret seg. Velg blant de tilgjengelige ressursene nedenfor.");
 
@@ -168,6 +161,7 @@ public class AllocationController : Controller
         return RedirectToAction("Confirmation", "Need", new { id = model.NeedId });
     }
 
+    /// Filtrerer tilgjengelige ressurser innenfor fem kilometer og beholder høyst tre av de nærmeste treffene.
     private async Task<bool> FillSuggestionsAsync(NeedAllocationViewModel model)
     {
         var need = await _needRepo.GetByIdAsync(model.NeedId);
@@ -183,7 +177,6 @@ public class AllocationController : Controller
             .OrderBy(c => c)
             .ToList();
 
-        // Filtreringen gjelder bare tilgjengelige ressurser innenfor 5 km.
         var query = model.Q?.Trim();
         model.Suggestions = nearby
             .Where(r => string.IsNullOrWhiteSpace(model.Category) || r.Category == model.Category)
@@ -196,8 +189,7 @@ public class AllocationController : Controller
         return true;
     }
 
-    // POST: /Allocation/Remove/5
-    // Fjerner en ressurs fra et behov, og sender brukeren tilbake til siden de kom fra.
+    /// Kontrollerer behandlingsrett og fjerner allokeringen før retur til redigering eller behovsdetaljer.
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -215,11 +207,11 @@ public class AllocationController : Controller
 
         TempData["Message"] = "Ressursen er fjernet fra behovet.";
 
-        // Bare to lovlige sider å gå tilbake til. Alt annet blir behovssiden.
         var action = returnTo == "Edit" ? "Edit" : "Confirmation";
         return RedirectToAction(action, "Need", new { id = needId });
     }
 
+    /// Kontrollerer behandlingsrett og forsøker å bekrefte det ventende tilbudet.
     [Authorize(Roles = RoleNames.PublicActor + "," + RoleNames.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -236,7 +228,7 @@ public class AllocationController : Controller
             "Need", new { id = allocation.NeedId });
     }
 
-    // Ressurseierskap kontrolleres også ved POST; skjulte ID-er kan endres.
+    /// Kontrollerer alle innsendte ressurs-ID-er mot innlogget bruker. Skjulte skjemafelt er ikke bevis på eierskap.
     private async Task<bool> OwnsResourcesAsync(List<int> ids)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -245,8 +237,7 @@ public class AllocationController : Controller
         return ids.All(id => resources.Any(r => r.Id == id && r.UserId == userId));
     }
 
-    // Fyller visningsdataene: de valgte ressursene og listen over behov.
-    // Brukes både første gang siden vises og når den vises på nytt med feil.
+    /// Gjenoppbygger ressurs- og behovsvalg, også etter valideringsfeil. Rollen bestemmer tilbudsmodus.
     private async Task FillAsync(AllocateViewModel model)
     {
         model.IsOffer = IsProvider;
@@ -269,8 +260,6 @@ public class AllocationController : Controller
             .ToList();
     }
 
-    // Gjør entityen om til modellen viewet bruker.
-    // Bare feltene allokeringssiden viser.
     private static ResourceModel ToModel(ResourceEntity entity)
     {
         return new ResourceModel

@@ -67,7 +67,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.Area)));
     }
 
-    // Kontaktperson er valgfri inntil den hentes fra brukerprofilen
     [Fact]
     public void EmptyContactName_ShouldPassValidation()
     {
@@ -80,7 +79,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.ContactName)));
     }
 
-    // Telefon er valgfri inntil den hentes fra brukerprofilen
     [Fact]
     public void EmptyContactPhone_ShouldPassValidation()
     {
@@ -104,8 +102,7 @@ public class ResourceViewModelTests
         Assert.Contains(results, result =>
             result.MemberNames.Contains(nameof(ResourceViewModel.CategoryId)));
     }
-    
-    
+
     [Theory]
     [InlineData(-91)]
     [InlineData(91)]
@@ -158,7 +155,6 @@ public class ResourceViewModelTests
             result.MemberNames.Contains(nameof(ResourceViewModel.Longitude)));
     }
 
-    
     [Fact]
     public void InvalidEmail_ShouldFailValidation()
     {
@@ -268,4 +264,3 @@ public class ResourceViewModelTests
         return new FormFile(stream, 0, size, "Image", fileName);
     }
 }
-      

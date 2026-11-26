@@ -1,15 +1,5 @@
 @model _202Oppgave.ViewModels.AllocateViewModel
 
-@*
-    Create.cshtml – allokerer valgte ressurser til et behov.
-    Brukeren kommer hit fra ressurslisten etter å ha krysset av ressurser.
-    Skjemaet sendes til AllocationController.Create (POST).
-
-    Stil: samme design som behovssidene (need.css), med to kort:
-    1 Valgte ressurser og 2 Velg behov.
-    Egen CSS ligger i @section Head med prefiks al- (allokering).
-*@
-
 @{
     var title = Model.IsOffer ? "Tilby ressurs" : "Alloker ressurser";
     var backController = Model.IsOffer ? "ResourceProvider" : "Resource";
@@ -19,19 +9,16 @@
 
 @section Head {
 <style>
-    /* Smalere innhold, siden skjemaet bare har to felt */
+
     .al-wrap {
         max-width: 820px;
     }
 
-    /* Kortene ligger under hverandre */
     .al-cards {
         display: grid;
         gap: 14px;
     }
 
-    /* Hvite kort med runde hjørner.
-       .design-concept foran trengs for å vinne over .card i beredskap.css */
     .design-concept .need-design .al-card {
         background: #fff;
         border: 1px solid #dbe1d8;
@@ -39,7 +26,6 @@
         padding: 28px 30px;
     }
 
-    /* Knapp med kant: "Til alle ressurser" */
     .al-back {
         display: inline-flex;
         align-items: center;
@@ -57,7 +43,6 @@
         background: #f2f5ee;
     }
 
-    /* Listen med valgte ressurser */
     .al-list {
         list-style: none;
         padding: 0;
@@ -81,7 +66,6 @@
         color: #56615b;
     }
 
-    /* Feltnavn: små store bokstaver, som "PRIORITET" på behovssiden */
     .need-design .al-label {
         display: block;
         font-size: .75rem;
@@ -108,8 +92,6 @@
         margin-bottom: 20px;
     }
 
-    /* Nedtrekkslisten: samme høyde og kant som tekstfeltene.
-       appearance: none fjerner macOS-utseendet, så høyden virker i Safari */
     .design-concept .need-design .al-card .form-select {
         -webkit-appearance: none;
         appearance: none;
@@ -122,7 +104,6 @@
         color: #131c18;
     }
 
-    /* Knapperad nederst i kort 2 */
     .al-actions {
         display: flex;
         justify-content: flex-end;
@@ -136,10 +117,8 @@
 </style>
 }
 
-@* need-design gir samme stil som behovssidene (fra need.css) *@
 <div class="container home-content need-design al-wrap">
 
-    @* Brødsmulesti *@
     <nav class="need-breadcrumb" aria-label="Brødsmuler">
         <a asp-controller="Home" asp-action="Index">Hjem</a>
         <span aria-hidden="true">/</span>
@@ -148,7 +127,6 @@
         <span aria-current="page">@title</span>
     </nav>
 
-    @* Tittel til venstre og tilbake-knapp til høyre *@
     <header class="rl-head">
         <div>
             <h1>@title</h1>
@@ -159,7 +137,7 @@
 
     @if (!Model.Resources.Any())
     {
-        @* Alle valgte ressurser er allerede tatt av noen andre *@
+
         <div class="card al-card">
             <p>Ingen av de valgte ressursene er tilgjengelige lenger.</p>
             <a class="al-back" asp-controller="@backController" asp-action="@backAction">Velg andre ressurser</a>
@@ -169,7 +147,6 @@
     {
         <div class="al-cards">
 
-            @* --- Kort 1: de valgte ressursene --- *@
             <section class="card al-card">
                 <h2 class="need-section-title">
                     <span class="need-step" aria-hidden="true">1</span>Valgte ressurser (@Model.Resources.Count)
@@ -185,15 +162,12 @@
                 </ul>
             </section>
 
-            @* --- Kort 2: skjemaet --- *@
             <form class="card al-card" asp-action="Create" method="post">
                 <div asp-validation-summary="All" class="text-danger" role="alert"></div>
                 <h2 class="need-section-title">
                     <span class="need-step" aria-hidden="true">2</span>Velg behov
                 </h2>
 
-                @* Id-ene sendes med som skjulte felt, ett per ressurs.
-                   Alle heter "ResourceIds", så de havner i listen i ViewModel. *@
                 @foreach (var r in Model.Resources)
                 {
                     <input type="hidden" name="ResourceIds" value="@r.Id" />

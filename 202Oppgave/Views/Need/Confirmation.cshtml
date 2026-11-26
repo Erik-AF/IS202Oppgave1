@@ -1,8 +1,6 @@
 @model _202Oppgave.Models.Need
 @using _202Oppgave.Models.Authorization
 
-@* Gjenbruker bekreftelsessiden når et behov åpnes fra oversikten. *@
-
 @{
     ViewData["Title"] = "Registrert behov";
 }
@@ -22,8 +20,7 @@
         <p><strong>Breddegrad:</strong> @Model.Latitude</p>
         <p><strong>Lengdegrad:</strong> @Model.Longitude</p>
         <div id="details-map" ></div>
-        
-        @* Melding etter allokering, f.eks. "2 ressurs(er) allokert til behovet." *@
+
         @if (TempData["Message"] is string message)
         {
             <p class="need-details-message">@message</p>
@@ -35,7 +32,6 @@
             <p><a class="btn btn-primary" asp-controller="Allocation" asp-action="FromNeed" asp-route-needId="@Model.Id">Alloker ressurser →</a></p>
         }
 
-        @* Ressursene som er allokert til dette behovet *@
         @await Component.InvokeAsync("AllocatedResources", new { needId = Model.Id })
         <div class="detail-actions"><p><a asp-action="Index" class="btn btn-primary">Se alle behov</a></p>
         @if (User.Identity?.IsAuthenticated == true && User.IsInRole(RoleNames.ResourceProvider))
@@ -58,7 +54,7 @@
         Rediger
     </a>
 </p>
-@* Ber om bekreftelse for å unngå at et behov slettes ved et uhell. *@
+
 <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
       onsubmit="return confirm('Er du sikker på at du vil slette dette behovet?');"
 >
@@ -73,7 +69,7 @@
 
 @section Scripts {
     <script>
-        // JSON sørger for at koordinatene får punktum som desimalskille i JavaScript.
+
         const position = [@Json.Serialize(Model.Latitude), @Json.Serialize(Model.Longitude)];
         const map = L.map('details-map').setView(position, 15);
         const standardLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {

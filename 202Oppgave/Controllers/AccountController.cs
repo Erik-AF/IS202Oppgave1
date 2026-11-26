@@ -1,4 +1,4 @@
-﻿using _202Oppgave.Models.Entities;
+using _202Oppgave.Models.Entities;
 using _202Oppgave.Models.Authorization;
 using _202Oppgave.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
@@ -28,6 +28,7 @@ namespace _202Oppgave.Controllers
             return View();
         }
 
+        /// Validerer innlogging med Identity og omdirigerer bare til en lokal returadresse ved suksess.
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -70,6 +71,7 @@ namespace _202Oppgave.Controllers
             return View(new RegisterViewModel());
         }
 
+        /// Oppretter konto som ressursleverandør eller offentlig aktør. Kontoen fjernes hvis rolletildelingen feiler.
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -130,6 +132,7 @@ namespace _202Oppgave.Controllers
             return View(new ForgotPasswordViewModel());
         }
 
+        /// Genererer en tilbakestillingslenke for bekreftede kontoer. Samme bekreftelse vises uansett om kontoen finnes.
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
@@ -160,6 +163,7 @@ namespace _202Oppgave.Controllers
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
         }
 
+        /// Viser generell bekreftelse uten å avsløre om e-postadressen er registrert.
         [AllowAnonymous]
         [HttpGet]
         public IActionResult ForgotPasswordConfirmation()
@@ -179,6 +183,7 @@ namespace _202Oppgave.Controllers
             return View(new ResetPasswordViewModel { Code = code, Email = email });
         }
 
+        /// Dekoder tilbakestillingskoden og lar Identity validere koden og endre passordet.
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
@@ -226,6 +231,7 @@ namespace _202Oppgave.Controllers
             return View();
         }
 
+        /// Tillater bare lokale returadresser for å hindre omdirigering til eksterne nettsteder.
         private IActionResult RedirectToLocalUrl(string? returnUrl)
         {
             return Url.IsLocalUrl(returnUrl) ? Redirect(returnUrl) : RedirectToAction("Index", "Home")!;

@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using _202Oppgave.Models.Entities;
 namespace _202Oppgave.DataAccess.Repositories
 {
+    /// Lagrer behov gjennom EF Core og frigjør tilknyttede ressurser ved sletting.
     public class NeedRepository : INeedRepository
     {
         private readonly ApplicationDbContext _context;
@@ -10,6 +11,8 @@ namespace _202Oppgave.DataAccess.Repositories
         {
             _context = context;
         }
+        /// async lar metoden avvente databasearbeid uten å blokkere forespørselstråden.
+        /// await sikrer at lagringen er ferdig før metoden fullføres. Task representerer arbeidet.
         public async Task AddAsync(Need need)
         {
             await _context.Needs.AddAsync(need);
@@ -35,7 +38,7 @@ namespace _202Oppgave.DataAccess.Repositories
 
             if (need != null)
             {
-                // Tilbud og allokeringer forsvinner med behovet; frigjør ressursene samtidig.
+
                 var resources = await _context.Resources
                     .Where(r => r.Allocations.Any(a => a.NeedId == id)
                         && !r.Allocations.Any(a => a.NeedId != id))
