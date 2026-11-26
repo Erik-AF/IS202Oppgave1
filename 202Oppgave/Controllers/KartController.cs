@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 namespace _202Oppgave.Controllers;
 
+/// Viser kartoversikten, håndterer separate kartpunkter i minnet og slår opp adresser hos Kartverket.
 public class KartController : Controller
 {
     [HttpGet]
@@ -13,6 +14,7 @@ public class KartController : Controller
         Timeout = TimeSpan.FromSeconds(10)
     };
 
+    /// Validerer koordinater og foreslår nærmeste adresse innenfor 100 meter fra Kartverket. Feil gir mulighet for manuell innskriving.
     [HttpGet]
     public async Task<IActionResult> ReverseGeocode(
         [FromQuery] double? lat, [FromQuery] double? lon)
@@ -48,6 +50,7 @@ public class KartController : Controller
             }
 
             var first = addresses[0];
+            /// Leser et tekstfelt fra adresseoppslaget og bruker tom tekst når feltet mangler.
             string ReadText(string name) =>
                 first.TryGetProperty(name, out var value) &&
                 value.ValueKind == System.Text.Json.JsonValueKind.String

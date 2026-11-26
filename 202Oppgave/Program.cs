@@ -5,6 +5,7 @@ using _202Oppgave.Models.Entities;
 using _202Oppgave.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,16 +17,15 @@ builder.WebHost.ConfigureKestrel(options =>
 ///Fjernet pga smart kontroller problem
 ///builder.AddServiceDefaults();
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// CSRF-beskyttelse på alle POST-er i hele appen (som i Espens Program.cs).
+// Sjekker tokenet på POST, PUT, PATCH og DELETE, men ikke på GET.
+builder.Services.AddControllersWithViews(o =>
+    o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
-// Register repository
 builder.Services.AddScoped<_202Oppgave.DataAccess.Repositories.IResourceRepository, _202Oppgave.DataAccess.Repositories.ResourceRepository>();
 
-// Gjør NeedRepository tilgjengelig for controlleren gjennom INeedRepository.
 builder.Services.AddScoped<INeedRepository, NeedRepository>();
 
-// Gjør AllocationRepository tilgjengelig for controllere og ViewComponents.
 builder.Services.AddScoped<IAllocationRepository, AllocationRepository>();
 
 var connectionString = builder.Configuration
@@ -33,14 +33,11 @@ var connectionString = builder.Configuration
     ?? throw new InvalidOperationException(
         "DefaultConnection mangler.");
 
-
 builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseMySql(
         connectionString,
         ServerVersion.AutoDetect(connectionString)));
 
-
-///Registrere Identity
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
@@ -61,18 +58,15 @@ builder.Services.AddScoped<IEmailSender, ConsoleEmailSender>();
 
 var app = builder.Build();
 
-// Apply EF Core migrations at startup so the database schema is created/updated.
-// This runs once during application startup and will throw if migrations cannot be applied.
+/// Eget scope sørger for at databasekonteksten frigjøres etter migrering og opprettelse av startdata.
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-
-    // Apply EF Core migrations at startup so the database schema is created/updated.
-    // This runs once during application startup and will throw if migrations cannot be applied.
     try
     {
         var db = services.GetRequiredService<ApplicationDbContext>();
+        /// Bruker utestående migreringer. Feil kastes videre slik at appen ikke starter med feil skjema.
         db.Database.Migrate();
     }
     catch (Exception ex)
@@ -89,11 +83,8 @@ using (var scope = app.Services.CreateScope())
         throw;
     }
 
-    ///Oppretter Resource Provider, Public Actor og Admin rollene 
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     await IdentitySeeder.SeedRolesAsync(roleManager);
-
-
 
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
@@ -127,14 +118,11 @@ app.Use(async (context, next) =>
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
-// Viser filer som lastes opp mens appen kjører, f.eks. bilder i wwwroot/uploads.
-// MapStaticAssets viser bare filer som fantes da appen ble bygget.
 
 app.UseStaticFiles();
 
@@ -144,13 +132,11 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-
 app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

@@ -1,4 +1,6 @@
-// Felles bakgrunnsvalg. Markører og tegninger beholdes når kartlaget byttes.
+/// Felles valg av bakgrunnskart på sidene med Leaflet.
+
+/// Legger til standardkart, topografisk kart og satellitt uten å fjerne markører eller tegninger.
 function addMapLayers(map, standardLayer) {
     const topographic = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
         maxNativeZoom: 17,

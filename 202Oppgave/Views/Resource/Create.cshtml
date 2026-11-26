@@ -7,7 +7,7 @@ ViewData["Title"] = "Registrer ressurs";
 
 @section Head {
 <style>
-    /* Kartet: full bredde i kortet */
+
     #resource-map {
         height: 550px;
         width: 100%;
@@ -16,7 +16,6 @@ ViewData["Title"] = "Registrer ressurs";
         margin-top: 18px;
     }
 
-    /* Små koordinatfelt ved siden av hverandre under kartet */
     .resource-coords {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -24,40 +23,33 @@ ViewData["Title"] = "Registrer ressurs";
         margin-top: 0.75rem;
     }
 
-    /* Mindre tekst, så feltene ikke tar fokus fra skjemaet */
     .resource-coords label,
     .resource-coords input {
         font-size: 0.85rem;
     }
 
-    /* Grå bakgrunn viser at feltene ikke kan redigeres.
-       Må være mer spesifikk enn .form-control[readonly] i components.css */
     .resource-coords .form-control[readonly] {
         background-color: #edeeec;
         color: var(--muted);
         cursor: default;
     }
 
-    /* Ingen blå fokusramme når man klikker i feltene */
     .resource-coords .form-control[readonly]:focus {
         border-color: var(--line-strong);
         box-shadow: none;
     }
 
-    /* Skjemaet til venstre og kartet til høyre, som på Registrer behov */
     .rr-form {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 24px;
-        align-items: start;   /* kortene blir ikke strukket til samme høyde */
+        align-items: start;
     }
-    /* Knapperaden går over begge kolonnene */
+
     .rr-actions {
         grid-column: 1 / -1;
     }
 
-
-    /* Hvite kort med runde hjørner, samme stil som behovskortene */
     .need-design .rr-card {
         background: #fff;
         border: 1px solid #dbe1d8;
@@ -65,14 +57,13 @@ ViewData["Title"] = "Registrer ressurs";
         padding: 28px 30px;
         min-width: 0;
     }
-    /* Undertekst under korttitlene */
+
     .rr-sub {
         margin: -14px 0 20px;
         color: #56615b;
         font-size: .95rem;
     }
 
-    /* Feltnavn: små store bokstaver, som "PRIORITET" på behovssiden */
     .need-design .rr-label {
         display: block;
         font-size: .75rem;
@@ -83,13 +74,11 @@ ViewData["Title"] = "Registrer ressurs";
         margin-bottom: 8px;
     }
 
-    /* Rød stjerne på påkrevde felt */
     .rr-label i, .rr-star, .rr-required i {
         font-style: normal;
         color: #b23c32;
     }
 
-    /* "valgfritt" etter Bilde */
     .rr-label em {
         font-style: normal;
         font-weight: 400;
@@ -99,20 +88,16 @@ ViewData["Title"] = "Registrer ressurs";
         margin-left: 6px;
     }
 
-    /* Avstand mellom feltene */
     .rr-field, .rr-row {
         margin-bottom: 18px;
     }
 
-    /* Tittel og kategori ved siden av hverandre */
     .rr-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 18px;
     }
 
-    /* Nedtrekkslisten for kategori: samme høyde og kant som tekstfeltene.
-    appearance: none fjerner macOS-utseendet, så høyden virker i Safari. */
     .design-concept .need-design .rr-form select {
         -webkit-appearance: none;
         appearance: none;
@@ -125,14 +110,11 @@ ViewData["Title"] = "Registrer ressurs";
         color: #131c18;
     }
 
-    /* Boks 1: runde hjørner og luft på alle sider.
-       .design-concept foran trengs for å vinne over .card i beredskap.css */
     .design-concept .need-design .rr-card {
         border-radius: 14px;
         padding: 28px 30px;
     }
 
-    /* Tegnteller under beskrivelsen */
     .rr-hint {
         text-align: right;
         font-size: .8rem;
@@ -140,7 +122,6 @@ ViewData["Title"] = "Registrer ressurs";
         margin-top: 6px;
     }
 
-    /* Stiplet slippfelt for bildet */
     .rr-drop {
         display: flex;
         align-items: center;
@@ -153,7 +134,7 @@ ViewData["Title"] = "Registrer ressurs";
         cursor: pointer;
     }
     .rr-drop:hover,
-    .rr-drop.is-over {   /* is-over settes av scriptet når man drar en fil over */
+    .rr-drop.is-over {
         border-color: #15483d;
         background: #f2f5ee;
     }
@@ -169,12 +150,10 @@ ViewData["Title"] = "Registrer ressurs";
         background: #e4e9d6;
     }
 
-    /* Selve filfeltet skjules. Slippfeltet over brukes i stedet */
     .rr-file {
         display: none;
     }
 
-    /* Forhåndsvisning av valgt bilde */
     .rr-preview {
         margin-top: 12px;
         width: 100%;
@@ -184,7 +163,6 @@ ViewData["Title"] = "Registrer ressurs";
         border-radius: 8px;
     }
 
-    /* Raden under kartet: breddegrad, lengdegrad og "Min posisjon" */
     .rr-coords {
         display: grid;
         grid-template-columns: 1fr 1fr auto;
@@ -193,8 +171,6 @@ ViewData["Title"] = "Registrer ressurs";
         margin-top: 16px;
     }
 
-    /* Grå bakgrunn viser at koordinatene ikke kan redigeres.
-   .need-design foran trengs for å vinne over need.css */
     .need-design .rr-coords .form-control[readonly] {
         background: #f6f7f2;
         cursor: default;
@@ -203,7 +179,6 @@ ViewData["Title"] = "Registrer ressurs";
         box-shadow: none;
     }
 
-    /* Knapp med kant: "Min posisjon" og "Til alle ressurser" */
     .rr-pos, .rr-back {
         display: inline-flex;
         align-items: center;
@@ -224,7 +199,6 @@ ViewData["Title"] = "Registrer ressurs";
         background: #f2f5ee;
     }
 
-    /* Knapperad under kortene */
     .rr-actions {
         display: flex;
         align-items: center;
@@ -232,7 +206,7 @@ ViewData["Title"] = "Registrer ressurs";
         margin-top: 28px;
     }
     .rr-required {
-        margin-right: auto;   /* skyver Avbryt og Registrer til høyre */
+        margin-right: auto;
         font-size: .85rem;
         color: #56615b;
     }
@@ -241,14 +215,11 @@ ViewData["Title"] = "Registrer ressurs";
         text-underline-offset: 4px;
     }
 
-    /* Slippfeltet er en <label>, så need.css gjør den til display:block.
-   Med .design-concept .need-design foran vinner vår regel, og ikonet havner ved siden av teksten */
     .design-concept .need-design .rr-drop {
         display: flex;
         margin-bottom: 0;
     }
 
-    /* Mobil: alt under hverandre */
         @@media (max-width: 900px) {
         .rr-form,
         .rr-row,
@@ -260,11 +231,11 @@ ViewData["Title"] = "Registrer ressurs";
 }
 
 <div class="container home-content need-design">
-    @* Brødsmulesti: viser hvor brukeren er *@
+
     <nav class="need-breadcrumb" aria-label="Brødsmuler">
         <a asp-controller="Home" asp-action="Index">Hjem</a>
         <span aria-hidden="true">/</span>
-        @* Providere har ikke tilgang til ressurslisten, så det leddet skjules for dem *@
+
         @if (!User.IsInRole("ResourceProvider"))
         {
             <a asp-action="Index">Ressurser</a>
@@ -273,20 +244,18 @@ ViewData["Title"] = "Registrer ressurs";
         <span aria-current="page">Registrer ressurs</span>
     </nav>
 
-    @* Tittel til venstre og tilbake-knapp til høyre, som på behovssiden *@
     <header class="rl-head">
         <div>
             <h1>Registrer ressurs</h1>
             <p>Gjør utstyr og kapasitet synlig for beredskap og krisehåndtering.</p>
         </div>
-        @* Tilbake-knappen vises bare for brukere som har tilgang til ressurslisten *@
+
         @if (!User.IsInRole("ResourceProvider"))
         {
             <a class="rr-back" asp-action="Index">← Til alle ressurser</a>
         }
     </header>
 
-    @* Skjemaet omslutter både feltene og kartet, slik at koordinatene under kartet sendes med *@
     <form id="resource-form"
           class="rr-form"
           asp-controller="Resource"
@@ -294,7 +263,6 @@ ViewData["Title"] = "Registrer ressurs";
           method="post"
           enctype="multipart/form-data">
 
-        @* Venstre kolonne: skjemafeltene *@
         <div class="card rr-card">
             <h2 class="need-section-title"><span class="need-step" aria-hidden="true">1</span>Om ressursen</h2>
 
@@ -302,10 +270,8 @@ ViewData["Title"] = "Registrer ressurs";
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            @* Skjult felt som sender kartformen sammen med skjemaet. *@
             <input asp-for="GeometryJson" type="hidden" />
 
-            @* Tittel og kategori ved siden av hverandre *@
             <div class="rr-row">
                 <div>
                     <label asp-for="Type" class="rr-label">Tittel <i>*</i></label>
@@ -313,7 +279,6 @@ ViewData["Title"] = "Registrer ressurs";
                     <span asp-validation-for="Type" class="text-danger"></span>
                 </div>
 
-                @* Kategorier fra databasen *@
                 <div>
                     <label asp-for="CategoryId" class="rr-label">Kategori <i>*</i></label>
                     <select asp-for="CategoryId" asp-items="Model.CategoryOptions" class="form-select">
@@ -322,10 +287,7 @@ ViewData["Title"] = "Registrer ressurs";
                     <span asp-validation-for="CategoryId" class="text-danger"></span>
                 </div>
             </div>
-            
-            
 
-            @* Beskrivelse med tegnteller (telleren styres av scriptet nederst) *@
             <div class="rr-field">
                 <label asp-for="Description" class="rr-label">Beskrivelse <i>*</i></label>
                 <textarea asp-for="Description" class="form-control" maxlength="500"></textarea>
@@ -333,16 +295,12 @@ ViewData["Title"] = "Registrer ressurs";
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
-            @* Adresse eller sted. Fylles automatisk fra Kartverket når man markerer i kartet,
-               men kan rettes manuelt *@
             <div class="rr-field">
                 <label asp-for="Area" class="rr-label">Adresse eller sted <i>*</i></label>
                 <input asp-for="Area" class="form-control"/>
                 <span asp-validation-for="Area" class="text-danger"></span>
             </div>
-            
-            @* Tidsrom ressursen er tilgjengelig. Begge er valgfrie.
-               Viewmodellen sjekker at "til" ikke er før "fra". *@
+
             <div class="rr-row">
                 <div>
                     <label asp-for="AvailableFrom" class="rr-label">Tilgjengelig fra <em>valgfritt</em></label>
@@ -356,9 +314,6 @@ ViewData["Title"] = "Registrer ressurs";
                 </div>
             </div>
 
-            @* Valgfritt ressursbilde.
-               Hele den stiplede boksen er en <label> for filfeltet,
-               så et klikk hvor som helst i boksen åpner filvelgeren. *@
             <div class="rr-field">
                 <span class="rr-label">Bilde <em>valgfritt</em></span>
                 <label for="Image" class="rr-drop" id="image-drop">
@@ -368,15 +323,15 @@ ViewData["Title"] = "Registrer ressurs";
                         <small>JPG, PNG eller WEBP, maks 5 MB</small>
                     </span>
                 </label>
-                @* Selve filfeltet er skjult, boksen over brukes i stedet *@
+
                 <input asp-for="Image" type="file" accept=".jpg,.jpeg,.png,.webp" class="rr-file" />
                 <span asp-validation-for="Image" class="text-danger"></span>
                 <img id="image-preview" alt="Forhåndsvisning av valgt bilde" hidden class="rr-preview" />
             </div>
-            @* Knapperad under kortene *@
+
             <div class="rr-actions">
                 <span class="rr-required">Felt merket <i>*</i> må fylles ut.</span>
-                @* Providere sendes til Min side, de andre til ressurslisten *@
+
                 @if (User.IsInRole("ResourceProvider"))
                 {
                     <a class="rr-cancel" asp-controller="ResourceProvider" asp-action="Index">Avbryt</a>
@@ -389,7 +344,6 @@ ViewData["Title"] = "Registrer ressurs";
 
         </div>
 
-        @* Kort 2: plassering i kartet *@
         <div class="resource-map-panel">
             <h2 class="need-section-title">
                 <span class="need-step" aria-hidden="true">2</span>Plassering <i class="rr-star">*</i>
@@ -398,8 +352,6 @@ ViewData["Title"] = "Registrer ressurs";
 
             <div id="resource-map"></div>
 
-            @* Koordinatene fylles automatisk når man markerer i kartet.
-               De er readonly, men sendes likevel med skjemaet. *@
             <div class="rr-coords">
                 <div>
                     <label asp-for="Latitude" class="rr-label"></label>
@@ -413,7 +365,6 @@ ViewData["Title"] = "Registrer ressurs";
                 </div>
             </div>
         </div>
-       
 
     </form>
 </div>
@@ -422,7 +373,7 @@ ViewData["Title"] = "Registrer ressurs";
 <partial name="_ValidationScriptsPartial" />
 
 <script>
-    // Forhåndsvisning av valgt bilde, uavhengig av kartet
+
     const imageInput = document.getElementById('Image');
     const imagePreview = document.getElementById('image-preview');
     let previewUrl = null;
@@ -442,7 +393,6 @@ ViewData["Title"] = "Registrer ressurs";
         }
     });
 
-    // Tegnteller for beskrivelsen: viser antall tegn av 500
     const descriptionInput = document.getElementById('Description');
     const descriptionCount = document.getElementById('description-count');
 
@@ -451,16 +401,14 @@ ViewData["Title"] = "Registrer ressurs";
     }
 
     descriptionInput.addEventListener('input', updateDescriptionCount);
-    updateDescriptionCount(); // riktig tall også når siden lastes på nytt etter en skjemafeil
+    updateDescriptionCount();
 
-    // Dra og slipp bilde i den stiplede boksen
     const imageDrop = document.getElementById('image-drop');
 
-    // Nettleseren åpner bildet i fanen hvis vi ikke stopper standardoppførselen
     ['dragenter', 'dragover'].forEach(function (eventName) {
         imageDrop.addEventListener(eventName, function (e) {
             e.preventDefault();
-            imageDrop.classList.add('is-over'); // grønn kant mens filen er over boksen
+            imageDrop.classList.add('is-over');
         });
     });
 
@@ -475,44 +423,37 @@ ViewData["Title"] = "Registrer ressurs";
         const files = e.dataTransfer.files;
         if (!files || files.length === 0) return;
 
-        // Legg den slupne filen i det skjulte filfeltet, så den sendes med skjemaet
         imageInput.files = files;
 
-        // Si fra at feltet er endret, så forhåndsvisningen over oppdateres
         imageInput.dispatchEvent(new Event('change'));
     });
 
-    // Opprett kartet
     const map = L.map('resource-map')
         .setView([58.1467, 7.9956], 13);
 
-    // OpenStreetMap
     const standardLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
     addMapLayers(map, standardLayer);
 
-    // Gruppe for tegninger
     const drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
-
 
     const originalAddVertex = L.Draw.Polyline.prototype.addVertex;
 
     L.Draw.Polyline.include({
+        /// Lar tegningen avsluttes ved første punkt når minst tre punkter er valgt.
         addVertex: function (latlng) {
             const result = originalAddVertex.call(this, latlng);
 
-            // Når første punkt opprettes, kobles
-            // en egen klikkhendelse til denne markøren.
             if (this._markers.length === 1) {
                 const firstMarker = this._markers[0];
 
                 firstMarker.off('click');
 
                 firstMarker.on('click', (event) => {
-                    // Krev minst tre punkter før figuren lukkes.
+
                     if (this._markers.length < 3) {
                         return;
                     }
@@ -521,15 +462,11 @@ ViewData["Title"] = "Registrer ressurs";
                         L.DomEvent.stop(event.originalEvent);
                     }
 
-                    // Hent startpunktets koordinater.
                     const firstPoint =
                         this._markers[0].getLatLng();
 
-                    // Legg til startpunktet som siste punkt.
-                    // Dette tegner den siste linjestrekningen.
                     originalAddVertex.call(this, firstPoint);
 
-                    // Avslutt tegningen.
                     this.completeShape();
                 });
             }
@@ -538,7 +475,6 @@ ViewData["Title"] = "Registrer ressurs";
         }
     });
 
-    // Leaflet.Draw-verktøy
     const drawControl = new L.Control.Draw({
         draw: {
             polygon: false,
@@ -556,17 +492,14 @@ ViewData["Title"] = "Registrer ressurs";
 
     map.addControl(drawControl);
 
-    // Koordinatfeltene
     const latitudeInput =
         document.getElementById('Latitude');
 
     const longitudeInput =
         document.getElementById('Longitude');
 
-    // Henter det skjulte feltet for kartformen
     const geometryInput = document.getElementById('GeometryJson');
 
-    // Adresseforslag etter at brukeren velger eller redigerer en kartform.
     const addressInput = document.getElementById('Area');
     const addressStatus = document.createElement('small');
     addressStatus.setAttribute('role', 'status');
@@ -578,6 +511,7 @@ ViewData["Title"] = "Registrer ressurs";
     let addressTimer;
     let addressController;
 
+    /// Avbryter forsinket og pågående adresseoppslag når brukerens valg endres.
     function cancelAddressLookup() {
         ++addressVersion;
         clearTimeout(addressTimer);
@@ -589,6 +523,7 @@ ViewData["Title"] = "Registrer ressurs";
         addressStatus.textContent = 'Manuelt angitt adresse eller sted.';
     });
 
+    /// Forsinker adresseoppslaget og unngår at et gammelt svar overskriver nyere valg.
     function scheduleAddressLookup(latlng) {
         cancelAddressLookup();
         const version = addressVersion;
@@ -623,18 +558,16 @@ ViewData["Title"] = "Registrer ressurs";
         }, 350);
     }
 
-    // Lagrer koordinater for alle figurtyper
+    /// Lagrer GeoJSON i skjemaet. Sirkelradius må lagres separat fordi GeoJSON bare beskriver sentrum.
     function updateGeometry(layer){
         const geometry = layer.toGeoJSON();
 
-        // Sirkler trenger også radous for å gjennopprettes
         if (layer instanceof L.Circle){
             geometry.properties.radius = layer.getRadius();
         }
         geometryInput.value = JSON.stringify(geometry);
     }
 
-    // Oppdater koordinater for alle figurtyper
     function updateCoordinates(layer) {
         updateGeometry(layer);
         let latlng;
@@ -656,7 +589,6 @@ ViewData["Title"] = "Registrer ressurs";
         }
     }
 
-    // Gjenopprett markør etter skjemafeil
     if (geometryInput.value) {
         let geometry = null;
         try {
@@ -667,6 +599,7 @@ ViewData["Title"] = "Registrer ressurs";
 
         if (geometry) {
             const restored = L.geoJSON(geometry, {
+                /// Gjenoppretter sirkler med lagret radius. Andre punkter blir markører.
                 pointToLayer: function (feature, latlng) {
                     const radius = feature.properties?.radius;
 
@@ -705,28 +638,22 @@ ViewData["Title"] = "Registrer ressurs";
         }
     }
 
-    // Når en ny markering opprettes
     map.on('draw:created', function (e) {
 
-        // Fjern den gamle markeringen
         drawnItems.clearLayers();
 
-        // Legg til den nye markeringen
         const layer = e.layer;
         drawnItems.addLayer(layer);
 
-        // Oppdater koordinatene
         updateCoordinates(layer);
     });
 
-    // Når markeringen redigeres
     map.on('draw:edited', function (e) {
         e.layers.eachLayer(function (layer) {
             updateCoordinates(layer);
         });
     });
 
-    // Når markeringen slettes
     map.on('draw:deleted', function () {
         latitudeInput.value = '';
         longitudeInput.value = '';
@@ -736,12 +663,10 @@ ViewData["Title"] = "Registrer ressurs";
         addressStatus.textContent = 'Velg en ny plassering på kartet.';
     });
 
-    // Oppdater kartstørrelsen
     setTimeout(function () {
         map.invalidateSize();
     }, 100);
 
-    // Aktiver verktøylinjens markør ved åpning av et tomt skjema.
     if (drawnItems.getLayers().length === 0) {
         drawControl._toolbars.draw._modes.marker.handler.enable();
     }

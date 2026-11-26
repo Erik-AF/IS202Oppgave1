@@ -3,26 +3,26 @@ using _202Oppgave.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
-
 namespace _202Oppgave.DataAccess
 {
+    /// Kobler domenedata og Identity til databasen og definerer relasjoner, slettingsregler og startkategorier.
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options)
             : base(options)
-        {   
+        {
         }
 
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Need> Needs { get; set; }
         public DbSet<Category> Categories { get; set; }
-        
+
         public DbSet<Allocation> Allocations { get; set; }
 
-        // Bildene til ressursene, i egen tabell
         public DbSet<ResourceImage> ResourceImages { get; set; }
 
+        /// Definerer fremmednøkler, slettingsregler, tidsstempler og faste kategorier. Hver allokering peker på én ressurs og ett behov.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -30,8 +30,7 @@ namespace _202Oppgave.DataAccess
             modelBuilder.Entity<Resource>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                // Én bruker kan ha mange ressurser.
-                // Restrict: en bruker som har ressurser kan ikke slettes ved et uhell.
+
                 entity.Property(e => e.UserId).HasMaxLength(255);
                 entity.HasOne(e => e.User)
                     .WithMany()
@@ -41,40 +40,34 @@ namespace _202Oppgave.DataAccess
                 entity.Property(e => e.Description).HasMaxLength(1000);
                 entity.Property(e => e.Type).HasMaxLength(100);
                 entity.Property(e => e.ImagePath).HasMaxLength(300);
-                // Databasen fyller inn tidspunktet når en ny ressurs settes inn
+
                 entity.Property(e => e.CreatedAt)
                     .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
                     .ValueGeneratedOnAdd();
-                
-                // Én kategori har mange ressurser.
-                // Slettes en kategori, blir CategoryId satt til null i stedet for at ressursene slettes.
+
                 entity.HasOne(e => e.Category)
                     .WithMany(c => c.Resources)
                     .HasForeignKey(e => e.CategoryId)
                     .OnDelete(DeleteBehavior.SetNull);
             });
-            
+
             modelBuilder.Entity<ResourceImage>(entity =>
             {
                 entity.HasKey(i => i.Id);
                 entity.Property(i => i.Data).IsRequired();
                 entity.Property(i => i.ContentType).HasMaxLength(100).IsRequired();
 
-                // Én ressurs har ett bilde.
-                // Cascade: slettes ressursen, slettes bildet automatisk også.
                 entity.HasOne(i => i.Resource)
                     .WithOne(r => r.Image)
                     .HasForeignKey<ResourceImage>(i => i.ResourceId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
-            
+
                         modelBuilder.Entity<Category>(entity =>
             {
                 entity.HasKey(c => c.Id);
                 entity.Property(c => c.Name).HasMaxLength(100).IsRequired();
 
-                // Startdata: kategoriene finnes i databasen fra første oppstart.
-                // HasData krever at Id settes manuelt.
                 entity.HasData(
                     new Category { Id = 1, Name = "Bil" },
                     new Category { Id = 2, Name = "Lastebil" },
@@ -98,14 +91,11 @@ namespace _202Oppgave.DataAccess
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                // Databasen fyller inn tidspunktet når et nytt behov settes inn
                 entity.Property(e => e.CreatedAt)
                     .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
                     .ValueGeneratedOnAdd();
             });
 
-            // Allocation: koblingstabell mellom Resource og Need (mange-til-mange),
-            // slik som i ER-diagrammet.
             modelBuilder.Entity<Allocation>(entity =>
             {
                 entity.HasKey(a => a.AllocationId);
@@ -113,20 +103,15 @@ namespace _202Oppgave.DataAccess
                 entity.Property(a => a.State).HasMaxLength(30).IsRequired();
                 entity.Property(a => a.Note).HasMaxLength(500);
 
-                // Databasen setter tidspunktet når allokeringen lages
                 entity.Property(a => a.Date)
                     .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
                     .ValueGeneratedOnAdd();
 
-                // Én ressurs har mange allokeringer.
-                // Slettes ressursen, slettes allokeringene også.
                 entity.HasOne(a => a.Resource)
                     .WithMany(r => r.Allocations)
                     .HasForeignKey(a => a.ResourceId)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                // Ett behov har mange allokeringer.
-                // Slettes behovet, slettes allokeringene også.
                 entity.HasOne(a => a.Need)
                     .WithMany(n => n.Allocations)
                     .HasForeignKey(a => a.NeedId)

@@ -1,6 +1,5 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-// MariaDB-container
 var mariadb = builder.AddContainer(
         "mariadb",
         "mariadb",
@@ -12,10 +11,10 @@ var mariadb = builder.AddContainer(
     .WithEndpoint(
         targetPort: 3306,
         name: "mysql")
+    /// Volumet bevarer databasen når containeren erstattes.
     .WithVolume("mariadb-data", "/var/lib/mysql")
     .WithLifetime(ContainerLifetime.Persistent);
 
-// MVC-applikasjon
 builder.AddDockerfile(
     "Oppgave202",
     "..",
@@ -23,10 +22,8 @@ builder.AddDockerfile(
     .WithHttpEndpoint(
         port: 5027,
         targetPort: 8080)
-    // Lagrer opplastede bilder i et Docker-volum utenfor containeren,
-    // så de ikke slettes når appen bygges og startes på nytt
+
+    /// Bevarer eldre diskbaserte bilder. Nye bilder lagres i databasen.
     .WithVolume("ressursbilder", "/app/wwwroot/uploads");
-
-
 
 builder.Build().Run();

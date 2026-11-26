@@ -1,13 +1,8 @@
 @model _202Oppgave.Models.Resource
 
-@*
-    Details.cshtml – detaljvisning for én registrert ressurs.
-*@
-
 @{
     ViewData["Title"] = "Ressursdetaljer";
 
-    // Samme fargelogikk som i Index.cshtml, se kommentar der.
     var statusColor = Model.Status switch
     {
         "Tilgjengelig" => "var(--map-available)",
@@ -18,7 +13,7 @@
 
 @section Head {
     <style>
-    /* Bildet øverst i kortet, med runde hjørner som kartet */
+
     .rd-image {
         display: block;
         width: 100%;
@@ -29,12 +24,10 @@
         margin-bottom: 24px;
     }
 
-    /* Statusen i fet skrift. Fargen settes per ressurs i HTML */
     .rd-status {
         font-weight: 700;
     }
 
-    /* Kartet: høyde, kant og runde hjørner, som på behovsdetaljene */
     #details-map {
         height: 350px;
         width: 100%;
@@ -45,10 +38,8 @@
     </style>
 }
 
-@* need-design og need-details gir samme stil som detaljsiden for behov (fra need.css) *@
 <div class="container home-content need-design need-details">
 
-    @* Brødsmulesti: Hjem / Ressurser / navnet på ressursen *@
     <nav class="need-breadcrumb" aria-label="Brødsmuler">
         <a asp-controller="Home" asp-action="Index">Hjem</a>
         <span aria-hidden="true">/</span>
@@ -59,7 +50,6 @@
 
     <div class="card detail-card">
 
-        @* Opplastet bilde. Vises bare hvis ressursen har et. *@
         @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
         {
             <img src="@Model.ImagePath" alt="Bilde av @Model.Type" class="rd-image" />
@@ -76,7 +66,6 @@
         <p><strong>Adresse eller sted:</strong> @Model.Area</p>
         <p><strong>Status:</strong> <span class="rd-status" style="color:@statusColor;">@Model.Status</span></p>
 
-        @* Kontaktinfo fra brukeren som registrerte ressursen *@
         <p><strong>Registrert av:</strong> @(string.IsNullOrWhiteSpace(Model.ContactName) ? "Ukjent" : Model.ContactName)</p>
         @if (!string.IsNullOrWhiteSpace(Model.ContactPhone))
         {
@@ -87,7 +76,6 @@
             <p><strong>E-post:</strong> <a href="mailto:@Model.ContactEmail">@Model.ContactEmail</a></p>
         }
 
-        @* Kartet får høyde, kant og runde hjørner fra need.css (.need-details #details-map) *@
         @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
         {
             <div id="details-map"></div>
@@ -97,10 +85,8 @@
             <p>Ingen kartposisjon er lagret for denne ressursen.</p>
         }
 
-        @* Knappene får samme stil som på behovssiden (fra need.css) *@
         <div class="detail-actions">
-            @* Providere går til sine egne ressurser på Min side.
-               Offentlige aktører og admin går til ressurslisten. *@
+
             @if (User.IsInRole("ResourceProvider"))
             {
                 <p><a asp-controller="ResourceProvider" asp-action="Resources" class="btn btn-primary">Se alle ressurser</a></p>
@@ -110,12 +96,10 @@
                 <p><a asp-action="Index" class="btn btn-primary">Se alle ressurser</a></p>
             }
 
-            @* Rediger og Slett vises bare for eieren og admin *@
             @if (Model.CanManage)
             {
                 <p><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Rediger</a></p>
 
-                @* Ber om bekreftelse for å unngå at en ressurs slettes ved et uhell *@
                 <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
                       onsubmit="return confirm('Er du sikker på at du vil slette denne ressursen?');">
                     <button type="submit" class="btn need-delete-button">Slett</button>
@@ -141,13 +125,13 @@
             }).addTo(map);
             addMapLayers(map, standardLayer);
 
-            // Henter den lagrede kartformen fra modellen.
             const geometryJson = @Json.Serialize(Model.GeometryJson);
 
             if (geometryJson) {
                 const geometry = JSON.parse(geometryJson);
 
                 const shape = L.geoJSON(geometry, {
+                    /// Gjenoppretter sirkler med lagret radius. Andre punkter blir markører.
                     pointToLayer: function (feature, latlng) {
                         const radius = feature.properties?.radius;
 
@@ -161,13 +145,12 @@
                     }
                 }).addTo(map);
 
-                // Tilpasser kartet slik at hele formen vises.
                 map.fitBounds(shape.getBounds(), {
                     padding: [20, 20],
                     maxZoom: 15
                 });
             } else {
-                // Eldre ressurser uten formdata vises som markører.
+
                 L.marker(position).addTo(map);
             }        </script>
     }
