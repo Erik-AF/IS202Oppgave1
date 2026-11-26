@@ -22,4 +22,18 @@
     </article>
     <article><h3>Se sammenhengen</h3><p>Kartet samler registreringene og gir en geografisk oversikt over behov og ressurser.</p><a asp-controller="Kart" asp-action="Oversikt">Åpne kartoversikten →</a></article>
 </div></div></section>
-<section class="container editorial-section"><div class="section-heading"><div><p class="eyebrow">Sammen for Norge</p><h2>Alle har noe å bidra med.</h2></div><a class="btn btn-primary" asp-controller="Account" asp-action="Register">Opprett en bruker ↗</a></div></section>
+<section class="container editorial-section">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Sammen for Norge</p>
+            <h2>Alle har noe å bidra med.</h2>
+        </div>
+
+        @if (User.Identity?.IsAuthenticated != true)
+        {
+            <a class="btn btn-primary" asp-controller="Account" asp-action="Register">
+                Opprett en bruker ↗
+            </a>
+        }
+    </div>
+</section>
