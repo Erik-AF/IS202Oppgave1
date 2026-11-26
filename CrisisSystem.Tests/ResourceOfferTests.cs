@@ -130,16 +130,20 @@ public class ResourceOfferTests
     }
 
     [Fact]
-    public async Task FromMap_ShouldShowAvailableOwnResourcesAndKeepNeed()
+    public async Task FromMap_ShouldSubmitOfferDirectlyAndReturnToOriginalNeed()
     {
         var (controller, repo) = Setup();
         var view = Assert.IsType<ViewResult>(await controller.OfferToNeed(7));
         var model = Assert.IsType<AllocateViewModel>(view.Model);
         Assert.Equal(7, model.NeedId);
         Assert.Equal(1, Assert.Single(model.Resources).Id);
-        var next = Assert.IsType<ViewResult>(await controller.Create(new List<int> { 1 }, 7));
-        Assert.Equal(7, Assert.IsType<AllocateViewModel>(next.Model).NeedId);
-        repo.Verify(r => r.OfferAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        var result = Assert.IsType<RedirectToActionResult>(await controller.Create(new AllocateViewModel
+        { NeedId = model.NeedId, ResourceIds = new() { 1 } }));
+        Assert.Equal("Need", result.ControllerName);
+        Assert.Equal("Confirmation", result.ActionName);
+        Assert.Equal(7, result.RouteValues!["id"]);
+        repo.Verify(r => r.OfferAsync(7, It.Is<List<int>>(ids => ids.SequenceEqual(new[] { 1 })), "provider", null), Times.Once);
+        repo.Verify(r => r.AllocateAsync(It.IsAny<int>(), It.IsAny<List<int>>(), It.IsAny<string>()), Times.Never);
     }
 
     [Fact]

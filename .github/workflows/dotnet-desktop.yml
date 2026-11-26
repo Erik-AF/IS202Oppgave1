@@ -19,6 +19,22 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      mariadb:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: isolated-test-password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      TEST_MARIADB_CONNECTION: "Server=127.0.0.1;Port=3306;User=root;Password=isolated-test-password"
+      RUN_BROWSER_TESTS: "1"
 
     steps:
       - name: Checkout repository
@@ -35,5 +51,17 @@ jobs:
       - name: Build solution
         run: dotnet build IS202Oppgave1.slnx --no-restore --configuration Release
 
-      - name: Run unit tests
-        run: dotnet test CrisisSystem.Tests/CrisisSystem.Tests.csproj --configuration Release --no-restore --verbosity normal
+      - name: Install test browser
+        shell: pwsh
+        run: ./CrisisSystem.Tests/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+
+      - name: Run unit, database and browser tests
+        run: dotnet test CrisisSystem.Tests/CrisisSystem.Tests.csproj --configuration Release --no-build --no-restore --logger "trx;LogFileName=tests.trx" --results-directory TestResults
+
+      - name: Save test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/
+          if-no-files-found: warn

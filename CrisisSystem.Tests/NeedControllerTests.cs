@@ -34,8 +34,13 @@ public class NeedControllerTests
                 Needs.FirstOrDefault(n => n.Id == id));
         }
 
+        public int UpdateCalls { get; private set; }
+        public Need? LastUpdated { get; private set; }
+
         public Task UpdateAsync(Need need)
         {
+            UpdateCalls++;
+            LastUpdated = need;
             return Task.CompletedTask;
         }
 
@@ -164,6 +169,8 @@ public async Task Edit_ExistingNeed_ShouldUpdateNeed()
     var result = await controller.Edit(1, model);
 
     Assert.Equal("user-123", repository.Needs[0].UserId);
+    Assert.Equal(1, repository.UpdateCalls);
+    Assert.Same(repository.Needs[0], repository.LastUpdated);
     Assert.Equal("Drikkevann", repository.Needs[0].Type);
     Assert.Equal("Grimstad", repository.Needs[0].Location);
     Assert.Equal(NeedPriority.Akutt, repository.Needs[0].Priority);

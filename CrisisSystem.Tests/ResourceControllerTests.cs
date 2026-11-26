@@ -25,8 +25,13 @@ public class ResourceControllerTests
             return Task.CompletedTask;
         }
 
+        public int UpdateCalls { get; private set; }
+        public Resource? LastUpdated { get; private set; }
+
         public Task UpdateAsync(Resource resource)
         {
+            UpdateCalls++;
+            LastUpdated = resource;
             return Task.CompletedTask;
         }
 
@@ -291,6 +296,8 @@ public async Task Edit_ExistingResource_ShouldUpdateResource()
     var result = await controller.Edit(1, model);
 
     var updated = Assert.Single(repository.Resources);
+    Assert.Equal(1, repository.UpdateCalls);
+    Assert.Same(repository.Resources[0], repository.LastUpdated);
     Assert.Equal("Drikkevann", updated.Type);
     Assert.Equal("Grimstad", updated.Name);
 

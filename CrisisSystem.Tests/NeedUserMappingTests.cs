@@ -35,7 +35,7 @@ public class NeedUserMappingTests
     }
 
     [Fact]
-    public void Migration_ShouldOnlyAddUserColumnIndexAndForeignKey()
+    public void AddNeedUserMigration_AddsOwnershipWithoutDroppingNeeds()
     {
         using var db = CreateContext();
         var sql = db.GetService<IMigrator>().GenerateScript(

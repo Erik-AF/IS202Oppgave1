@@ -123,6 +123,10 @@ The following demo accounts are intended for local development and manual testin
 | Public actor | Register a crisis-related need | publicactor@example.com |!RedSideraptors1|
 | Resource provider | Register an available resource | provider@example.com | !RiverScuttle1 |
 | Admin | Can do All | admin@example.com |!blueSideGromp1 |
+## Testing
+
+See [Testing and results](docs/Testing.md) for automated tests, isolated MariaDB and browser tests, recorded results and six manual test scenarios.
+
 ## Test Data — Available Resources
 
 A proposed sample dataset is provided in [Testdata — Available Resources](Testscenarioer.md) for development and manual testing. These are **example records**, not confirmed preloaded resources in the running application.
