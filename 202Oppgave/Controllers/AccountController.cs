@@ -31,6 +31,7 @@ namespace _202Oppgave.Controllers
         /// Validerer innlogging med Identity og omdirigerer bare til en lokal returadresse ved suksess.
         [AllowAnonymous]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
@@ -39,6 +40,7 @@ namespace _202Oppgave.Controllers
             }
 
             var user = await userManager.FindByEmailAsync(model.Email);
+
             if (user is not null)
             {
                 var result = await signInManager.PasswordSignInAsync(
@@ -46,13 +48,167 @@ namespace _202Oppgave.Controllers
                     model.Password,
                     model.RememberMe,
                     lockoutOnFailure: true);
+
                 if (result.Succeeded)
                 {
                     return RedirectToLocalUrl(model.ReturnUrl);
                 }
+
+                if (result.RequiresTwoFactor)
+                {
+                    return RedirectToAction(nameof(LoginWith2fa), new
+                    {
+                        returnUrl = model.ReturnUrl,
+                        rememberMe = model.RememberMe
+                    });
+                }
+
+                if (result.IsLockedOut)
+                {
+                    ModelState.AddModelError(
+                        string.Empty,
+                        "Innlogging er midlertidig sperret.");
+
+                    return View(model);
+                }
             }
 
-            ModelState.AddModelError(string.Empty, "Invalid email or password.");
+            ModelState.AddModelError(
+                string.Empty,
+                "Invalid email or password.");
+
+            return View(model);
+        }
+        [AllowAnonymous]
+        [HttpGet]
+        [ResponseCache(Duration = 0,Location = ResponseCacheLocation.None,NoStore = true)]
+        public async Task<IActionResult> LoginWith2fa(bool rememberMe,string? returnUrl = null)
+        {
+            var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user is null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+                return View(new LoginWith2faViewModel
+            {
+                RememberMe = rememberMe,
+                ReturnUrl = returnUrl
+            });
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ResponseCache(Duration = 0,Location = ResponseCacheLocation.None,NoStore = true)]
+        public async Task<IActionResult> LoginWith2fa(LoginWith2faViewModel model)
+        {
+            var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+
+            if (user is null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var result = await signInManager
+                .TwoFactorAuthenticatorSignInAsync(
+                    model.Code,
+                    model.RememberMe,
+                    rememberClient: false);
+
+            if (result.Succeeded)
+            {
+                return RedirectToLocalUrl(model.ReturnUrl);
+            }
+
+            if (result.IsLockedOut)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            ModelState.AddModelError(
+                string.Empty,
+                "Ugyldig sikkerhetskode.");
+
+            return View(model);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [ResponseCache(Duration = 0,Location = ResponseCacheLocation.None,NoStore = true)]
+        public async Task<IActionResult> LoginWithRecoveryCode(string? returnUrl = null)
+            {
+                var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+
+                if (user is null)
+                {
+                    return RedirectToAction(nameof(Login));
+                }
+
+                return View(new LoginWithRecoveryCodeViewModel
+                {
+                    ReturnUrl = returnUrl
+                });
+            }
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ResponseCache(Duration = 0,Location = ResponseCacheLocation.None,NoStore = true)]
+        public async Task<IActionResult> LoginWithRecoveryCode(LoginWithRecoveryCodeViewModel model)
+        {
+            var user = await signInManager
+                .GetTwoFactorAuthenticationUserAsync();
+
+            if (user is null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            if (await userManager.IsLockedOutAsync(user))
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            var recoveryCode = model.Code.Trim()
+                .Replace(" ", string.Empty);
+
+            var result = await signInManager
+                .TwoFactorRecoveryCodeSignInAsync(recoveryCode);
+
+            if (result.Succeeded)
+            {
+                return RedirectToLocalUrl(model.ReturnUrl);
+            }
+
+            if (result.IsLockedOut)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            if (await userManager.GetLockoutEnabledAsync(user))
+            {
+                var failure = await userManager.AccessFailedAsync(user);
+
+                if (!failure.Succeeded ||
+                    await userManager.IsLockedOutAsync(user))
+                {
+                    return RedirectToAction(nameof(Login));
+                }
+            }
+
+            ModelState.AddModelError(
+                string.Empty,
+                "Ugyldig eller allerede brukt gjenopprettingskode.");
+
             return View(model);
         }
 

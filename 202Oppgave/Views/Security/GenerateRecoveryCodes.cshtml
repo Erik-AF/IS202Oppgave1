@@ -1,0 +1,77 @@
+﻿@model _202Oppgave.ViewModels.Account.ConfirmPasswordViewModel
+
+@{
+    ViewData["Title"] = "Generer gjenopprettingskoder";
+}
+
+<section class="auth-card">
+
+    <div class="auth-heading">
+
+        <p class="auth-eyebrow">SIKKERHET</p>
+
+        <h1>Generer nye gjenopprettingskoder</h1>
+
+    </div>
+
+    <div class="alert alert-warning">
+
+        Alle tidligere gjenopprettingskoder vil bli ugyldige
+        når du genererer nye.
+
+    </div>
+
+    <form asp-controller="Security"
+          asp-action="GenerateRecoveryCodes"
+          method="post">
+
+        <div asp-validation-summary="ModelOnly"
+             class="auth-validation"></div>
+
+        <div class="auth-field">
+
+            <label asp-for="Password"></label>
+
+            <input asp-for="Password"
+                   type="password"
+                   autocomplete="current-password" />
+
+            <span asp-validation-for="Password"
+                  class="auth-validation"></span>
+
+        </div>
+
+        <div class="auth-field">
+
+            <label asp-for="Code"></label>
+
+            <input asp-for="Code"
+                   type="text"
+                   inputmode="numeric"
+                   autocomplete="one-time-code"
+                   maxlength="6" />
+
+            <span asp-validation-for="Code"
+                  class="auth-validation"></span>
+
+        </div>
+
+        <button type="submit" class="auth-submit">
+
+            Generer nye koder
+
+        </button>
+
+    </form>
+
+    <div class="auth-bottom">
+
+        <a asp-action="Index">Avbryt</a>
+
+    </div>
+
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

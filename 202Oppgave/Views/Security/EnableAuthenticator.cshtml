@@ -1,0 +1,100 @@
+﻿@model _202Oppgave.ViewModels.Account.EnableAuthenticatorViewModel
+
+@{
+    ViewData["Title"] = "Konfigurer autentiseringsapp";
+}
+
+<section class="auth-card">
+
+    <div class="auth-heading">
+
+        <p class="auth-eyebrow">SIKKERHET</p>
+
+        <h1>Konfigurer autentiseringsapp</h1>
+
+        <p>
+            Følg stegene under for å aktivere
+            tofaktorautentisering.
+        </p>
+
+    </div>
+
+    <ol>
+
+        <li>
+            Last ned Microsoft Authenticator,
+            Google Authenticator eller en tilsvarende app.
+        </li>
+
+        <li>
+            Legg til en ny konto i autentiseringsappen.
+        </li>
+
+        <li>
+            Skann QR-koden nedenfor.
+        </li>
+
+    </ol>
+
+    <div class="text-center my-3">
+
+        <img src="@Model.QrCodeImage"
+             alt="QR-kode for autentiseringsapp"
+             width="220"
+             height="220"
+             class="img-fluid" />
+
+    </div>
+
+    <p>
+        Kan du ikke skanne QR-koden?
+        Skriv inn denne nøkkelen manuelt i appen:
+    </p>
+
+    <p class="text-center">
+
+        <code>@Model.SharedKey</code>
+
+    </p>
+
+    <form asp-controller="Security"
+          asp-action="EnableAuthenticator"
+          method="post">
+
+        <div asp-validation-summary="ModelOnly"class="auth-validation"></div>
+
+        <div class="auth-field">
+
+            <label asp-for="Code"></label>
+
+            <input asp-for="Code"
+                   type="text"
+                   inputmode="numeric"
+                   autocomplete="one-time-code"
+                   maxlength="6"
+                   placeholder="000000" />
+            <input asp-for="SetupToken" type="hidden" />
+
+            <span asp-validation-for="Code"class="auth-validation"></span>
+
+        </div>
+
+        <button type="submit" class="auth-submit">
+
+            Bekreft og aktiver
+
+        </button>
+
+    </form>
+
+    <div class="auth-bottom">
+
+        <a asp-action="Index">Avbryt</a>
+
+    </div>
+
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

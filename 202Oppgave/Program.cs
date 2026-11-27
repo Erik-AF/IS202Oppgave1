@@ -3,10 +3,15 @@ using _202Oppgave.DataAccess;
 using _202Oppgave.DataAccess.Repositories;
 using _202Oppgave.Models.Entities;
 using _202Oppgave.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using _202Oppgave.Models.Authorization;
+using _202Oppgave.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options =>
@@ -54,9 +59,62 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.Configure<SecurityStampValidatorOptions>(
+    options =>
+    {
+        options.ValidationInterval = TimeSpan.FromMinutes(1);
+
+        options.OnRefreshingPrincipal = context =>
+        {
+            var amr = context.CurrentPrincipal?
+                .FindFirst("amr");
+
+            if (amr is not null &&
+                context.NewPrincipal?.Identity
+                    is ClaimsIdentity identity &&
+                !identity.HasClaim(amr.Type, amr.Value))
+            {
+                identity.AddClaim(
+                    new Claim(amr.Type, amr.Value));
+            }
+
+            return Task.CompletedTask;
+        };
+    });
+
 builder.Services.AddScoped<IEmailSender, ConsoleEmailSender>();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+
+    options.AccessDeniedPath = "/Account/AccessDenied";
+
+    options.Cookie.HttpOnly = true;
+
+    options.Cookie.SameSite = SameSiteMode.Lax;
+
+    options.Cookie.SecurePolicy =
+        builder.Environment.IsDevelopment()
+            ? CookieSecurePolicy.SameAsRequest
+            : CookieSecurePolicy.Always;
+});
+
+builder.Services.Configure<CookieAuthenticationOptions>(IdentityConstants.TwoFactorUserIdScheme,
+    options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+        options.Cookie.HttpOnly = true;
+
+        options.Cookie.SecurePolicy =
+            builder.Environment.IsDevelopment()
+                ? CookieSecurePolicy.SameAsRequest
+                : CookieSecurePolicy.Always;
+    });
+
 var app = builder.Build();
+
 
 /// Eget scope sørger for at databasekonteksten frigjøres etter migrering og opprettelse av startdata.
 using (var scope = app.Services.CreateScope())
@@ -129,6 +187,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
+
+app.UseMiddleware<RequireMfaMiddleware>();
 
 app.UseAuthorization();
 

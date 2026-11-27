@@ -369,6 +369,17 @@
                             Kontakt oss
                         </a>
                     </li>
+                    <li>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-controller="Security"
+                           asp-action="Index">
+
+                            Sikkerhetsinnstillinger
+
+                        </a>
+                    }
+                    </li>
                 </ul>
             </nav>
         </div>
